@@ -4,12 +4,8 @@ import org.bukkit.entity.Player;
 
 public abstract class SandAbility extends EarthAbility implements SubAbility {
 
-	public SandAbility(Player player, boolean autoStart) {
-		super(player, autoStart);
-	}
-
 	public SandAbility(Player player) {
-		super(player, false);
+		super(player);
 	}
 
 	@Override

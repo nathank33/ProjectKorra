@@ -7,12 +7,8 @@ import org.bukkit.entity.Player;
 
 public abstract class AirAbility extends CoreAbility {
 
-	public AirAbility(Player player, boolean autoStart) {
-		super(player, autoStart);
-	}
-
 	public AirAbility(Player player) {
-		this(player, false);
+		super(player);
 	}
 
 	@Override
@@ -25,8 +21,17 @@ public abstract class AirAbility extends CoreAbility {
 	 * 
 	 * @return Config specified ChatColor
 	 */
-	public static ChatColor getAirColor() {
+	public static ChatColor getChatColor() {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Air"));
+	}
+	
+	/**
+	 * Gets the AirSubColor from the config.
+	 * 
+	 * @return Config specified ChatColor
+	 */
+	public static ChatColor getSubChatColor() {
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.AirSub"));
 	}
 
 }

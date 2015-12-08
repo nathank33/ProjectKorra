@@ -1,24 +1,24 @@
 package com.projectkorra.projectkorra.ability.multiability;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.SubElement;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.SubElement;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.chiblocking.ChiMethods;
+import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.firebending.FireMethods;
+import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 public class MultiAbilityManager {
 
@@ -294,7 +294,7 @@ public class MultiAbilityManager {
 			if (sub == null) {
 				switch (element) {
 					case Air:
-						return AirMethods.getAirColor();
+						return AirAbility.getChatColor();
 					case Water:
 						return WaterMethods.getWaterColor();
 					case Fire:

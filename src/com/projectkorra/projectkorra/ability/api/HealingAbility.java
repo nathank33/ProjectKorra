@@ -4,10 +4,6 @@ import org.bukkit.entity.Player;
 
 public abstract class HealingAbility extends WaterAbility implements SubAbility {
 
-	public HealingAbility(Player player, boolean autoStart) {
-		super(player, autoStart);
-	}
-
 	public HealingAbility(Player player) {
 		super(player);
 	}

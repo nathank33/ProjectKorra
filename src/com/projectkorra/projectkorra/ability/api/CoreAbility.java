@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.ability.api;
 
-import com.projectkorra.projectkorra.SubElement;
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.ChatColor;
@@ -20,30 +20,32 @@ public abstract class CoreAbility implements Ability {
 	private static ConcurrentHashMap<Class<? extends CoreAbility>, Set<CoreAbility>> instancesByClass = new ConcurrentHashMap<>();
 	private static Integer idCounter;
 
-	private long startTime;
-	private Player player;
-	private Integer id;
-	private FileConfiguration config;
+	protected long startTime;
+	protected Player player;
+	protected BendingPlayer bPlayer;
+	protected Integer id;
+	protected FileConfiguration config;
+	
+	private boolean hasStarted;
 
 	static {
 		idCounter = Integer.MIN_VALUE;
 	}
 
-	public CoreAbility(Player player, boolean autoStart) {
+	public CoreAbility(Player player) {
 		if (player == null) {
 			throw new IllegalArgumentException("Player cannot be null");
 		}
 
 		this.player = player;
+		this.bPlayer = BendingPlayer.getBendingPlayer(player);
 		this.startTime = System.currentTimeMillis();
 		this.config = ConfigManager.defaultConfig.get();
-
-		if (autoStart) {
-			start();
-		}
+		this.hasStarted = false;
 	}
 
-	private void start() {
+	public void start() {
+		hasStarted = true;
 		Class<? extends CoreAbility> clazz = getClass();
 		UUID uuid = player.getUniqueId();
 
@@ -66,16 +68,20 @@ public abstract class CoreAbility implements Ability {
 		CoreAbility.instancesByClass.get(clazz).add(this);
 	}
 
-	public CoreAbility(Player player) {
-		this(player, true);
-	}
-
 	public long getStartTime() {
 		return startTime;
+	}
+	
+	public boolean hasStarted() {
+		return hasStarted;
 	}
 
 	public Player getPlayer() {
 		return player;
+	}
+	
+	public BendingPlayer getBendingPlayer() {
+		return bPlayer;
 	}
 
 	public Integer getId() {
@@ -102,49 +108,65 @@ public abstract class CoreAbility implements Ability {
 	}
 
 	public static void progressAll() {
-		for (Set<CoreAbility> setAbils : CoreAbility.instancesByClass.values()) {
+		for (Set<CoreAbility> setAbils : instancesByClass.values()) {
 			for (CoreAbility abil : setAbils) {
 				abil.progress();
 			}
 		}
 	}
-
+	
+	public static void progressAll(Class<? extends CoreAbility> clazz) {
+		for (CoreAbility abil : getAbilities(clazz)) {
+			abil.progress();
+		}
+	}
+	
 	public static void removeAll() {
-		for (Set<CoreAbility> setAbils : CoreAbility.instancesByClass.values()) {
+		for (Set<CoreAbility> setAbils : instancesByClass.values()) {
 			for (CoreAbility abil : setAbils) {
 				abil.remove();
 			}
 		}
 	}
 
-	public static CoreAbility getAbility(Player player, Class<? extends CoreAbility> clazz) {
-		Collection<CoreAbility> abils = CoreAbility.getAbilities(player, clazz);
+	public static void removeAll(Class<? extends CoreAbility> clazz) {
+		for (CoreAbility abil : getAbilities(clazz)) {
+			abil.remove();
+		}
+	}
+
+	public static <T extends CoreAbility> T getAbility(Player player, Class<T> clazz) {
+		Collection<T> abils = getAbilities(player, clazz);
 		if (abils.iterator().hasNext()) {
 			return abils.iterator().next();
 		}
 		return null;
 	}
-
-	public static Collection<CoreAbility> getAbilities(Class<? extends CoreAbility> clazz) {
-		if (CoreAbility.instancesByClass.get(clazz).size() == 0) {
-			return Collections.emptySet();
-		}
-		return CoreAbility.instancesByClass.get(clazz);
-	}
-
-	public static Collection<CoreAbility> getAbilities(Player player, Class<? extends CoreAbility> clazz) {
-		if (player == null || CoreAbility.instances.get(clazz) == null || CoreAbility.instances.get(clazz).get(player.getUniqueId()) == null) {
-			return Collections.emptySet();
-		}
-		return CoreAbility.instances.get(clazz).get(player.getUniqueId()).values();
-	}
-
-	public ChatColor getElementColor() {
-		String element = (this instanceof SubAbility) ? getParentAbility().getElementName() + "Sub" : getElementName();
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors."+element));		
-	}
 	
-	public abstract String getName();
+	public static <T extends CoreAbility> boolean hasAbility(Player player, Class<T> clazz) {
+		return getAbility(player, clazz) != null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends CoreAbility> Collection<T> getAbilities(Class<T> clazz) {
+		if (instancesByClass.get(clazz) == null || instancesByClass.get(clazz).size() == 0) {
+			return Collections.emptySet();
+		}
+		return (Collection<T>) CoreAbility.instancesByClass.get(clazz);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends CoreAbility> Collection<T> getAbilities(Player player, Class<T> clazz) {
+		if (player == null || instances.get(clazz) == null || instances.get(clazz).get(player.getUniqueId()) == null) {
+			return Collections.emptySet();
+		}
+		return (Collection<T>) instances.get(clazz).get(player.getUniqueId()).values();
+	}
+
+	public final ChatColor getElementColor() {
+		String element = (this instanceof SubAbility) ? getElementName() + "Sub" : getElementName();
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors."+element));		
+	}	
 
 	public abstract String getElementName();
 

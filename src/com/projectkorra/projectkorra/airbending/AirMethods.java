@@ -5,6 +5,7 @@ import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.ChatColor;
@@ -169,7 +170,7 @@ public class AirMethods {
 	 * Stops all airbending systems. SHOULD ONLY BE USED ON PLUGIN DISABLING!
 	 */
 	public static void stopBending() {
-		AirBlast.removeAll();
+		CoreAbility.removeAll(AirBlast.class);
 		AirBubble.removeAll();
 		AirShield.removeAll();
 		AirSuction.removeAll();
@@ -180,7 +181,7 @@ public class AirMethods {
 		AirBurst.removeAll();
 		Suffocate.removeAll();
 		AirCombo.removeAll();
-		FlightAbility.removeAll();
+		AirFlight.removeAll();
 	}
 
 	/**

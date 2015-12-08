@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra;
 
 import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
 import com.projectkorra.projectkorra.chiblocking.RapidPunch;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
@@ -166,6 +167,7 @@ public class BendingManager implements Runnable, ConfigLoadable {
 			time = System.currentTimeMillis();
 			ProjectKorra.time_step = interval;
 
+			CoreAbility.progressAll();
 			AvatarState.manageAvatarStates();
 			TempPotionEffect.progressAll();
 			handleDayNight();

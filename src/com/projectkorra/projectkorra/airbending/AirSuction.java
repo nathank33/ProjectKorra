@@ -1,12 +1,12 @@
 package com.projectkorra.projectkorra.airbending;
 
-import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
 import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.Flight;
@@ -18,157 +18,122 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AirSuction implements ConfigLoadable {
+public class AirSuction extends AirAbility {
 
-	public static ConcurrentHashMap<Player, AirSuction> instances = new ConcurrentHashMap<>();
-
-	private static ConcurrentHashMap<Player, Location> origins = new ConcurrentHashMap<Player, Location>();
-
-	private static final double maxspeed = AirBlast.maxspeed;
-	private static final int maxticks = 10000;
-
-	// private static long soonesttime = config.get().getLong("Properties.GlobalCooldown");
-	private static double SPEED = config.get().getDouble("Abilities.Air.AirSuction.Speed");
-	private static double RANGE = config.get().getDouble("Abilities.Air.AirSuction.Range");
-	private static double RADIUS = config.get().getDouble("Abilities.Air.AirSuction.Radius");
-	private static double PUSH_FACTOR = config.get().getDouble("Abilities.Air.AirSuction.Push");
-	private static double originselectrange = 10;
+	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<>();
+	private static final int ORIGIN_PARTICLE_COUNT = 6;
+	private static final int ABILITY_PARTICLE_COUNT = 6;
+	private static final int MAX_TICKS = 10000;
+	private static final double ORIGIN_SELECT_RANGE = 10;
 
 	private Location location;
 	private Location origin;
 	private Vector direction;
-	private Player player;
-	private boolean otherorigin = false;
-	private int ticks = 0;
-	private double speed = SPEED;
-	private double range = RANGE;
-	private double affectingradius = RADIUS;
-	private double pushfactor = PUSH_FACTOR;
-	// private long time;
-
-	private double speedfactor;
-
-	@SuppressWarnings("unused")
-	private ArrayList<Entity> affectedentities = new ArrayList<Entity>();
+	private boolean hasOtherOrigin;
+	private int ticks;
+	private int particleCount;
+	private long cooldown;
+	private double speed;
+	private double range;
+	private double radius;
+	private double pushFactor;
 
 	public AirSuction(Player player) {
-		/* Initial Check */
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-		if (bPlayer.isOnCooldown("AirSuction"))
+		super(player);
+		if (bPlayer.isOnCooldown("AirSuction")) {
 			return;
+		}
 		if (player.getEyeLocation().getBlock().isLiquid()) {
 			return;
 		}
 		if (AirSpout.getPlayers().contains(player) || WaterSpout.getPlayers().contains(player)) {
 			return;
 		}
-		/* End Initial Check */
-		// reloadVariables();
-		this.player = player;
-		if (origins.containsKey(player)) {
-			origin = origins.get(player);
-			otherorigin = true;
-			origins.remove(player);
+
+		this.hasOtherOrigin = false;
+		this.ticks = 0;
+		this.particleCount = ABILITY_PARTICLE_COUNT;
+		this.speed = getConfig().getDouble("Abilities.Air.AirSuction.Speed");
+		this.range = getConfig().getDouble("Abilities.Air.AirSuction.Range");
+		this.radius = getConfig().getDouble("Abilities.Air.AirSuction.Radius");
+		this.pushFactor = getConfig().getDouble("Abilities.Air.AirSuction.Push");
+		this.cooldown = GeneralMethods.getGlobalCooldown();
+
+		if (ORIGINS.containsKey(player)) {
+			origin = ORIGINS.get(player);
+			hasOtherOrigin = true;
+			ORIGINS.remove(player);
 		} else {
 			origin = player.getEyeLocation();
 		}
+
 		location = GeneralMethods.getTargetedLocation(player, range, GeneralMethods.nonOpaque);
 		direction = GeneralMethods.getDirection(location, origin).normalize();
-		Entity entity = GeneralMethods.getTargetedEntity(player, range, new ArrayList<Entity>());
+		Entity entity = GeneralMethods.getTargetedEntity(player, range);
+
 		if (entity != null) {
 			direction = GeneralMethods.getDirection(entity.getLocation(), origin).normalize();
 			location = getLocation(origin, direction.clone().multiply(-1));
-			// location =
-			// origin.clone().add(direction.clone().multiply(-range));
 		}
-		// }
 
-		instances.put(player, this);
-		bPlayer.addCooldown("AirSuction", GeneralMethods.getGlobalCooldown());
-		// time = System.currentTimeMillis();
-		// timers.put(player, System.currentTimeMillis());
-	}
-
-	public static String getDescription() {
-		return "To use, simply left-click in a direction. " + "A gust of wind will originate as far as it can in that direction"
-				+ " and flow towards you, sucking anything in its path harmlessly with it."
-				+ " Skilled benders can use this technique to pull items from precarious locations. "
-				+ "Additionally, tapping sneak will change the origin of your next " + "AirSuction to your targeted location.";
+		bPlayer.addCooldown("AirSuction", cooldown);
+		start();
 	}
 
 	private static void playOriginEffect(Player player) {
-		if (!origins.containsKey(player))
-			return;
-		Location origin = origins.get(player);
-		if (player.isDead() || !player.isOnline())
-			return;
-		
-		if (!origin.getWorld().equals(player.getWorld())) {
-			origins.remove(player);
+		if (!ORIGINS.containsKey(player)) {
 			return;
 		}
 
-		if (GeneralMethods.getBoundAbility(player) == null) {
-			origins.remove(player);
+		Location origin = ORIGINS.get(player);
+		if (player.isDead() || !player.isOnline()) {
 			return;
-		}
-
-		if (!GeneralMethods.getBoundAbility(player).equalsIgnoreCase("AirSuction")
+		} else if (!origin.getWorld().equals(player.getWorld())) {
+			ORIGINS.remove(player);
+			return;
+		} else if (GeneralMethods.getBoundAbility(player) == null) {
+			ORIGINS.remove(player);
+			return;
+		} else if (!GeneralMethods.getBoundAbility(player).equalsIgnoreCase("AirSuction")
 				|| !GeneralMethods.canBend(player.getName(), "AirSuction")) {
-			origins.remove(player);
+			ORIGINS.remove(player);
+			return;
+		} else if (origin.distanceSquared(player.getEyeLocation()) > ORIGIN_SELECT_RANGE * ORIGIN_SELECT_RANGE) {
+			ORIGINS.remove(player);
 			return;
 		}
 
-		if (origin.distance(player.getEyeLocation()) > originselectrange) {
-			origins.remove(player);
-			return;
-		}
-
-		AirMethods.playAirbendingParticles(origin, 6);
-		//
-		// origin.getWorld().playEffect(origin, Effect.SMOKE, 4,
-		// (int) originselectrange);
+		AirMethods.playAirbendingParticles(origin, ORIGIN_PARTICLE_COUNT);
 	}
 
-	public static void progressAll() {
-		for (AirSuction ability : instances.values()) {
-			ability.progress();
-		}
-		for (Player player : origins.keySet()) {
+	public static void progressOrigins() {
+		for (Player player : ORIGINS.keySet()) {
 			playOriginEffect(player);
 		}
 	}
 
 	public static void setOrigin(Player player) {
-		Location location = GeneralMethods.getTargetedLocation(player, originselectrange, GeneralMethods.nonOpaque);
-		if (location.getBlock().isLiquid() || GeneralMethods.isSolid(location.getBlock()))
+		Location location = GeneralMethods.getTargetedLocation(player, ORIGIN_SELECT_RANGE, GeneralMethods.nonOpaque);
+		if (location.getBlock().isLiquid() || GeneralMethods.isSolid(location.getBlock())) {
 			return;
-
-		if (GeneralMethods.isRegionProtectedFromBuild(player, "AirSuction", location))
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, "AirSuction", location)) {
 			return;
-
-		if (origins.containsKey(player)) {
-			origins.replace(player, location);
+		} else if (ORIGINS.containsKey(player)) {
+			ORIGINS.replace(player, location);
 		} else {
-			origins.put(player, location);
+			ORIGINS.put(player, location);
 		}
 	}
 
 	private void advanceLocation() {
-		AirMethods.playAirbendingParticles(location, 6, 0.275F, 0.275F, 0.275F);
+		AirMethods.playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
 		if (GeneralMethods.rand.nextInt(4) == 0) {
 			AirMethods.playAirbendingSound(location);
 		}
-		// location.getWorld().playEffect(location, Effect.SMOKE, 4,
-		// (int) AirBlast.defaultrange);
-		location = location.add(direction.clone().multiply(speedfactor));
-	}
-
-	public double getAffectingradius() {
-		return affectingradius;
+		double speedFactor = speed * (ProjectKorra.time_step / 1000.);
+		location = location.add(direction.clone().multiply(speedFactor));
 	}
 
 	private Location getLocation(Location origin, Vector direction) {
@@ -183,68 +148,42 @@ public class AirSuction implements ConfigLoadable {
 		return location;
 	}
 
-	public Player getPlayer() {
-		return player;
-	}
-
-	public double getPushfactor() {
-		return pushfactor;
-	}
-
-	public double getRange() {
-		return range;
-	}
-
-	public double getSpeed() {
-		return speed;
-	}
-
-	public boolean progress() {
+	@Override
+	public void progress() {
 		if (player.isDead() || !player.isOnline()) {
 			remove();
-			return false;
-		}
-		if (GeneralMethods.isRegionProtectedFromBuild(player, "AirSuction", location)) {
+			return;
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, "AirSuction", location)) {
 			remove();
-			return false;
+			return;
 		}
-		speedfactor = speed * (ProjectKorra.time_step / 1000.);
 
 		ticks++;
-
-		if (ticks > maxticks) {
+		if (ticks > MAX_TICKS) {
 			remove();
-			return false;
-		}
-		// if (player.isSneaking()
-		// && Methods.getBendingAbility(player) == Abilities.AirSuction) {
-		// new AirSuction(player);
-		// }
-
-		if ((location.distance(origin) > range) || (location.distance(origin) <= 1)) {
+			return;
+		} else if ((location.distanceSquared(origin) > range * range) || (location.distanceSquared(origin) <= 1)) {
 			remove();
-			return false;
+			return;
 		}
 
-		for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, affectingradius)) {
-			// if (affectedentities.contains(entity))
-			// continue;
-			// affectedentities.add(entity);
-			if (entity.getEntityId() != player.getEntityId() || otherorigin) {
+		for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, radius)) {
+			if (entity.getEntityId() != player.getEntityId() || hasOtherOrigin) {
 				Vector velocity = entity.getVelocity();
-				double max = maxspeed;
-				double factor = pushfactor;
+				double max = speed;
+				double factor = pushFactor;
 				if (AvatarState.isAvatarState(player)) {
-					max = AvatarState.getValue(maxspeed);
+					max = AvatarState.getValue(max);
 					factor = AvatarState.getValue(factor);
 				}
 
 				Vector push = direction.clone();
 				if (Math.abs(push.getY()) > max && entity.getEntityId() != player.getEntityId()) {
-					if (push.getY() < 0)
+					if (push.getY() < 0) {
 						push.setY(-max);
-					else
+					} else {
 						push.setY(max);
+					}
 				}
 
 				factor *= 1 - location.distance(origin) / (2 * range);
@@ -260,44 +199,37 @@ public class AirSuction implements ConfigLoadable {
 				}
 
 				if (entity instanceof Player) {
-					if (Commands.invincible.contains(((Player) entity).getName()))
+					if (Commands.invincible.contains(((Player) entity).getName())) {
 						continue;
+					}
 				}
+
 				GeneralMethods.setVelocity(entity, velocity);
 				new HorizontalVelocityTracker(entity, player, 200l, "AirSuction", Element.Air, null);
 				entity.setFallDistance(0);
 				if (entity.getEntityId() != player.getEntityId() && entity instanceof Player) {
 					new Flight((Player) entity, player);
 				}
-				if (entity.getFireTicks() > 0)
+
+				if (entity.getFireTicks() > 0) {
 					entity.getWorld().playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
+				}
 				entity.setFireTicks(0);
 				AirMethods.breakBreathbendingHold(entity);
-
 			}
 		}
 
 		advanceLocation();
-		return true;
-	}
-
-	public void remove() {
-		instances.remove(player);
-	}
-
-	public static void removeAll() {
-		for (AirSuction ability : instances.values()) {
-			ability.remove();
-		}
 	}
 
 	public static boolean removeAirSuctionsAroundPoint(Location location, double radius) {
 		boolean removed = false;
-		for (AirSuction airSuction : instances.values()) {
+		for (AirSuction airSuction : CoreAbility.getAbilities(AirSuction.class)) {
 			Location airSuctionlocation = airSuction.location;
 			if (location.getWorld() == airSuctionlocation.getWorld()) {
-				if (location.distance(airSuctionlocation) <= radius)
+				if (location.distanceSquared(airSuctionlocation) <= radius * radius) {
 					airSuction.remove();
+				}
 				removed = true;
 			}
 		}
@@ -305,30 +237,98 @@ public class AirSuction implements ConfigLoadable {
 	}
 
 	@Override
-	public void reloadVariables() {
-		SPEED = config.get().getDouble("Abilities.Air.AirSuction.Speed");
-		RANGE = config.get().getDouble("Abilities.Air.AirSuction.Range");
-		RADIUS = config.get().getDouble("Abilities.Air.AirSuction.Radius");
-		PUSH_FACTOR = config.get().getDouble("Abilities.Air.AirSuction.Push");
-		speed = SPEED;
-		range = RANGE;
-		affectingradius = RADIUS;
-		pushfactor = PUSH_FACTOR;
+	public String getName() {
+		return "AirSuction";
 	}
 
-	public void setAffectingradius(double affectingradius) {
-		this.affectingradius = affectingradius;
+	@Override
+	public Location getLocation() {
+		return location;
 	}
 
-	public void setPushfactor(double pushfactor) {
-		this.pushfactor = pushfactor;
+	@Override
+	public long getCooldown() {
+		return cooldown;
+	}
+
+	public Location getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(Location origin) {
+		this.origin = origin;
+	}
+
+	public Vector getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Vector direction) {
+		this.direction = direction;
+	}
+
+	public boolean isHasOtherOrigin() {
+		return hasOtherOrigin;
+	}
+
+	public void setHasOtherOrigin(boolean hasOtherOrigin) {
+		this.hasOtherOrigin = hasOtherOrigin;
+	}
+
+	public int getTicks() {
+		return ticks;
+	}
+
+	public void setTicks(int ticks) {
+		this.ticks = ticks;
+	}
+
+	public int getParticleCount() {
+		return particleCount;
+	}
+
+	public void setParticleCount(int particleCount) {
+		this.particleCount = particleCount;
+	}
+
+	public double getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(double speed) {
+		this.speed = speed;
+	}
+
+	public double getRange() {
+		return range;
 	}
 
 	public void setRange(double range) {
 		this.range = range;
 	}
 
-	public void setSpeed(double speed) {
-		this.speed = speed;
+	public double getRadius() {
+		return radius;
 	}
+
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+
+	public double getPushFactor() {
+		return pushFactor;
+	}
+
+	public void setPushFactor(double pushFactor) {
+		this.pushFactor = pushFactor;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+	public void setCooldown(long cooldown) {
+		this.cooldown = cooldown;
+	}
+
 }

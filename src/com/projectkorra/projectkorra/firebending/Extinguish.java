@@ -23,7 +23,7 @@ public class Extinguish implements ConfigLoadable {
 	private static double defaultradius = config.get().getDouble("Abilities.Fire.HeatControl.Extinguish.Radius");
 
 	@SuppressWarnings("unused")
-	private static byte full = AirBlast.full;
+	private static byte full = 0x0;
 
 	public Extinguish(Player player) {
 		/* Initial Checks */

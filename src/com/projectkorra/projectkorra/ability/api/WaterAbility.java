@@ -10,13 +10,9 @@ public abstract class WaterAbility extends CoreAbility implements SourceAbility 
 	private boolean canAutoSource;
 	private boolean canDynamicSource;
 	private boolean canSelfSource;
-	
-	public WaterAbility(Player player, boolean autoStart) {
-		super(player, autoStart);
-	}
 
 	public WaterAbility(Player player) {
-		this(player, false);
+		super(player);
 	}
 
 	@Override

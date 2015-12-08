@@ -10,12 +10,8 @@ public abstract class EarthAbility extends CoreAbility implements SourceAbility 
 	private boolean canDynamicSource;
 	private boolean canSelfSource;
 	
-	public EarthAbility(Player player, boolean autoStart) {
-		super(player, autoStart);
-	}
-
 	public EarthAbility(Player player) {
-		this(player, false);
+		super(player);
 	}
 
 	@Override

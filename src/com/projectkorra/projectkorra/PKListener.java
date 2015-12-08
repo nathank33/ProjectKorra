@@ -74,7 +74,7 @@ import com.projectkorra.projectkorra.airbending.AirShield;
 import com.projectkorra.projectkorra.airbending.AirSpout;
 import com.projectkorra.projectkorra.airbending.AirSuction;
 import com.projectkorra.projectkorra.airbending.AirSwipe;
-import com.projectkorra.projectkorra.airbending.FlightAbility;
+import com.projectkorra.projectkorra.airbending.AirFlight;
 import com.projectkorra.projectkorra.airbending.Suffocate;
 import com.projectkorra.projectkorra.airbending.Tornado;
 import com.projectkorra.projectkorra.chiblocking.AcrobatStance;
@@ -722,7 +722,7 @@ public class PKListener implements Listener {
 			if (GeneralMethods.isBender(player.getName(), Element.Air) && event.getCause() == DamageCause.FALL && GeneralMethods.canBendPassive(player.getName(), Element.Air)) {
 				new Flight(player);
 				player.setAllowFlight(true);
-				AirBurst.fallBurst(player);
+				new AirBurst(player, true);
 				player.setFallDistance(0);
 				event.setDamage(0D);
 				event.setCancelled(true);
@@ -998,7 +998,7 @@ public class PKListener implements Listener {
 	public void onPlayerKick(PlayerKickEvent event) {
 		if (event.isCancelled())
 			return;
-		FlightAbility.remove(event.getPlayer());
+		AirFlight.remove(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -1046,8 +1046,8 @@ public class PKListener implements Listener {
 			}
 		}
 
-		if (FlightAbility.contains(event.getPlayer())) {
-			if (FlightAbility.isHovering(event.getPlayer())) {
+		if (AirFlight.isFlying(event.getPlayer())) {
+			if (AirFlight.isHovering(event.getPlayer())) {
 				Location loc = event.getFrom();
 				Location toLoc = player.getLocation();
 
@@ -1104,7 +1104,7 @@ public class PKListener implements Listener {
 		}
 
 		MultiAbilityManager.remove(player);
-		FlightAbility.remove(event.getPlayer());
+		AirFlight.remove(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -1165,13 +1165,13 @@ public class PKListener implements Listener {
 					AirBlast.setOrigin(player);
 				}
 				if (abil.equalsIgnoreCase("AirBurst")) {
-					new AirBurst(player);
+					new AirBurst(player, false);
 				}
 				if (abil.equalsIgnoreCase("AirSuction")) {
 					AirSuction.setOrigin(player);
 				}
 				if (abil.equalsIgnoreCase("AirSwipe")) {
-					AirSwipe.charge(player);
+					new AirSwipe(player, true);
 				}
 				if (abil.equalsIgnoreCase("AirShield")) {
 					new AirShield(player);
@@ -1182,7 +1182,7 @@ public class PKListener implements Listener {
 				if (abil.equalsIgnoreCase("Flight")) {
 					if (player.isSneaking() || !AirMethods.canAirFlight(player))
 						return;
-					new FlightAbility(player);
+					new AirFlight(player);
 				}
 			}
 
@@ -1365,11 +1365,11 @@ public class PKListener implements Listener {
 					if (!ProjectKorra.plugin.getConfig().getBoolean("Abilities.Air.Flight.HoverEnabled") || !AirMethods.canAirFlight(player))
 						return;
 
-					if (FlightAbility.contains(event.getPlayer())) {
-						if (FlightAbility.isHovering(event.getPlayer())) {
-							FlightAbility.setHovering(event.getPlayer(), false);
+					if (AirFlight.isFlying(event.getPlayer())) {
+						if (AirFlight.isHovering(event.getPlayer())) {
+							AirFlight.setHovering(event.getPlayer(), false);
 						} else {
-							FlightAbility.setHovering(event.getPlayer(), true);
+							AirFlight.setHovering(event.getPlayer(), true);
 						}
 					}
 				}

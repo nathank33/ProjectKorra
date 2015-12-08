@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.bukkit.ChatColor;
 
-import com.projectkorra.projectkorra.airbending.AirMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
@@ -12,7 +12,7 @@ import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 public enum Element {
 	
-	Air (AirMethods.getAirColor(), AirMethods.getAirSubColor()), 
+	Air (AirAbility.getChatColor(), AirAbility.getSubChatColor()), 
 	Water (WaterMethods.getWaterColor(), WaterMethods.getWaterSubColor()), 
 	Earth (EarthMethods.getEarthColor(), EarthMethods.getEarthSubColor()), 
 	Fire (FireMethods.getFireColor(), FireMethods.getFireSubColor()), 
