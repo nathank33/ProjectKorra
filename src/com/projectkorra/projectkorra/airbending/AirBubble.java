@@ -23,6 +23,8 @@ public class AirBubble extends AirAbility {
 	private double airRadius;
 	private double waterRadius;
 	private ConcurrentHashMap<Block, BlockState> waterOrigins;
+	
+	public AirBubble() {}
 
 	public AirBubble(Player player) {
 		super(player);

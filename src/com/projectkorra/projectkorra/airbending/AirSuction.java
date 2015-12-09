@@ -39,6 +39,8 @@ public class AirSuction extends AirAbility {
 	private double range;
 	private double radius;
 	private double pushFactor;
+	
+	public AirSuction() {}
 
 	public AirSuction(Player player) {
 		super(player);

@@ -27,9 +27,10 @@ public class AirBurst extends AirAbility {
 	private float playerFallDistance;
 	private boolean isCharged;
 	private boolean isFallBurst;
-
 	private ArrayList<AirBlast> blasts;
 	private ArrayList<Entity> affectedEntities;
+	
+	public AirBurst() {}
 
 	public AirBurst(Player player, boolean isFallBurst) {
 		super(player);

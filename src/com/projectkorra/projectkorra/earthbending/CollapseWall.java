@@ -1,0 +1,146 @@
+package com.projectkorra.projectkorra.earthbending;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
+
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.util.BlockSource;
+import com.projectkorra.projectkorra.util.ClickType;
+
+// TODO: Merge this ability with Collapse
+public class CollapseWall extends EarthAbility {
+
+	private int range;
+	private int height;
+	private long cooldown;
+	private double radius;
+	private Location location;
+	private ConcurrentHashMap<Block, Block> blocks = new ConcurrentHashMap<Block, Block>();
+	private ConcurrentHashMap<Block, Integer> baseBlocks = new ConcurrentHashMap<Block, Integer>();
+	
+	public CollapseWall() {}
+
+	@SuppressWarnings("deprecation")
+	public CollapseWall(Player player) {
+		super(player);
+		if (bPlayer.isOnCooldown(this)) {
+			return;
+		}
+
+		this.range = getConfig().getInt("Abilities.Earth.Collapse.Range");
+		this.height = getConfig().getInt("Abilities.Earth.RaiseEarth.Column.Height");
+		this.radius = getConfig().getDouble("Abilities.Earth.Collapse.Radius");
+		this.cooldown = GeneralMethods.getGlobalCooldown();
+		this.blocks = new ConcurrentHashMap<>();
+		this.baseBlocks = new ConcurrentHashMap<>();
+
+		Block sblock = BlockSource.getEarthSourceBlock(player, range, ClickType.SHIFT_DOWN);
+		if (sblock == null) {
+			location = player.getTargetBlock(EarthMethods.getTransparentEarthbending(), range).getLocation();
+		} else {
+			location = sblock.getLocation();
+		}
+		for (Block block : GeneralMethods.getBlocksAroundPoint(location, radius)) {
+			if (isEarthbendable(block) && !blocks.containsKey(block) && block.getY() >= location.getBlockY()) {
+				getAffectedBlocks(block);
+			}
+		}
+
+		if (!baseBlocks.isEmpty()) {
+			bPlayer.addCooldown(this);
+		}
+		for (Block block : baseBlocks.keySet()) {
+			new Collapse(player, block.getLocation());
+		}
+		remove();
+	}
+
+	private void getAffectedBlocks(Block block) {
+		Block baseblock = block;
+		int tall = 0;
+		ArrayList<Block> bendableblocks = new ArrayList<Block>();
+		bendableblocks.add(block);
+
+		for (int i = 1; i <= height; i++) {
+			Block blocki = block.getRelative(BlockFace.DOWN, i);
+			if (isEarthbendable(blocki)) {
+				baseblock = blocki;
+				bendableblocks.add(blocki);
+				tall++;
+			} else {
+				break;
+			}
+		}
+		baseBlocks.put(baseblock, tall);
+		for (Block blocki : bendableblocks) {
+			blocks.put(blocki, baseblock);
+		}
+	}
+
+	@Override
+	public String getName() {
+		return "Collapse";
+	}
+
+	@Override
+	public void progress() {
+		
+	}
+
+	@Override
+	public Location getLocation() {
+		return location;
+	}
+
+	@Override
+	public long getCooldown() {
+		return cooldown;
+	}
+
+	public int getRange() {
+		return range;
+	}
+
+	public void setRange(int range) {
+		this.range = range;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public double getRadius() {
+		return radius;
+	}
+
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+
+	public ConcurrentHashMap<Block, Block> getBlocks() {
+		return blocks;
+	}
+
+	public ConcurrentHashMap<Block, Integer> getBaseBlocks() {
+		return baseBlocks;
+	}
+
+	public void setCooldown(long cooldown) {
+		this.cooldown = cooldown;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+}

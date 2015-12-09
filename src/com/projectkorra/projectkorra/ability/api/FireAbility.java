@@ -16,6 +16,8 @@ public abstract class FireAbility extends CoreAbility {
 
 	private double dayFactor;
 	
+	public FireAbility() {}
+	
 	public FireAbility(Player player) {
 		super(player);
 		this.dayFactor = FireAbility.getFirebendingDayAugment(1, player.getWorld());

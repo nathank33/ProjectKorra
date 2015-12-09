@@ -20,10 +20,8 @@ public class EarthbendingManager implements Runnable {
 		RevertChecker.revertEarthBlocks();
 		EarthTunnel.progressAll();
 		EarthArmor.moveArmorAll();
-		Catapult.progressAll();
 		Tremorsense.manage(Bukkit.getServer());
 		EarthColumn.progressAll();
-		CompactColumn.progressAll();
 		Shockwave.progressAll();
 		EarthBlast.progressAll();
 		MetalClips.progressAll();

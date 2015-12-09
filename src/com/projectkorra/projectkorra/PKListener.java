@@ -63,12 +63,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirBlast;
 import com.projectkorra.projectkorra.airbending.AirBubble;
 import com.projectkorra.projectkorra.airbending.AirBurst;
-import com.projectkorra.projectkorra.airbending.AirMethods;
 import com.projectkorra.projectkorra.airbending.AirScooter;
 import com.projectkorra.projectkorra.airbending.AirShield;
 import com.projectkorra.projectkorra.airbending.AirSpout;
@@ -91,8 +92,8 @@ import com.projectkorra.projectkorra.chiblocking.WarriorStance;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.earthbending.Catapult;
+import com.projectkorra.projectkorra.earthbending.CollapseWall;
 import com.projectkorra.projectkorra.earthbending.Collapse;
-import com.projectkorra.projectkorra.earthbending.CompactColumn;
 import com.projectkorra.projectkorra.earthbending.EarthArmor;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.earthbending.EarthColumn;
@@ -186,7 +187,7 @@ public class PKListener implements Listener {
 			color = ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.Avatar"));
 		} else if (GeneralMethods.isBender(player.getName(), Element.Air) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Air");
-			color = AirMethods.getAirColor();
+			color = AirAbility.getChatColor();
 		} else if (GeneralMethods.isBender(player.getName(), Element.Water) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Water");
 			color = WaterMethods.getWaterColor();
@@ -370,7 +371,7 @@ public class PKListener implements Listener {
 			color = ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.Avatar"));
 		} else if (e == Element.Air && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Air");
-			color = AirMethods.getAirColor();
+			color = AirAbility.getChatColor();
 		} else if (e == Element.Water && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Water");
 			color = WaterMethods.getWaterColor();
@@ -1110,6 +1111,7 @@ public class PKListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerSneak(PlayerToggleSneakEvent event) {
 		Player player = event.getPlayer();
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 
 		if (event.isCancelled())
 			return;
@@ -1150,11 +1152,12 @@ public class PKListener implements Listener {
 			event.setCancelled(true);
 			return;
 		}
-
+		
+		CoreAbility coreAbil = CoreAbility.getAbility(abil);
 		if (!player.isSneaking() && GeneralMethods.canBend(player.getName(), abil)) {
 			if (GeneralMethods.isDisabledStockAbility(abil))
 				return;
-			if (AirMethods.isAirAbility(abil) && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
+			if (coreAbil != null && coreAbil instanceof AirAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {
 					return;
 				}
@@ -1180,7 +1183,7 @@ public class PKListener implements Listener {
 					new Suffocate(player);
 				}
 				if (abil.equalsIgnoreCase("Flight")) {
-					if (player.isSneaking() || !AirMethods.canAirFlight(player))
+					if (player.isSneaking() || !bPlayer.canUseFlight())
 						return;
 					new AirFlight(player);
 				}
@@ -1230,7 +1233,7 @@ public class PKListener implements Listener {
 					new EarthWall(player);
 				}
 				if (abil.equalsIgnoreCase("Collapse")) {
-					new Collapse(player);
+					new CollapseWall(player);
 				}
 				if (abil.equalsIgnoreCase("Shockwave")) {
 					new Shockwave(player);
@@ -1302,6 +1305,7 @@ public class PKListener implements Listener {
 			return;
 
 		Player player = event.getPlayer();
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		
 		if (interact.contains(player.getUniqueId())) return;
 		
@@ -1333,13 +1337,15 @@ public class PKListener implements Listener {
 		AirScooter.check(player);
 
 		String abil = GeneralMethods.getBoundAbility(player);
-		if (abil == null && !MultiAbilityManager.hasMultiAbilityBound(player))
+		CoreAbility coreAbil = CoreAbility.getAbility(abil);
+		
+		if (coreAbil == null && !MultiAbilityManager.hasMultiAbilityBound(player))
 			return;
 		if (GeneralMethods.canBend(player.getName(), abil)) {
 			if (GeneralMethods.isDisabledStockAbility(abil))
 				return;
 
-			if (AirMethods.isAirAbility(abil) && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
+			if (coreAbil instanceof AirAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {
 					return;
 				}
@@ -1362,7 +1368,7 @@ public class PKListener implements Listener {
 					new AirSwipe(player);
 				}
 				if (abil.equalsIgnoreCase("Flight")) {
-					if (!ProjectKorra.plugin.getConfig().getBoolean("Abilities.Air.Flight.HoverEnabled") || !AirMethods.canAirFlight(player))
+					if (!ProjectKorra.plugin.getConfig().getBoolean("Abilities.Air.Flight.HoverEnabled") || !bPlayer.canUseFlight())
 						return;
 
 					if (AirFlight.isFlying(event.getPlayer())) {
@@ -1425,7 +1431,7 @@ public class PKListener implements Listener {
 					new EarthColumn(player);
 				}
 				if (abil.equalsIgnoreCase("Collapse")) {
-					new CompactColumn(player);
+					new Collapse(player);
 				}
 				if (abil.equalsIgnoreCase("Shockwave")) {
 					Shockwave.coneShockwave(player);

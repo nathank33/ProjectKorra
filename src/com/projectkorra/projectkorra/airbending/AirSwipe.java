@@ -52,6 +52,8 @@ public class AirSwipe extends AirAbility {
 	private ConcurrentHashMap<Vector, Location> elements;
 	private ArrayList<Entity> affectedEntities;
 
+	public AirSwipe() {}
+	
 	public AirSwipe(Player player) {
 		this(player, false);
 	}

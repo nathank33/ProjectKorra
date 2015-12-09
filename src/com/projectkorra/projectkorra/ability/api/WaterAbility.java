@@ -5,11 +5,13 @@ import com.projectkorra.projectkorra.configuration.ConfigManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public abstract class WaterAbility extends CoreAbility implements SourceAbility {
+public abstract class WaterAbility extends BlockAbility implements SourceAbility {
 
 	private boolean canAutoSource;
 	private boolean canDynamicSource;
 	private boolean canSelfSource;
+	
+	public WaterAbility() {}
 
 	public WaterAbility(Player player) {
 		super(player);

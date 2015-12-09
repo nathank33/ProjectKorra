@@ -19,6 +19,8 @@ public class AirSpout extends AirAbility {
 	private int angle;
 	private double height;
 	private long updateInterval;
+	
+	public AirSpout() {}
 
 	public AirSpout(Player player) {
 		super(player);

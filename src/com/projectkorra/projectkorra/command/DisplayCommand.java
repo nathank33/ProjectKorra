@@ -6,8 +6,8 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.airbending.AirMethods;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
@@ -76,7 +76,7 @@ public class DisplayCommand extends PKCommand {
 
 			else {
 				ChatColor w = ChatColor.WHITE;
-				sender.sendMessage(ChatColor.RED + "Not a valid argument." + ChatColor.WHITE + "\nElements: " + AirMethods.getAirColor() + "Air" + ChatColor.WHITE + " | " + WaterMethods.getWaterColor() + "Water" + ChatColor.WHITE + " | " + EarthMethods.getEarthColor() + "Earth" + ChatColor.WHITE + " | " + FireMethods.getFireColor() + "Fire" + ChatColor.WHITE + " | " + ChiMethods.getChiColor() + "Chi");
+				sender.sendMessage(ChatColor.RED + "Not a valid argument." + ChatColor.WHITE + "\nElements: " + AirAbility.getChatColor() + "Air" + ChatColor.WHITE + " | " + WaterMethods.getWaterColor() + "Water" + ChatColor.WHITE + " | " + EarthMethods.getEarthColor() + "Earth" + ChatColor.WHITE + " | " + FireMethods.getFireColor() + "Fire" + ChatColor.WHITE + " | " + ChiMethods.getChiColor() + "Chi");
 				sender.sendMessage(w + "SubElements: "
 						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Air) + " Flight"
 						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Earth) + " Lavabending"

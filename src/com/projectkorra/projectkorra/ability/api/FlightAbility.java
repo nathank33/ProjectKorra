@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 
 public abstract class FlightAbility extends AirAbility implements SubAbility {
 
+	public FlightAbility() {}
+	
 	public FlightAbility(Player player) {
 		super(player);
 	}

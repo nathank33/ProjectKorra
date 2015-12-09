@@ -3,7 +3,6 @@ package com.projectkorra.projectkorra.firebending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.airbending.AirBlast;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
 import com.projectkorra.projectkorra.waterbending.WaterMethods;
 

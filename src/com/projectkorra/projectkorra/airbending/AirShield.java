@@ -34,6 +34,8 @@ public class AirShield extends AirAbility {
 	private int particleCount;
 	private HashMap<Integer, Integer> angles;
 
+	public AirShield() {}
+	
 	public AirShield(Player player) {
 		super(player);
 

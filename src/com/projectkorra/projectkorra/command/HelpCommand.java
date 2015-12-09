@@ -1,19 +1,19 @@
 package com.projectkorra.projectkorra.command;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.Arrays;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
-import java.util.List;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.AbilityModuleManager;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.combo.ComboManager;
+import com.projectkorra.projectkorra.chiblocking.ChiMethods;
+import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.firebending.FireMethods;
+import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 /**
  * Executor for /bending help. Extends {@link PKCommand}.
@@ -46,8 +46,8 @@ public class HelpCommand extends PKCommand {
 			sender.sendMessage(color + ability + " - ");
 			sender.sendMessage(color + AbilityModuleManager.descriptions.get(GeneralMethods.getAbility(ability)));
 		} else if (Arrays.asList(Commands.airaliases).contains(args.get(0))) {
-			sender.sendMessage(AirMethods.getAirColor() + "Air is the element of freedom. Airbenders are natural pacifists and " + "great explorers. There is nothing stopping them from scaling the tallest of mountains and walls easily. They specialize in redirection, " + "from blasting things away with gusts of winds, to forming a shield around them to prevent damage. Easy to get across flat terrains, " + "such as oceans, there is practically no terrain off limits to Airbenders. They lack much raw damage output, but make up for it with " + "with their ridiculous amounts of utility and speed.");
-			sender.sendMessage(ChatColor.YELLOW + "Airbenders can chain their abilities into combos, type " + AirMethods.getAirColor() + "/b help AirCombos" + ChatColor.YELLOW + " for more information.");
+			sender.sendMessage(AirAbility.getChatColor() + "Air is the element of freedom. Airbenders are natural pacifists and " + "great explorers. There is nothing stopping them from scaling the tallest of mountains and walls easily. They specialize in redirection, " + "from blasting things away with gusts of winds, to forming a shield around them to prevent damage. Easy to get across flat terrains, " + "such as oceans, there is practically no terrain off limits to Airbenders. They lack much raw damage output, but make up for it with " + "with their ridiculous amounts of utility and speed.");
+			sender.sendMessage(ChatColor.YELLOW + "Airbenders can chain their abilities into combos, type " + AirAbility.getChatColor() + "/b help AirCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/qffg9m3");
 		} else if (Arrays.asList(Commands.wateraliases).contains(args.get(0))) {
 			sender.sendMessage(WaterMethods.getWaterColor() + "Water is the element of change. Waterbending focuses on using your " + "opponents own force against them. Using redirection and various dodging tactics, you can be made " + "practically untouchable by an opponent. Waterbending provides agility, along with strong offensive " + "skills while in or near water.");

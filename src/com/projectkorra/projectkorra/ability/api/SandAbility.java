@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 
 public abstract class SandAbility extends EarthAbility implements SubAbility {
 
+	public SandAbility() {}
+	
 	public SandAbility(Player player) {
 		super(player);
 	}
@@ -11,6 +13,11 @@ public abstract class SandAbility extends EarthAbility implements SubAbility {
 	@Override
 	public Class<? extends Ability> getParentAbility() {
 		return EarthAbility.class;
+	}
+	
+	@Override
+	public String getSubElementName() {
+		return "Sand";
 	}
 	
 }

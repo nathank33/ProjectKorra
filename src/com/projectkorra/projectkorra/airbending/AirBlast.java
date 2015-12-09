@@ -40,6 +40,7 @@ public class AirBlast extends AirAbility {
 	private Location location;
 	private Location origin;
 	private Vector direction;
+	private AirBurst source;
 	private int ticks;
 	private int particleCount;
 	private long cooldown;
@@ -56,10 +57,10 @@ public class AirBlast extends AirAbility {
 	private boolean canCoolLava;
 	private boolean isFromOtherOrigin;
 	private boolean showParticles;
-
 	private ArrayList<Block> affectedLevers;
 	private ArrayList<Entity> affectedEntities;
-	private AirBurst source;
+	
+	public AirBlast() {}
 
 	public AirBlast(Player player) {
 		super(player);

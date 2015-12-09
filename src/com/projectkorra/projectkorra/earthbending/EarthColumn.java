@@ -127,8 +127,8 @@ public class EarthColumn {
 		for (int i = 0; i <= distance; i++) {
 			thisblock = block.getWorld().getBlockAt(location.clone().add(direction.clone().multiply(-i)));
 			affectedblocks.put(thisblock, thisblock);
-			if (CompactColumn.blockInAllAffectedBlocks(thisblock))
-				CompactColumn.revertBlock(thisblock);
+			if (Collapse.blockInAllAffectedBlocks(thisblock))
+				Collapse.revert(thisblock);
 		}
 	}
 

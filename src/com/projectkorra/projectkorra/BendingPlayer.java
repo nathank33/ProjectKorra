@@ -143,7 +143,7 @@ public class BendingPlayer {
 	 * 
 	 * @return true If player has permission node "bending.air.flight"
 	 */
-	public boolean canAirFlight() {
+	public boolean canUseFlight() {
 		return player.hasPermission("bending.air.flight");
 	}
 
@@ -503,6 +503,8 @@ public class BendingPlayer {
 			return false;
 		} else if (!ignoreCooldowns && isOnCooldown(ability.getName())) {
 			return false;
+		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbility())) {
+			return false;
 		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
 			return false;
 		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getName())) {
@@ -572,6 +574,19 @@ public class BendingPlayer {
 
 	public static BendingPlayer getBendingPlayer(Player player) {
 		return getBendingPlayer(player.getName());
+	}
+	
+	/**
+	 * Gets the Ability bound to the slot that the player is in.
+	 * 
+	 * @return The Ability name bounded to the slot
+	 *         <p>
+	 *         else null
+	 *         </p>
+	 */
+	public String getBoundAbility() {
+		int slot = player.getInventory().getHeldItemSlot() + 1;
+		return getAbilities().get(slot);
 	}
 
 }

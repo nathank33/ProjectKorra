@@ -31,6 +31,8 @@ public class Tornado extends AirAbility {
 	private double currentHeight;
 	private double currentRadius;
 	private ConcurrentHashMap<Integer, Integer> angles;
+	
+	public Tornado() {}
 
 	public Tornado(Player player) {
 		super(player);

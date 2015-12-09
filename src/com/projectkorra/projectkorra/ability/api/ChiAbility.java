@@ -5,17 +5,17 @@ import com.projectkorra.projectkorra.configuration.ConfigManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public abstract class AirAbility extends CoreAbility {
+public abstract class ChiAbility extends CoreAbility {
 
-	public AirAbility() {}
+	public ChiAbility() {}
 	
-	public AirAbility(Player player) {
+	public ChiAbility(Player player) {
 		super(player);
 	}
 
 	@Override
 	public final String getElementName() {
-		return "Air";
+		return "Chi";
 	}
 
 	/**
@@ -24,7 +24,7 @@ public abstract class AirAbility extends CoreAbility {
 	 * @return Config specified ChatColor
 	 */
 	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Air"));
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Chi"));
 	}
 	
 	/**
@@ -33,7 +33,7 @@ public abstract class AirAbility extends CoreAbility {
 	 * @return Config specified ChatColor
 	 */
 	public static ChatColor getSubChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.AirSub"));
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Chi"));
 	}
 
 }

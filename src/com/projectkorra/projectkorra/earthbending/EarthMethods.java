@@ -65,7 +65,6 @@ public class EarthMethods {
 			block.setType(Material.AIR);
 			tempair.put(info.getID(), info);
 		}
-
 	}
 
 	/**
@@ -642,7 +641,7 @@ public class EarthMethods {
 
 	public static void stopBending() {
 		Catapult.removeAll();
-		CompactColumn.removeAll();
+		Collapse.removeAll();
 		EarthBlast.removeAll();
 		EarthColumn.removeAll();
 		EarthPassive.removeAll();

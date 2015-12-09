@@ -86,6 +86,7 @@ import com.projectkorra.projectkorra.ability.AbilityModule;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.StockAbility;
 import com.projectkorra.projectkorra.ability.api.Ability;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
@@ -206,8 +207,9 @@ public class GeneralMethods {
 
 		BendingPlayer bPlayer = getBendingPlayer(player.getName());
 		bPlayer.getAbilities().put(slot, ability);
-		if (AirMethods.isAirAbility(ability)) {
-			player.sendMessage(AirMethods.getAirColor() + "Succesfully bound " + ability + " to slot " + slot);
+		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		if (coreAbil != null) {
+			player.sendMessage(coreAbil.getElementColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (WaterMethods.isWaterAbility(ability)) {
 			player.sendMessage(WaterMethods.getWaterColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (EarthMethods.isEarthAbility(ability)) {
@@ -353,12 +355,16 @@ public class GeneralMethods {
 
 	public static boolean canBind(String player, String ability) {
 		Player p = Bukkit.getPlayer(player);
-		if (p == null)
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(p);
+		CoreAbility abil = CoreAbility.getAbility(ability);
+		
+		if (p == null || bPlayer == null)
 			return false;
 		if (!p.hasPermission("bending.ability." + ability))
 			return false;
-		if (AirMethods.isAirAbility(ability) && !isBender(player, Element.Air))
+		if (abil != null && !bPlayer.hasElement(abil.getElementName()))
 			return false;
+		
 		if (WaterMethods.isWaterAbility(ability) && !isBender(player, Element.Water))
 			return false;
 		if (EarthMethods.isEarthAbility(ability) && !isBender(player, Element.Earth))
@@ -373,10 +379,6 @@ public class GeneralMethods {
 		else if (!EarthMethods.canMetalbend(p) && EarthMethods.isMetalbendingAbility(ability))
 			return false;
 		else if (!EarthMethods.canSandbend(p) && EarthMethods.isSandbendingAbility(ability))
-			return false;
-		else if (!AirMethods.canAirFlight(p) && AirMethods.isFlightAbility(ability))
-			return false;
-		else if (!AirMethods.canUseSpiritualProjection(p) && AirMethods.isSpiritualProjectionAbility(ability))
 			return false;
 		else if (!FireMethods.canCombustionbend(p) && FireMethods.isCombustionbendingAbility(ability))
 			return false;
@@ -736,7 +738,7 @@ public class GeneralMethods {
 		if (AbilityModuleManager.airbendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
 				return getSubBendingColor(Element.Air);
-			return AirMethods.getAirColor();
+			return AirAbility.getChatColor();
 		}
 		if (AbilityModuleManager.waterbendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
@@ -1019,7 +1021,7 @@ public class GeneralMethods {
 					else if (module.getSubElement() == SubElement.Sandbending || module.getSubElement() == SubElement.Metalbending || module.getSubElement() == SubElement.Lavabending)
 						return EarthMethods.getEarthSubColor();
 					else if (module.getSubElement() == SubElement.Flight || module.getSubElement() == SubElement.SpiritualProjection)
-						return AirMethods.getAirSubColor();
+						return AirAbility.getSubChatColor();
 				}
 				if (module.getElement().equalsIgnoreCase(Element.Water.toString()))
 					return WaterMethods.getWaterColor();
@@ -1028,7 +1030,7 @@ public class GeneralMethods {
 				else if (module.getElement().equalsIgnoreCase(Element.Fire.toString()))
 					return FireMethods.getFireColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Air.toString()))
-					return AirMethods.getAirColor();
+					return AirAbility.getChatColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Chi.toString()))
 					return ChiMethods.getChiColor();
 				else
@@ -1040,7 +1042,7 @@ public class GeneralMethods {
 			} else if (comboability.getComboType().equals(FireCombo.class)) {
 				return FireMethods.getFireColor();
 			} else if (comboability.getComboType().equals(AirCombo.class)) {
-				return AirMethods.getAirColor();
+				return AirAbility.getChatColor();
 			} else {
 				Element element = null;
 				for (AbilityInformation abilityinfo : comboability.getAbilities()) {
@@ -1058,11 +1060,11 @@ public class GeneralMethods {
 						else if (sub == SubElement.Sandbending || sub == SubElement.Metalbending || sub == SubElement.Lavabending)
 							return EarthMethods.getEarthSubColor();
 						else if (sub == SubElement.Flight || sub == SubElement.SpiritualProjection)
-							return AirMethods.getAirSubColor();
+							return AirAbility.getSubChatColor();
 					}
 				}
 				if (element == Element.Air)
-					return AirMethods.getAirColor();
+					return AirAbility.getChatColor();
 				if (element == Element.Earth)
 					return EarthMethods.getEarthColor();
 				if (element == Element.Fire)
@@ -2096,7 +2098,7 @@ public class GeneralMethods {
 	public static ChatColor getElementColor(Element element) {
 		switch (element) {
 			case Air:
-				return AirMethods.getAirColor();
+				return AirAbility.getChatColor();
 			case Fire:
 				return FireMethods.getFireColor();
 			case Earth:

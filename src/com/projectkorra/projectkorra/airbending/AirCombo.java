@@ -53,6 +53,8 @@ public class AirCombo extends AirAbility {
 	private ArrayList<Entity> affectedEntities;
 	private ArrayList<BukkitRunnable> tasks;
 	private ArrayList<Flight> flights;
+	
+	public AirCombo() {}
 
 	public AirCombo(Player player, String ability) {
 		super(player);

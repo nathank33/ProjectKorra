@@ -1,15 +1,10 @@
 package com.projectkorra.projectkorra.command;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
-import com.projectkorra.rpg.RPGMethods;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,11 +13,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.chiblocking.ChiMethods;
+import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.firebending.FireMethods;
+import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import com.projectkorra.rpg.RPGMethods;
 
 /**
  * Executor for /bending who. Extends {@link PKCommand}.
@@ -83,7 +83,7 @@ public class WhoCommand extends PKCommand {
 					bp = GeneralMethods.getBendingPlayer(player.getName());
 				}
 				if (bp.hasElement(Element.Air)) {
-					result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Air) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&7&mA") : AirMethods.getAirColor() + "A");
+					result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Air) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&7&mA") : AirAbility.getChatColor() + "A");
 				}
 				if (bp.hasElement(Element.Earth)) {
 					if (result == "") {
@@ -153,8 +153,9 @@ public class WhoCommand extends PKCommand {
 		}
 		
 		Player player_ = (Player) (player.isOnline() ? player : null);
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 
-		if (!BendingPlayer.getPlayers().containsKey(player.getUniqueId())) {
+		if (bPlayer == null) {
 			GeneralMethods.createBendingPlayer(player.getUniqueId(), playerName);
 			BukkitRunnable runnable = new BukkitRunnable() {
 				@Override
@@ -182,14 +183,16 @@ public class WhoCommand extends PKCommand {
 			runnable.runTaskAsynchronously(ProjectKorra.plugin);
 			return;
 		}
-		if (BendingPlayer.getPlayers().containsKey(player.getUniqueId())) {
+		
+		bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer != null) {
 			sender.sendMessage(player.getName() + (!player.isOnline() ? ChatColor.RESET + " (Offline)" : "") + " - ");
 			if (GeneralMethods.isBender(playerName, Element.Air)) {
-				sender.sendMessage(AirMethods.getAirColor() + "- Airbender");
-				if (player_ != null && AirMethods.canAirFlight((Player) player)) {
+				sender.sendMessage(AirAbility.getChatColor() + "- Airbender");
+				if (player_ != null && bPlayer.canUseFlight()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Air) + "    Can Fly");
 				}
-				if (player_ != null && AirMethods.canUseSpiritualProjection((Player) player)) {
+				if (player_ != null && bPlayer.canUseSpiritualProjection()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Air) + "    Can use Spiritual Projection");
 				}
 			}
@@ -236,7 +239,7 @@ public class WhoCommand extends PKCommand {
 			if (GeneralMethods.isBender(playerName, Element.Chi)) {
 				sender.sendMessage(ChiMethods.getChiColor() + "- ChiBlocker");
 			}
-			BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(playerName);
+			
 			UUID uuid = player.getUniqueId();
 			if (bPlayer != null) {
 				sender.sendMessage("Abilities: ");
