@@ -3,7 +3,10 @@ package com.projectkorra.projectkorra.ability.api;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+<<<<<<< HEAD
 import java.util.ArrayList;
+=======
+>>>>>>> CoreAbility Reflection, Initial Earth Refactor
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -127,7 +130,10 @@ public abstract class CoreAbility implements Ability {
 				}
 			}
 		}
-		CoreAbility.instancesByClass.get(getClass()).remove(this);
+
+		if (CoreAbility.instancesByClass.containsKey(getClass())) {
+			CoreAbility.instancesByClass.get(getClass()).remove(this);
+		}
 	}
 
 	public static void progressAll() {
