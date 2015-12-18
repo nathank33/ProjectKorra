@@ -3,6 +3,7 @@ package com.projectkorra.projectkorra.ability.api;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -225,6 +226,18 @@ public abstract class CoreAbility implements Ability {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors." + element));
 	}
 
+	public static ArrayList<CoreAbility> getAbilities() {
+		return new ArrayList<CoreAbility>(abilitiesByName.values());
+	}
+	
+	public static ArrayList<CoreAbility> getAbilitiesByElement(String element) {
+		ArrayList<CoreAbility> abilities = new ArrayList<CoreAbility>();
+		for (CoreAbility ability : getAbilities()) {
+			if (ability.getElementName().equalsIgnoreCase(element) && !ability.getName().equalsIgnoreCase(element + "Ability"))
+				abilities.add(ability);
+		}
+		return abilities;
+	}
 	public abstract String getElementName();
 
 	public abstract Location getLocation();

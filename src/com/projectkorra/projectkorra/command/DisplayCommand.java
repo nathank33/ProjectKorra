@@ -7,6 +7,8 @@ import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.SubAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.earthbending.EarthMethods;
@@ -19,6 +21,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -129,18 +132,20 @@ public class DisplayCommand extends PKCommand {
 	 * @param element The element to show the moves for
 	 */
 	private void displayElement(CommandSender sender, String element) {
-		List<String> abilities = ProjectKorra.plugin.abManager.getAbilities(element);
-		if (abilities == null) {
+		ArrayList<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(element);
+		ProjectKorra.log.warning(abilities.toString());
+		ProjectKorra.log.warning(abilities.toString());
+		if (abilities.isEmpty()) {
 			sender.sendMessage(ChatColor.RED + "You must select a valid element.");
 			return;
 		} else if (abilities.isEmpty()) {
 			sender.sendMessage(ChatColor.YELLOW + "There are no " + GeneralMethods.getElementColor(Element.valueOf(element)) + element + ChatColor.YELLOW + " abilities enabled on the server.");
 		}
-		for (String ability : abilities) {
-			if (GeneralMethods.isSubAbility(ability))
+		for (CoreAbility ability : abilities) {
+			if (ability instanceof SubAbility)
 				continue;
-			if (!(sender instanceof Player) || GeneralMethods.canView((Player) sender, ability)) {
-				sender.sendMessage(GeneralMethods.getElementColor(Element.getType(element)) + ability);
+			if (!(sender instanceof Player) || GeneralMethods.canView((Player) sender, ability.getName())) {
+				sender.sendMessage(ability.getElementColor() + ability.getName());
 			}
 		}
 		if (element.equalsIgnoreCase("earth")) {
