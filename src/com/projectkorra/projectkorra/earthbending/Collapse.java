@@ -15,8 +15,6 @@ import com.projectkorra.projectkorra.util.ClickType;
 
 public class Collapse extends EarthAbility {
 
-	public static final ConcurrentHashMap<Block, Block> FINISHED_BLOCKS = new ConcurrentHashMap<Block, Block>();
-
 	private Location origin;
 	private Location location;
 	private Vector direction;
@@ -36,24 +34,22 @@ public class Collapse extends EarthAbility {
 		if (bPlayer.isOnCooldown(this)) {
 			return;
 		}
-
+		setFields();
+		
 		block = BlockSource.getEarthSourceBlock(player, range, ClickType.LEFT_CLICK); // TODO: why is this broken?
 		if (block == null) {
 			return;
 		}
 
-		setFields();
 		this.origin = block.getLocation();
 		this.location = origin.clone();
 		this.distance = getEarthbendableBlocksLength(block, direction.clone().multiply(-1), height);
 		loadAffectedBlocks();
 
 		if (distance != 0) {
-			if (canInstantiate()) {
-				start();
-				bPlayer.addCooldown(this);
-				time = System.currentTimeMillis() - (long) (1000.0 / speed);
-			}
+			start();
+			bPlayer.addCooldown(this);
+			time = System.currentTimeMillis() - (long) (1000.0 / speed);
 		} else {
 			remove();
 		}
@@ -70,10 +66,8 @@ public class Collapse extends EarthAbility {
 		loadAffectedBlocks();
 
 		if (distance != 0) {
-			if (canInstantiate()) {
-				start();
-				time = System.currentTimeMillis() - (long) (1000.0 / speed);
-			}
+			start();
+			time = System.currentTimeMillis() - (long) (1000.0 / speed);
 		} else {
 			remove();
 		}
@@ -114,15 +108,6 @@ public class Collapse extends EarthAbility {
 		for (Collapse collapse : CoreAbility.getAbilities(Collapse.class)) {
 			collapse.affectedBlocks.remove(block);
 		}
-	}
-
-	private boolean canInstantiate() {
-		for (Block block : affectedBlocks.keySet()) {
-			if (FINISHED_BLOCKS.containsKey(block)) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	@Override

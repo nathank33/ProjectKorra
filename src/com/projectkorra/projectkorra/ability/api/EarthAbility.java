@@ -189,6 +189,10 @@ public abstract class EarthAbility extends BlockAbility {
 		}
 		return true;
 	}
+	
+	public boolean isEarthRevertOn() {
+		return getConfig().getBoolean("Properties.Earth.RevertEarthbending");
+	}
 
 	public boolean isLava(Block block) {
 		return block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA;

@@ -58,7 +58,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -642,7 +641,7 @@ public class PKListener implements Listener {
 					event.setCancelled(true);
 		}
 
-		if (event.getSlotType() == SlotType.ARMOR && !EarthArmor.canRemoveArmor((Player) event.getWhoClicked()))
+		if (event.getSlotType() == SlotType.ARMOR && CoreAbility.hasAbility((Player) event.getWhoClicked(), EarthArmor.class))
 			event.setCancelled(true);
 		if (event.getSlotType() == SlotType.ARMOR && !PlantArmor.canRemoveArmor((Player) event.getWhoClicked()))
 			event.setCancelled(true);
@@ -850,26 +849,33 @@ public class PKListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (event.getEntity().getKiller() == null) {
+		if (event.getEntity().getKiller() == null || !(event.getEntity() instanceof Player)) {
 			return;
 		}
-		if (EarthArmor.instances.containsKey(event.getEntity())) {
+		
+		Player player = (Player) event.getEntity();
+		EarthArmor earthArmor = CoreAbility.getAbility(player, EarthArmor.class);
+		
+		if (earthArmor != null) {
 			List<ItemStack> drops = event.getDrops();
-			List<ItemStack> newdrops = new ArrayList<ItemStack>();
+			List<ItemStack> newDrops = new ArrayList<ItemStack>();
 			for (int i = 0; i < drops.size(); i++) {
-				if (!(drops.get(i).getType() == Material.LEATHER_BOOTS || drops.get(i).getType() == Material.LEATHER_CHESTPLATE || drops.get(i).getType() == Material.LEATHER_HELMET || drops.get(i).getType() == Material.LEATHER_LEGGINGS || drops.get(i).getType() == Material.AIR))
-					newdrops.add((drops.get(i)));
+				if (!(drops.get(i).getType() == Material.LEATHER_BOOTS || drops.get(i).getType() == Material.LEATHER_CHESTPLATE || drops.get(i).getType() == Material.LEATHER_HELMET || drops.get(i).getType() == Material.LEATHER_LEGGINGS || drops.get(i).getType() == Material.AIR)) {
+					newDrops.add((drops.get(i)));
+				}
 			}
-			if (EarthArmor.instances.get(event.getEntity()).oldarmor != null) {
-				for (ItemStack is : EarthArmor.instances.get(event.getEntity()).oldarmor) {
-					if (!(is.getType() == Material.AIR))
-						newdrops.add(is);
+			if (earthArmor.getOldArmor() != null) {
+				for (ItemStack is : earthArmor.getOldArmor()) {
+					if (is.getType() != Material.AIR) {
+						newDrops.add(is);
+					}
 				}
 			}
 			event.getDrops().clear();
-			event.getDrops().addAll(newdrops);
-			EarthArmor.removeEffect(event.getEntity());
+			event.getDrops().addAll(newDrops);
+			earthArmor.remove();
 		}
+		
 		if (PlantArmor.instances.containsKey(event.getEntity())) {
 			List<ItemStack> drops = event.getDrops();
 			List<ItemStack> newdrops = new ArrayList<ItemStack>();
@@ -887,6 +893,7 @@ public class PKListener implements Listener {
 			event.getDrops().addAll(newdrops);
 			PlantArmor.removeEffect(event.getEntity());
 		}
+		
 		if (MetalClips.clipped.containsKey(event.getEntity())) {
 			List<ItemStack> drops = event.getDrops();
 			List<ItemStack> newdrops = new ArrayList<ItemStack>();
@@ -904,6 +911,7 @@ public class PKListener implements Listener {
 			event.getDrops().addAll(newdrops);
 			MetalClips.clipped.remove(event.getEntity());
 		}
+		
 		if (bendingDeathPlayer.containsKey(event.getEntity())) {
 			String message = ConfigManager.deathMsgConfig.get().getString("Properties.Default");
 			String ability = bendingDeathPlayer.get(event.getEntity());
@@ -1078,6 +1086,7 @@ public class PKListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+		
 		if (bPlayer != null) {
 			if (GeneralMethods.toggedOut.contains(player.getUniqueId()) && bPlayer.isToggled())
 				GeneralMethods.toggedOut.remove(player.getUniqueId());
@@ -1085,14 +1094,14 @@ public class PKListener implements Listener {
 				GeneralMethods.toggedOut.add(player.getUniqueId());
 		}
 
-		if (Commands.invincible.contains(event.getPlayer().getName())) {
-			Commands.invincible.remove(event.getPlayer().getName());
+		if (Commands.invincible.contains(player.getName())) {
+			Commands.invincible.remove(player.getName());
 		}
 		Preset.unloadPreset(player);
-		//BendingPlayer.getPlayers().remove(event.getPlayer().getUniqueId());
-		if (EarthArmor.instances.containsKey(event.getPlayer())) {
-			EarthArmor.removeEffect(event.getPlayer());
-			event.getPlayer().removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
+
+		EarthArmor earthArmor = CoreAbility.getAbility(player, EarthArmor.class);
+		if (earthArmor != null) {
+			earthArmor.remove();
 		}
 		if (PlantArmor.instances.containsKey(event.getPlayer())) {
 			PlantArmor.removeEffect(event.getPlayer());

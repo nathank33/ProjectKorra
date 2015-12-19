@@ -58,7 +58,6 @@ public class CollapseWall extends EarthAbility {
 		for (Block block : baseBlocks.keySet()) {
 			new Collapse(player, block.getLocation());
 		}
-		remove();
 	}
 
 	private void getAffectedBlocks(Block block) {
@@ -89,9 +88,7 @@ public class CollapseWall extends EarthAbility {
 	}
 
 	@Override
-	public void progress() {
-		
-	}
+	public void progress() {}
 
 	@Override
 	public Location getLocation() {

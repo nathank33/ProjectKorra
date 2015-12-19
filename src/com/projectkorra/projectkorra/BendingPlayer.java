@@ -503,7 +503,7 @@ public class BendingPlayer {
 			return false;
 		} else if (!ignoreCooldowns && isOnCooldown(ability.getName())) {
 			return false;
-		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbility())) {
+		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbilityName())) {
 			return false;
 		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
 			return false;
@@ -580,13 +580,14 @@ public class BendingPlayer {
 	 * Gets the Ability bound to the slot that the player is in.
 	 * 
 	 * @return The Ability name bounded to the slot
-	 *         <p>
-	 *         else null
-	 *         </p>
 	 */
-	public String getBoundAbility() {
+	public String getBoundAbilityName() {
 		int slot = player.getInventory().getHeldItemSlot() + 1;
 		return getAbilities().get(slot);
+	}
+	
+	public CoreAbility getBoundAbility() {
+		return CoreAbility.getAbility(getBoundAbilityName());
 	}
 
 }
