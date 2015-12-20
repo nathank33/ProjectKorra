@@ -5,7 +5,7 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 import com.projectkorra.projectkorra.waterbending.WaterArms.Arm;
 import com.projectkorra.rpg.WorldEvents;
@@ -218,7 +218,7 @@ public class WaterArmsSpear {
 	private void createIceBall() {
 		layer++;
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, layer)) {
-			if (EarthMethods.isTransparentToEarthbending(player, block) && block.getType() != Material.ICE && !WaterArms.isUnbreakable(block)) {
+			if (EarthAbility.isTransparentToEarthbending(player, block) && block.getType() != Material.ICE && !WaterArms.isUnbreakable(block)) {
 				WaterMethods.playIcebendingSound(block.getLocation());
 				new TempBlock(block, Material.ICE, (byte) 0);
 				WaterArms.revert.put(block, System.currentTimeMillis() + spearDuration + (long) (Math.random() * 500));
@@ -227,7 +227,7 @@ public class WaterArmsSpear {
 	}
 
 	private boolean canPlaceBlock(Block block) {
-		if (!EarthMethods.isTransparentToEarthbending(player, block) && !((WaterMethods.isWater(block) || WaterMethods.isIcebendable(block)) && (TempBlock.isTempBlock(block) && !WaterArms.revert.containsKey(block)))) {
+		if (!EarthAbility.isTransparentToEarthbending(player, block) && !((WaterMethods.isWater(block) || WaterMethods.isIcebendable(block)) && (TempBlock.isTempBlock(block) && !WaterArms.revert.containsKey(block)))) {
 			return false;
 		}
 		if (GeneralMethods.isRegionProtectedFromBuild(player, "WaterArms", block.getLocation())) {

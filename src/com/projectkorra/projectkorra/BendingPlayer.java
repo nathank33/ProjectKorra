@@ -19,6 +19,7 @@ import com.projectkorra.projectkorra.waterbending.Bloodbending;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -202,7 +203,7 @@ public class BendingPlayer {
 	 * @param player The player to check
 	 * @return true If player has permission node "bending.ability.plantbending"
 	 */
-	public static boolean canPlantbend(Player player) {
+	public boolean canPlantbend() {
 		return player.hasPermission("bending.water.plantbending");
 	}
 
@@ -236,15 +237,15 @@ public class BendingPlayer {
 	 * @param player The player to check
 	 * @return true If player has permission node "bending.earth.lavabending"
 	 */
-	public static boolean canLavabend(Player player) {
+	public boolean canLavabend() {
 		return player.hasPermission("bending.earth.lavabending");
 	}
 
-	public static boolean canCombustionbend(Player player) {
+	public boolean canCombustionbend() {
 		return player.hasPermission("bending.fire.combustionbending");
 	}
 
-	public static boolean canLightningbend(Player player) {
+	public boolean canLightningbend() {
 		return player.hasPermission("bending.fire.lightningbending");
 	}
 
@@ -332,6 +333,10 @@ public class BendingPlayer {
 		// TODO: Finish this
 		return true;
 	}
+	
+	public boolean isAvatarstate() {
+		return AvatarState.isAvatarState(player);
+	}
 
 	/**
 	 * Checks to see if the {@link BendingPlayer} is chi blocked.
@@ -355,8 +360,9 @@ public class BendingPlayer {
 	}
 
 	public boolean isElementToggled(Element e) {
-		if (e != null)
+		if (e != null) {
 			return this.toggledElements.get(e);
+		}
 		return true;
 	}
 
@@ -428,8 +434,7 @@ public class BendingPlayer {
 	public void setAbilities(HashMap<Integer, String> abilities) {
 		this.abilities = abilities;
 		for (int i = 1; i <= 9; i++) {
-			DBConnection.sql.modifyQuery("UPDATE pk_players SET slot" + i + " = '" + abilities.get(i) + "' WHERE uuid = '" + uuid
-					+ "'");
+			DBConnection.sql.modifyQuery("UPDATE pk_players SET slot" + i + " = '" + abilities.get(i) + "' WHERE uuid = '" + uuid + "'");
 		}
 	}
 
@@ -498,14 +503,30 @@ public class BendingPlayer {
 	public boolean canBendIgnoreBinds(CoreAbility ability) {
 		return canBend(ability, true, false);
 	}
+	
+	public boolean canBendIgnoreBindsCooldowns(CoreAbility ability) {
+		return canBend(ability, true, true);
+	}
 
 	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns) {
+		if (ability == null) {
+			return false;
+		}
+		
 		List<String> disabledWorlds = config.getStringList("Properties.DisabledWorlds");
+		Location location = ability.getLocation();
+		
+		if (location == null && player != null) {
+			location = player.getLocation();
+		}
+
 		if (player == null || !player.isOnline() || player.isDead()) {
+			return false;
+		} else if (location != null && !location.getWorld().equals(player.getWorld())) {
 			return false;
 		} else if (!ignoreCooldowns && isOnCooldown(ability.getName())) {
 			return false;
-		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbility())) {
+		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbilityName())) {
 			return false;
 		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
 			return false;
@@ -523,7 +544,7 @@ public class BendingPlayer {
 
 		if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
 			return false;
-		} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), player.getLocation())) {
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
 			return false;
 		} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
 				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
@@ -536,9 +557,34 @@ public class BendingPlayer {
 		}
 		return true;
 	}
+	
+	public boolean canBendPassive(String element) {
+		if (element == null || player == null) {
+			return false;
+		} else if (!player.hasPermission("bending." + element + ".passive")) {
+			return false;
+		} else if (!isToggled()) {
+			return false;
+		} else if (!hasElement(element)) {
+			return false;
+		} else if (isElementToggled(element) == false) {
+			return false;
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, player.getLocation())) {
+			return false;
+		} else if (isChiBlocked()) {
+			return false;
+		}
+		return true;
+	}
 
+	/*
+	 * TODO: Combos are broken with canBind in BendingTabCommand.
+	 * The fake CoreAbility will always return "FireCombo", however
+	 * we need to be able to check the permissions of every combo permission.
+	 * We should split up the combos into their own files.
+	 */
 	public boolean canBind(CoreAbility ability) {
-		if (player == null && player.isOnline()) {
+		if (ability == null || player == null && player.isOnline()) {
 			return false;
 		} else if (!player.hasPermission("bending.ability." + ability.getName())) {
 			return false;
@@ -551,6 +597,10 @@ public class BendingPlayer {
 			}
 		}
 		return true;
+	}
+	
+	public static BendingPlayer getBendingPlayer(OfflinePlayer oPlayer) {
+		return BendingPlayer.getPlayers().get(oPlayer.getUniqueId());
 	}
 
 	/**
@@ -570,10 +620,6 @@ public class BendingPlayer {
 		return getBendingPlayer(oPlayer);
 	}
 	
-	public static BendingPlayer getBendingPlayer(OfflinePlayer oPlayer) {
-		return BendingPlayer.getPlayers().get(oPlayer.getUniqueId());
-	}
-
 	public static BendingPlayer getBendingPlayer(Player player) {
 		return getBendingPlayer(player.getName());
 	}
@@ -582,13 +628,14 @@ public class BendingPlayer {
 	 * Gets the Ability bound to the slot that the player is in.
 	 * 
 	 * @return The Ability name bounded to the slot
-	 *         <p>
-	 *         else null
-	 *         </p>
 	 */
-	public String getBoundAbility() {
+	public String getBoundAbilityName() {
 		int slot = player.getInventory().getHeldItemSlot() + 1;
 		return getAbilities().get(slot);
+	}
+	
+	public CoreAbility getBoundAbility() {
+		return CoreAbility.getAbility(getBoundAbilityName());
 	}
 
 	/**

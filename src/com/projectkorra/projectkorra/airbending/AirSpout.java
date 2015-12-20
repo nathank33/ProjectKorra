@@ -14,18 +14,20 @@ import com.projectkorra.projectkorra.util.Flight;
 
 public class AirSpout extends AirAbility {
 
-	public static final Integer[] DIRECTIONS = { 0, 1, 2, 3, 5, 6, 7, 8 };
+	private static final Integer[] DIRECTIONS = { 0, 1, 2, 3, 5, 6, 7, 8 };
 
 	private int angle;
-	private double height;
 	private long updateInterval;
+	private double height;
 	
 	public AirSpout() {}
 
 	public AirSpout(Player player) {
 		super(player);
-		if (CoreAbility.hasAbility(player, AirSpout.class)) {
-			CoreAbility.getAbility(player, AirSpout.class).remove();
+		
+		AirSpout ability = CoreAbility.getAbility(player, AirSpout.class);
+		if (ability != null) {
+			ability.remove();
 			return;
 		}
 
@@ -35,7 +37,6 @@ public class AirSpout extends AirAbility {
 
 		new Flight(player);
 		start();
-		//progress();
 	}
 
 	public static ArrayList<Player> getPlayers() {
@@ -99,7 +100,7 @@ public class AirSpout extends AirAbility {
 		player.setFallDistance(0);
 		player.setSprinting(false);
 		if (GeneralMethods.rand.nextInt(4) == 0) {
-			AirMethods.playAirbendingSound(player.getLocation());
+			playAirbendingSound(player.getLocation());
 		}
 
 		Block block = getGround();
@@ -143,7 +144,7 @@ public class AirSpout extends AirAbility {
 			for (int i = 1; i <= dy; i++) {
 				index = index >= DIRECTIONS.length ? 0 : index + 1;
 				Location effectloc2 = new Location(location.getWorld(), location.getX(), block.getY() + i, location.getZ());
-				AirMethods.playAirbendingParticles(effectloc2, 3, 0.4F, 0.4F, 0.4F);
+				playAirbendingParticles(effectloc2, 3, 0.4F, 0.4F, 0.4F);
 			}
 		}
 	}
@@ -155,7 +156,7 @@ public class AirSpout extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override

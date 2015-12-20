@@ -1,10 +1,15 @@
 package com.projectkorra.projectkorra.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.chiblocking.ChiMethods;
+import com.projectkorra.projectkorra.firebending.FireMethods;
+import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import com.projectkorra.rpg.RPGMethods;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,16 +18,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
-import com.projectkorra.rpg.RPGMethods;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Executor for /bending who. Extends {@link PKCommand}.
@@ -78,6 +78,7 @@ public class WhoCommand extends PKCommand {
 				String playerName = player.getName();
 				String result = "";
 				BendingPlayer bp = GeneralMethods.getBendingPlayer(playerName);
+				
 				if (bp == null) {
 					GeneralMethods.createBendingPlayer(player.getUniqueId(), player.getName());
 					bp = GeneralMethods.getBendingPlayer(player.getName());
@@ -87,9 +88,9 @@ public class WhoCommand extends PKCommand {
 				}
 				if (bp.hasElement(Element.Earth)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthMethods.getEarthColor() + "E");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getEarthColor() + "E");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthMethods.getEarthColor() + "E");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getEarthColor() + "E");
 					}
 				}
 				if (bp.hasElement(Element.Fire)) {
@@ -216,14 +217,14 @@ public class WhoCommand extends PKCommand {
 				}
 			}
 			if (GeneralMethods.isBender(playerName, Element.Earth)) {
-				sender.sendMessage(EarthMethods.getEarthColor() + "- Earthbender");
-				if (player_ != null && EarthMethods.canMetalbend((Player) player)) {
+				sender.sendMessage(EarthAbility.getEarthColor() + "- Earthbender");
+				if (player_ != null && bPlayer.canMetalbend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Metalbend");
 				}
-				if (player_ != null && EarthMethods.canLavabend((Player) player)) {
+				if (player_ != null && bPlayer.canLavabend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Lavabend");
 				}
-				if (player_ != null && EarthMethods.canSandbend((Player) player)) {
+				if (player_ != null && bPlayer.canSandbend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Sandbend");
 				}
 			}

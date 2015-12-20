@@ -6,8 +6,8 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.firebending.FireCombo;
 import com.projectkorra.projectkorra.firebending.FireCombo.FireComboStream;
 import com.projectkorra.projectkorra.util.BlockSource;
@@ -348,7 +348,7 @@ public class WaterCombo {
 			FireComboStream fstream = (FireComboStream) tasks.get(i);
 			Location loc = fstream.getLocation();
 
-			if (!EarthMethods.isTransparentToEarthbending(player,
+			if (!EarthAbility.isTransparentToEarthbending(player,
 					loc.clone().add(0, 0.2, 0).getBlock())) {
 				fstream.remove();
 				return;

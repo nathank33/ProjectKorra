@@ -18,16 +18,6 @@ public class EarthbendingManager implements Runnable {
 		EarthPassive.handleMetalPassives();
 		EarthPassive.sandSpeed();
 		RevertChecker.revertEarthBlocks();
-		EarthTunnel.progressAll();
-		EarthArmor.moveArmorAll();
 		Tremorsense.manage(Bukkit.getServer());
-		EarthColumn.progressAll();
-		Shockwave.progressAll();
-		EarthBlast.progressAll();
-		MetalClips.progressAll();
-		LavaSurge.progressAll();
-		LavaFlow.progressAll();
-		EarthSmash.progressAll();
-		SandSpout.spoutAll();
 	}
 }

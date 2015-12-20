@@ -11,11 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
-import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.object.Preset;
 
 /**
@@ -28,14 +27,19 @@ public class BendingTabComplete implements TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		if (args.length == 0 || args[0].equals(""))
 			return getPossibleCompletionsForGivenArgs(args, getCommandsForUser(sender));
+		
 		if (args.length >= 2) {
+			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
+			
 			if (args[0].equalsIgnoreCase("bind") || args[0].equalsIgnoreCase("b")) {
 				if (args.length > 3 || !sender.hasPermission("bending.command.bind") || !(sender instanceof Player))
 					return new ArrayList<String>();
+				
 				List<String> abilities = new ArrayList<String>();
 				if (args.length == 2) {
 					for (String abil : AbilityModuleManager.abilities) {
-						if (GeneralMethods.canBind(sender.getName(), abil)) {
+						CoreAbility coreAbil = CoreAbility.getAbility(abil);
+						if (bPlayer != null && bPlayer.canBind(coreAbil)) {
 							abilities.add(abil);
 						}
 					}
@@ -44,6 +48,7 @@ public class BendingTabComplete implements TabCompleter {
 						abilities.add("" + i);
 					}
 				}
+				
 				Collections.sort(abilities);
 				return getPossibleCompletionsForGivenArgs(args, abilities);
 			} else if (args[0].equalsIgnoreCase("display") || args[0].equalsIgnoreCase("d")) {
@@ -109,15 +114,23 @@ public class BendingTabComplete implements TabCompleter {
 				}
 				List<String> abils = new ArrayList<String>();
 				for (String abil : AbilityModuleManager.abilities) {
-					if (GeneralMethods.canBind(sender.getName(), abil)) {
+					if (bPlayer.canBind(CoreAbility.getAbility(abil))) {
 						abils.add(abil);
 					}
 				}
+				
+				/*
+				 * TODO: Combo support is currently broken because Combos
+				 * are all in the same class file. We need to split those abilities
+				 * into their own file. 
+				 */
+				/*
 				for (ComboAbilityModule abil : ComboModuleManager.combo) {
-					if (GeneralMethods.canBind(sender.getName(), abil.getName())) {
+					if (bPlayer.canBind(abil.getName())) {
 						abils.add(abil.getName());
 					}
 				}
+				*/
 				Collections.sort(abils);
 				list.addAll(abils);
 				return getPossibleCompletionsForGivenArgs(args, list);

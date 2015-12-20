@@ -2,7 +2,7 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Location;
@@ -139,7 +139,7 @@ public class TorrentBurst {
 				Block block = location.getBlock();
 				if (torrentblocks.contains(block))
 					continue;
-				if (EarthMethods.isTransparentToEarthbending(player, block)) {
+				if (EarthAbility.isTransparentToEarthbending(player, block)) {
 					TempBlock tempBlock = new TempBlock(block, Material.STATIONARY_WATER, (byte) 8);
 					blocks.add(tempBlock);
 					torrentblocks.add(block);

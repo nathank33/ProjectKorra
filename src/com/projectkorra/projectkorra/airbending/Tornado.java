@@ -18,8 +18,6 @@ import com.projectkorra.projectkorra.util.Flight;
 
 public class Tornado extends AirAbility {
 
-	private Flight flight;
-	private Location origin;
 	private int numberOfStreams;
 	private int particleCount;
 	private double speed;
@@ -30,6 +28,8 @@ public class Tornado extends AirAbility {
 	private double npcPushFactor;
 	private double currentHeight;
 	private double currentRadius;
+	private Flight flight;
+	private Location origin;
 	private ConcurrentHashMap<Integer, Integer> angles;
 	
 	public Tornado() {}
@@ -157,7 +157,7 @@ public class Tornado extends AirAbility {
 						GeneralMethods.setVelocity(entity, velocity);
 						entity.setFallDistance(0);
 
-						AirMethods.breakBreathbendingHold(entity);
+						breakBreathbendingHold(entity);
 
 						if (entity instanceof Player) {
 							new Flight((Player) entity);
@@ -179,9 +179,9 @@ public class Tornado extends AirAbility {
 
 				Location effect = new Location(origin.getWorld(), x, y, z);
 				if (!GeneralMethods.isRegionProtectedFromBuild(this, effect)) {
-					AirMethods.playAirbendingParticles(effect, particleCount);
+					playAirbendingParticles(effect, particleCount);
 					if (GeneralMethods.rand.nextInt(20) == 0) {
-						AirMethods.playAirbendingSound(effect);
+						playAirbendingSound(effect);
 					}
 				}
 				angles.put(i, angles.get(i) + 25 * (int) speed);
@@ -197,7 +197,7 @@ public class Tornado extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override

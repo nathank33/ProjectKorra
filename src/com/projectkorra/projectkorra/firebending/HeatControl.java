@@ -1,20 +1,20 @@
 package com.projectkorra.projectkorra.firebending;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.util.ParticleEffect;
+import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
-import com.projectkorra.projectkorra.util.ParticleEffect;
-import com.projectkorra.projectkorra.util.TempBlock;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Carbogen on 11/02/15. Ability HeatControl
@@ -44,7 +44,7 @@ public class HeatControl implements ConfigLoadable {
 		if (!isEligible(player))
 			return;
 
-		if (EarthMethods.getLavaSourceBlock(player, getRange()) == null) {
+		if (EarthAbility.getLavaSourceBlock(player, getRange()) == null) {
 			new Cook(player);
 			return;
 		}
@@ -66,7 +66,7 @@ public class HeatControl implements ConfigLoadable {
 		List<Block> lava = new ArrayList<Block>();
 
 		for (Location l : area)
-			if (EarthMethods.isLava(l.getBlock()))
+			if (EarthAbility.isLava(l.getBlock()))
 				lava.add(l.getBlock());
 
 		lastBlockTime = System.currentTimeMillis();
@@ -129,7 +129,7 @@ public class HeatControl implements ConfigLoadable {
 		lastParticleTime = System.currentTimeMillis();
 
 		for (Location l : area) {
-			if (EarthMethods.isLava(l.getBlock()))
+			if (EarthAbility.isLava(l.getBlock()))
 				ParticleEffect.SMOKE.display(l, 0, 0, 0, 0.1f, 2);
 		}
 	}

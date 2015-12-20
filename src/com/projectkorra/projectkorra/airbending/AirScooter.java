@@ -73,14 +73,6 @@ public class AirScooter extends AirAbility {
 		return false;
 	}
 
-	public static ArrayList<Player> getPlayers() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (AirScooter scooter : CoreAbility.getAbilities(AirScooter.class)) {
-			players.add(scooter.getPlayer());
-		}
-		return players;
-	}
-
 	private void getFloor() {
 		floorblock = null;
 		for (int i = 0; i <= maxHeightFromGround; i++) {
@@ -133,7 +125,7 @@ public class AirScooter extends AirAbility {
 		player.removePotionEffect(PotionEffectType.SPEED);
 		player.setVelocity(velocity);
 		if (GeneralMethods.rand.nextInt(4) == 0) {
-			AirMethods.playAirbendingSound(player.getLocation());
+			playAirbendingSound(player.getLocation());
 		}
 	}
 
@@ -153,7 +145,7 @@ public class AirScooter extends AirAbility {
 			double x = Math.cos(Math.toRadians(angles.get(i))) * radius;
 			double y = ((double) i) / 2 * radius - radius;
 			double z = Math.sin(Math.toRadians(angles.get(i))) * radius;
-			AirMethods.playAirbendingParticles(origin.clone().add(x, y, z), 7);
+			playAirbendingParticles(origin.clone().add(x, y, z), 7);
 		}
 		for (int i = 0; i < 5; i++) {
 			angles.set(i, angles.get(i) + 10);
@@ -167,7 +159,7 @@ public class AirScooter extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player.getLocation() != null ? player.getLocation() : null;
 	}
 
 	@Override

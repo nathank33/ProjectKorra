@@ -5,7 +5,7 @@ import com.projectkorra.projectkorra.configuration.ConfigManager;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public abstract class ChiAbility extends CoreAbility {
+public abstract class ChiAbility extends ElementalAbility {
 
 	public ChiAbility() {}
 	

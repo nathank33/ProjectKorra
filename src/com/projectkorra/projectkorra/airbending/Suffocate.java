@@ -437,7 +437,7 @@ public class Suffocate extends AirAbility {
 				loc.setZ(tempLoc.getZ() + radius * Math.cos(Math.toRadians((double) i / (double) totalSteps * 360)));
 			}
 
-			AirMethods.getAirbendingParticles().display(loc, (float) 0, (float) 0, (float) 0, 0, 1);
+			getAirbendingParticles().display(loc, (float) 0, (float) 0, (float) 0, 0, 1);
 			if (i == totalSteps + 1) {
 				this.cancel();
 			}
@@ -452,7 +452,12 @@ public class Suffocate extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return targets.size() > 0 ? targets.get(0).getLocation() : player.getLocation();
+		if (targets.size() > 0) {
+			return targets.get(0).getLocation();
+		} else if (player != null) {
+			return player.getLocation();
+		}
+		return null;
 	}
 
 	@Override

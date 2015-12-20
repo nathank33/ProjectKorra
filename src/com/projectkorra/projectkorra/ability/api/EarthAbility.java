@@ -1,23 +1,20 @@
 package com.projectkorra.projectkorra.ability.api;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
-import com.projectkorra.projectkorra.earthbending.EarthColumn;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.earthbending.EarthPassive;
-import com.projectkorra.projectkorra.earthbending.LavaFlow;
+import com.projectkorra.projectkorra.earthbending.RaiseEarth;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.Information;
+import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -27,106 +24,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+
 public abstract class EarthAbility extends BlockAbility {
 
-	public static final ConcurrentHashMap<Block, Information> MOVED_EARTH = new ConcurrentHashMap<Block, Information>();
-	public static final ConcurrentHashMap<Integer, Information> TEMP_AIR_LOCATIONS = new ConcurrentHashMap<Integer, Information>();
-	public static final HashSet<Block> PREVENT_EARTHBENDING = new HashSet<Block>();
-	public static final Integer[] TRANSPARENT_MATERIAL = { 0, 6, 8, 9, 10, 11, 30, 31, 32, 37, 38, 39, 40, 50, 51, 59, 78, 83,
-			106, 175 };
-	public static ArrayList<Block> PREVENT_PHYSICS = new ArrayList<Block>();
+	private static final ConcurrentHashMap<Block, Information> MOVED_EARTH = new ConcurrentHashMap<Block, Information>();
+	private static final ConcurrentHashMap<Integer, Information> TEMP_AIR_LOCATIONS = new ConcurrentHashMap<Integer, Information>();
+	private static final ArrayList<Block> PREVENT_PHYSICS = new ArrayList<Block>();
 	private static final ItemStack DIAMOND_PICKAXE = new ItemStack(Material.DIAMOND_PICKAXE);
 
-	public EarthAbility() {
-	}
+	public EarthAbility() {}
 
 	public EarthAbility(Player player) {
 		super(player);
-	}
-
-	@Override
-	public final String getElementName() {
-		return "Earth";
-	}
-
-	/**
-	 * Gets the EarthColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getEarthColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Earth"));
-	}
-
-	/**
-	 * Finds a valid Earth source for a Player. To use dynamic source selection, use
-	 * BlockSource.getEarthSourceBlock() instead of this method. Dynamic source selection saves the
-	 * user's previous source for future use.
-	 * {@link BlockSource#getEarthSourceBlock(Player, double, com.projectkorra.projectkorra.util.ClickType)}
-	 * 
-	 * @param range the maximum block selection range.
-	 * @return a valid Earth source block, or null if one could not be found.
-	 */
-	@SuppressWarnings("deprecation")
-	public Block getEarthSourceBlock(double range) {
-		Block testblock = player.getTargetBlock(getTransparentEarthbending(), (int) range);
-		if (isEarthbendable(testblock) || isMetalbendable(testblock)) {
-			return testblock;
-		}
-
-		Location location = player.getEyeLocation();
-		Vector vector = location.getDirection().clone().normalize();
-
-		for (double i = 0; i <= range; i++) {
-			Block block = location.clone().add(vector.clone().multiply(i)).getBlock();
-			if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
-				continue;
-			} else if (isEarthbendable(block)) {
-				return block;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Finds a valid Lava source for a Player. To use dynamic source selection, use
-	 * BlockSource.getLavaSourceBlock() instead of this method. Dynamic source selection saves the
-	 * user's previous source for future use.
-	 * {@link BlockSource#getLavaSourceBlock(Player, double, com.projectkorra.projectkorra.util.ClickType)}
-	 * 
-	 * @param range the maximum block selection range.
-	 * @return a valid Lava source block, or null if one could not be found.
-	 */
-	@SuppressWarnings("deprecation")
-	public Block getLavaSourceBlock(Player player, double range) {
-		Location location = player.getEyeLocation();
-		Vector vector = location.getDirection().clone().normalize();
-
-		for (double i = 0; i <= range; i++) {
-			Block block = location.clone().add(vector.clone().multiply(i)).getBlock();
-			if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
-				continue;
-			}
-			if (isLavabendable(block, player)) {
-				if (TempBlock.isTempBlock(block)) {
-					TempBlock tb = TempBlock.get(block);
-					byte full = 0x0;
-					if (tb.getState().getRawData() != full
-							&& (tb.getState().getType() != Material.LAVA || tb.getState().getType() != Material.STATIONARY_LAVA)) {
-						continue;
-					}
-				}
-				return block;
-			}
-		}
-		return null;
 	}
 
 	public int getEarthbendableBlocksLength(Block block, Vector direction, int maxlength) {
 		Location location = block.getLocation();
 		direction = direction.normalize();
 		for (int i = 0; i <= maxlength; i++) {
-			double j = (double) i;
+			double j = i;
 			if (!isEarthbendable(location.clone().add(direction.clone().multiply(j)).getBlock())) {
 				return i;
 			}
@@ -134,112 +52,23 @@ public abstract class EarthAbility extends BlockAbility {
 		return maxlength;
 	}
 
-	public double getMetalAugment(double value) {
-		return value * getConfig().getDouble("Properties.Earth.MetalPowerFactor");
+	public Block getEarthSourceBlock(double range) {
+		return getEarthSourceBlock(player, getName(), range);
+	}
+	
+	@Override
+	public final String getElementName() {
+		return "Earth";
 	}
 
-	/**
-	 * Attempts to find the closest earth block near a given location.
-	 * 
-	 * @param loc the initial location to search from.
-	 * @param radius the maximum radius to search for the earth block.
-	 * @param maxVertical the maximum block height difference between the starting location and the
-	 *            earth bendable block.
-	 * @return an earth bendable block, or null.
-	 */
-	public Block getNearbyEarthBlock(Location loc, double radius, int maxVertical) {
-		if (loc == null) {
-			return null;
-		}
-
-		int rotation = 30;
-		for (int i = 0; i < radius; i++) {
-			Vector tracer = new Vector(i, 0, 0);
-			for (int deg = 0; deg < 360; deg += rotation) {
-				Location searchLoc = loc.clone().add(tracer);
-				Block block = GeneralMethods.getTopBlock(searchLoc, maxVertical);
-
-				if (block != null && isEarthbendable(block.getType())) {
-					return block;
-				}
-				tracer = GeneralMethods.rotateXZ(tracer, rotation);
-			}
-		}
-		return null;
+	public Block getLavaSourceBlock(double range) {
+		return getLavaSourceBlock(player, getName(), range);
 	}
 
-	public HashSet<Byte> getTransparentEarthbending() {
-		HashSet<Byte> set = new HashSet<Byte>();
-		for (int i : TRANSPARENT_MATERIAL) {
-			set.add((byte) i);
-		}
-		return set;
+	public Block getTargetEarthBlock(int range) {
+		return getTargetEarthBlock(player, range);
 	}
-
-	public boolean isEarthbendable(Material material) {
-		return getConfig().getStringList("Properties.Earth.EarthbendableBlocks").contains(material.toString());
-	}
-
-	public boolean isEarthbendable(Block block) {
-		if (!isEarthbendable(block.getType()) || PREVENT_EARTHBENDING.contains(block)
-				|| GeneralMethods.isRegionProtectedFromBuild(this, block.getLocation())) {
-			return false;
-		} else if (isMetal(block) && !bPlayer.canMetalbend()) {
-			return false;
-		}
-		return true;
-	}
-
-	public boolean isLava(Block block) {
-		return block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA;
-	}
-
-	@SuppressWarnings("deprecation")
-	public boolean isLavabendable(Block block, Player player) {
-		byte full = 0x0;
-		if (TempBlock.isTempBlock(block)) {
-			TempBlock tblock = TempBlock.instances.get(block);
-			if (tblock == null || !LavaFlow.TEMP_LAVA_BLOCKS.contains(tblock)) {
-				return false;
-			}
-		}
-		if ((block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) && block.getData() == full) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean isMetal(Material material) {
-		return getConfig().getStringList("Properties.Earth.MetalBlocks").contains(material.toString());
-	}
-
-	public boolean isMetal(Block block) {
-		return isMetal(block.getType());
-	}
-
-	public boolean isMetalbendable(Material material) {
-		return isMetal(material) && bPlayer.canMetalbend();
-	}
-
-	public boolean isMetalbendable(Block block) {
-		return isMetalbendable(block.getType());
-	}
-
-	public boolean isMetalBlock(Block block) {
-		if (block.getType() == Material.GOLD_BLOCK || block.getType() == Material.IRON_BLOCK
-				|| block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE
-				|| block.getType() == Material.QUARTZ_BLOCK || block.getType() == Material.QUARTZ_ORE) {
-			return true;
-		}
-		return false;
-	}
-
-	@SuppressWarnings("deprecation")
-	public boolean isTransparentToEarthbending(Block block) {
-		return Arrays.asList(TRANSPARENT_MATERIAL).contains(block.getTypeId())
-				&& !GeneralMethods.isRegionProtectedFromBuild(this, block.getLocation());
-	}
-
+	
 	public void moveEarth(Block block, Vector direction, int chainlength) {
 		moveEarth(block, direction, chainlength, true);
 	}
@@ -307,7 +136,7 @@ public abstract class EarthAbility extends BlockAbility {
 				}
 
 				moveEarthBlock(block, affectedblock);
-				EarthMethods.playEarthbendingSound(block.getLocation());
+				playEarthbendingSound(block.getLocation());
 
 				for (double i = 1; i < chainlength; i++) {
 					affectedblock = location.clone().add(negnorm.getX() * i, negnorm.getY() * i, negnorm.getZ() * i).getBlock();
@@ -363,9 +192,180 @@ public abstract class EarthAbility extends BlockAbility {
 	public void moveEarth(Location location, Vector direction, int chainlength, boolean throwplayer) {
 		moveEarth(location.getBlock(), direction, chainlength, throwplayer);
 	}
+	
+	/**
+	 * Creates a temporary air block.
+	 * 
+	 * @param block The block to use as a base
+	 */
+	public static void addTempAirBlock(Block block) {
+		Information info;
+		if (MOVED_EARTH.containsKey(block)) {
+			info = MOVED_EARTH.get(block);
+			MOVED_EARTH.remove(block);
+		} else {
+			info = new Information();
+			info.setBlock(block);
+			info.setState(block.getState());
+		}
+		block.setType(Material.AIR);
+		info.setTime(System.currentTimeMillis());
+		TEMP_AIR_LOCATIONS.put(info.getID(), info);
+	}
+
+	public static void displaySandParticle(Location loc, float xOffset, float yOffset, float zOffset, float amount, float speed, boolean red) {
+		if (amount <= 0)
+			return;
+
+		for (int x = 0; x < amount; x++) {
+			if (!red) {
+				ParticleEffect.ITEM_CRACK.display(new ParticleEffect.ItemData(Material.SAND, (byte) 0), new Vector(((Math.random() - 0.5) * xOffset), ((Math.random() - 0.5) * yOffset), ((Math.random() - 0.5) * zOffset)), speed, loc, 257.0D);
+				ParticleEffect.ITEM_CRACK.display(new ParticleEffect.ItemData(Material.SANDSTONE, (byte) 0), new Vector(((Math.random() - 0.5) * xOffset), ((Math.random() - 0.5) * yOffset), ((Math.random() - 0.5) * zOffset)), speed, loc, 257.0D);
+			} else if (red) {
+				ParticleEffect.ITEM_CRACK.display(new ParticleEffect.ItemData(Material.SAND, (byte) 1), new Vector(((Math.random() - 0.5) * xOffset), ((Math.random() - 0.5) * yOffset), ((Math.random() - 0.5) * zOffset)), speed, loc, 257.0D);
+				ParticleEffect.ITEM_CRACK.display(new ParticleEffect.ItemData(Material.RED_SANDSTONE, (byte) 0), new Vector(((Math.random() - 0.5) * xOffset), ((Math.random() - 0.5) * yOffset), ((Math.random() - 0.5) * zOffset)), speed, loc, 257.0D);
+			}
+
+		}
+	}
+
+	/**
+	 * Gets the EarthColor from the config.
+	 * 
+	 * @return Config specified ChatColor
+	 */
+	public static ChatColor getEarthColor() {
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Earth"));
+	}
+
+	/**
+	 * Finds a valid Earth source for a Player. To use dynamic source selection, use
+	 * BlockSource.getEarthSourceBlock() instead of this method. Dynamic source selection saves the
+	 * user's previous source for future use.
+	 * {@link BlockSource#getEarthSourceBlock(Player, double, com.projectkorra.projectkorra.util.ClickType)}
+	 * 
+	 * @param range the maximum block selection range.
+	 * @return a valid Earth source block, or null if one could not be found.
+	 */
+	@SuppressWarnings("deprecation")
+	public static Block getEarthSourceBlock(Player player, String abilityName, double range) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		Block testblock = player.getTargetBlock(getTransparentMaterialSet(), (int) range);
+		if (bPlayer == null) {
+			return null;
+		} else if (isEarthbendable(player, testblock) || isMetalbendable(player, testblock.getType())) {
+			return testblock;
+		}
+
+		Location location = player.getEyeLocation();
+		Vector vector = location.getDirection().clone().normalize();
+
+		for (double i = 0; i <= range; i++) {
+			Block block = location.clone().add(vector.clone().multiply(i)).getBlock();
+			if (GeneralMethods.isRegionProtectedFromBuild(player, abilityName, location)) {
+				continue;
+			} else if (isEarthbendable(player, block)) {
+				return block;
+			}
+		}
+		return null;
+	}
+	
+	public static ChatColor getEarthSubColor() {
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.EarthSub"));
+	}
+
+	public static Block getLavaSourceBlock(Player player, double range) {
+		return getLavaSourceBlock(player, null, range);
+	}
+	
+	/**
+	 * Finds a valid Lava source for a Player. To use dynamic source selection, use
+	 * BlockSource.getLavaSourceBlock() instead of this method. Dynamic source selection saves the
+	 * user's previous source for future use.
+	 * {@link BlockSource#getLavaSourceBlock(Player, double, com.projectkorra.projectkorra.util.ClickType)}
+	 * 
+	 * @param range the maximum block selection range.
+	 * @return a valid Lava source block, or null if one could not be found.
+	 */
+	@SuppressWarnings("deprecation")
+	public static Block getLavaSourceBlock(Player player, String abilityName, double range) {
+		Location location = player.getEyeLocation();
+		Vector vector = location.getDirection().clone().normalize();
+
+		for (double i = 0; i <= range; i++) {
+			Block block = location.clone().add(vector.clone().multiply(i)).getBlock();
+			if (GeneralMethods.isRegionProtectedFromBuild(player, abilityName, location)) {
+				continue;
+			}
+			if (isLavabendable(block)) {
+				if (TempBlock.isTempBlock(block)) {
+					TempBlock tb = TempBlock.get(block);
+					byte full = 0x0;
+					if (tb.getState().getRawData() != full
+							&& (tb.getState().getType() != Material.LAVA || tb.getState().getType() != Material.STATIONARY_LAVA)) {
+						continue;
+					}
+				}
+				return block;
+			}
+		}
+		return null;
+	}
+
+	public static double getMetalAugment(double value) {
+		return value * getConfig().getDouble("Properties.Earth.MetalPowerFactor");
+	}
+
+	public static ConcurrentHashMap<Block, Information> getMovedEarth() {
+		return MOVED_EARTH;
+	}
+
+	/**
+	 * Attempts to find the closest earth block near a given location.
+	 * 
+	 * @param loc the initial location to search from.
+	 * @param radius the maximum radius to search for the earth block.
+	 * @param maxVertical the maximum block height difference between the starting location and the
+	 *            earth bendable block.
+	 * @return an earth bendable block, or null.
+	 */
+	public static Block getNearbyEarthBlock(Location loc, double radius, int maxVertical) {
+		if (loc == null) {
+			return null;
+		}
+
+		int rotation = 30;
+		for (int i = 0; i < radius; i++) {
+			Vector tracer = new Vector(i, 0, 0);
+			for (int deg = 0; deg < 360; deg += rotation) {
+				Location searchLoc = loc.clone().add(tracer);
+				Block block = GeneralMethods.getTopBlock(searchLoc, maxVertical);
+
+				if (block != null && isEarthbendable(block.getType())) {
+					return block;
+				}
+				tracer = GeneralMethods.rotateXZ(tracer, rotation);
+			}
+		}
+		return null;
+	}
+
+	public static ArrayList<Block> getPreventPhysicsBlocks() {
+		return PREVENT_PHYSICS;
+	}
 
 	@SuppressWarnings("deprecation")
-	public void moveEarthBlock(Block source, Block target) {
+	public static Block getTargetEarthBlock(Player player, int range) {
+		return player.getTargetBlock(getTransparentMaterialSet(), range);
+	}
+
+	public static ConcurrentHashMap<Integer, Information> getTempAirLocations() {
+		return TEMP_AIR_LOCATIONS;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static void moveEarthBlock(Block source, Block target) {
 		byte full = 0x0;
 		Information info;
 
@@ -399,6 +399,24 @@ public abstract class EarthAbility extends BlockAbility {
 		}
 	}
 
+	public static void playEarthbendingSound(Location loc) {
+		if (getConfig().getBoolean("Properties.Earth.PlaySound")) {
+			loc.getWorld().playEffect(loc, Effect.GHAST_SHOOT, 0, 10);
+		}
+	}
+	
+	public static void playMetalbendingSound(Location loc) {
+		if (getConfig().getBoolean("Properties.Earth.PlaySound")) {
+			loc.getWorld().playSound(loc, Sound.IRONGOLEM_HIT, 1, 10);
+		}
+	}
+
+	public static void playSandBendingSound(Location loc) {
+		if (getConfig().getBoolean("Properties.Earth.PlaySound")) {
+			loc.getWorld().playSound(loc, Sound.DIG_SAND, 1.5f, 5);
+		}
+	}
+
 	public static void removeAllEarthbendedBlocks() {
 		for (Block block : MOVED_EARTH.keySet()) {
 			revertBlock(block);
@@ -414,38 +432,18 @@ public abstract class EarthAbility extends BlockAbility {
 			if (block.getType() == Material.SANDSTONE && info.getType() == Material.SAND) {
 				block.setType(Material.SAND);
 			}
-			if (EarthColumn.blockInAllAffectedBlocks(block)) {
-				EarthColumn.revertBlock(block);
+			if (RaiseEarth.blockInAllAffectedBlocks(block)) {
+				EarthAbility.revertBlock(block);
 			}
 
 			MOVED_EARTH.remove(block);
 		}
 	}
-
-	public void revertAirBlock(int i) {
+	
+	public static void revertAirBlock(int i) {
 		revertAirBlock(i, false);
 	}
-
-	/**
-	 * Creates a temporary air block.
-	 * 
-	 * @param block The block to use as a base
-	 */
-	public static void addTempAirBlock(Block block) {
-		Information info;
-		if (MOVED_EARTH.containsKey(block)) {
-			info = MOVED_EARTH.get(block);
-			MOVED_EARTH.remove(block);
-		} else {
-			info = new Information();
-			info.setBlock(block);
-			info.setState(block.getState());
-		}
-		block.setType(Material.AIR);
-		info.setTime(System.currentTimeMillis());
-		TEMP_AIR_LOCATIONS.put(info.getID(), info);
-	}
-
+	
 	@SuppressWarnings("deprecation")
 	public static void revertAirBlock(int i, boolean force) {
 		if (!TEMP_AIR_LOCATIONS.containsKey(i)) {
@@ -469,7 +467,7 @@ public abstract class EarthAbility extends BlockAbility {
 			TEMP_AIR_LOCATIONS.remove(i);
 		}
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	public static boolean revertBlock(Block block) {
 		byte full = 0x0;
@@ -488,17 +486,17 @@ public abstract class EarthAbility extends BlockAbility {
 
 			if (block.equals(sourceblock)) {
 				info.getState().update(true);
-				if (EarthColumn.blockInAllAffectedBlocks(sourceblock))
-					EarthColumn.revertBlock(sourceblock);
-				if (EarthColumn.blockInAllAffectedBlocks(block))
-					EarthColumn.revertBlock(block);
+				if (RaiseEarth.blockInAllAffectedBlocks(sourceblock)) {
+					EarthAbility.revertBlock(sourceblock);
+				}
+				if (RaiseEarth.blockInAllAffectedBlocks(block)) {
+					EarthAbility.revertBlock(block);
+				}
 				MOVED_EARTH.remove(block);
 				return true;
 			}
 
 			if (MOVED_EARTH.containsKey(sourceblock)) {
-				// TODO: if we can remove this nonstatic call then we can clean up a lot of the
-				// statics in this class
 				addTempAirBlock(block);
 				MOVED_EARTH.remove(block);
 				return true;
@@ -518,13 +516,22 @@ public abstract class EarthAbility extends BlockAbility {
 				block.setType(Material.AIR);
 			}
 
-			if (EarthColumn.blockInAllAffectedBlocks(sourceblock))
-				EarthColumn.revertBlock(sourceblock);
-			if (EarthColumn.blockInAllAffectedBlocks(block))
-				EarthColumn.revertBlock(block);
+			if (RaiseEarth.blockInAllAffectedBlocks(sourceblock)) {
+				EarthAbility.revertBlock(sourceblock);
+			}
+			if (RaiseEarth.blockInAllAffectedBlocks(block)) {
+				EarthAbility.revertBlock(block);
+			}
 			MOVED_EARTH.remove(block);
 		}
 		return true;
 	}
-
+	
+	public static void stopBending() {
+		EarthPassive.removeAll();
+		
+		if (isEarthRevertOn()) {
+			removeAllEarthbendedBlocks();
+		}
+	}
 }

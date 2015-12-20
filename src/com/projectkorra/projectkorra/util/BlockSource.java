@@ -1,8 +1,10 @@
 package com.projectkorra.projectkorra.util;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Location;
@@ -43,10 +45,14 @@ public class BlockSource {
 	 * @param clickType either {@link ClickType}.SHIFT_DOWN or ClickType.LEFT_CLICK
 	 */
 	public static void update(Player player, ClickType clickType) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		String boundAbil = GeneralMethods.getBoundAbility(player);
+		CoreAbility coreAbil = bPlayer.getBoundAbility();
+		
 		if (boundAbil == null) {
 			return;
 		}
+		
 		if (WaterMethods.isWaterAbility(boundAbil)) {
 			Block waterBlock = WaterMethods.getWaterSourceBlock(player, MAX_RANGE, true);
 			if (waterBlock != null) {
@@ -58,18 +64,18 @@ public class BlockSource {
 					putSource(player, waterBlock, BlockSourceType.ICE, clickType);
 				}
 			}
-		} else if (EarthMethods.isEarthAbility(boundAbil)) {
-			Block earthBlock = EarthMethods.getEarthSourceBlock(player, MAX_RANGE);
+		} else if (coreAbil != null && coreAbil instanceof EarthAbility) {
+			Block earthBlock = EarthAbility.getEarthSourceBlock(player, null, MAX_RANGE);
 			if (earthBlock != null) {
 				putSource(player, earthBlock, BlockSourceType.EARTH, clickType);
-				if (EarthMethods.isMetal(earthBlock)) {
+				if (EarthAbility.isMetal(earthBlock)) {
 					putSource(player, earthBlock, BlockSourceType.METAL, clickType);
 				}
 			}
 
 			// We need to handle lava differently, since getEarthSourceBlock doesn't account for
 			// lava. We should only select the lava source if it is closer than the earth.
-			Block lavaBlock = EarthMethods.getLavaSourceBlock(player, MAX_RANGE);
+			Block lavaBlock = EarthAbility.getLavaSourceBlock(player, MAX_RANGE);
 			double earthDist = earthBlock != null ? earthBlock.getLocation().distanceSquared(player.getLocation()) : Double.MAX_VALUE;
 			double lavaDist = lavaBlock != null ? lavaBlock.getLocation().distanceSquared(player.getLocation()) : Double.MAX_VALUE;
 			if (lavaBlock != null && lavaDist <= earthDist) {
@@ -283,8 +289,8 @@ public class BlockSource {
 			}
 
 			Location loc = tempBlock.getLocation();
-			sourceBlock = EarthMethods.getNearbyEarthBlock(loc, 3, 3);
-			if (sourceBlock == null || !sourceBlock.getLocation().getWorld().equals(player.getWorld()) || Math.abs(sourceBlock.getLocation().distance(player.getEyeLocation())) > range || !EarthMethods.isEarthbendable(player, sourceBlock)) {
+			sourceBlock = EarthAbility.getNearbyEarthBlock(loc, 3, 3);
+			if (sourceBlock == null || !sourceBlock.getLocation().getWorld().equals(player.getWorld()) || Math.abs(sourceBlock.getLocation().distance(player.getEyeLocation())) > range || !EarthAbility.isEarthbendable(player, sourceBlock)) {
 				return null;
 			}
 		}
@@ -355,11 +361,11 @@ public class BlockSource {
 			return false;
 		} else if (info.getSourceType() == BlockSourceType.PLANT && (!WaterMethods.isPlant(info.getBlock()) || !WaterMethods.isWaterbendable(info.getBlock(), info.getPlayer()))) {
 			return false;
-		} else if (info.getSourceType() == BlockSourceType.EARTH && !EarthMethods.isEarthbendable(info.getPlayer(), info.getBlock())) {
+		} else if (info.getSourceType() == BlockSourceType.EARTH && !EarthAbility.isEarthbendable(info.getPlayer(), info.getBlock())) {
 			return false;
-		} else if (info.getSourceType() == BlockSourceType.METAL && (!EarthMethods.isMetal(info.getBlock()) || !EarthMethods.isEarthbendable(info.getPlayer(), info.getBlock()))) {
+		} else if (info.getSourceType() == BlockSourceType.METAL && (!EarthAbility.isMetal(info.getBlock()) || !EarthAbility.isEarthbendable(info.getPlayer(), info.getBlock()))) {
 			return false;
-		} else if (info.getSourceType() == BlockSourceType.LAVA && (!EarthMethods.isLava(info.getBlock()) || !EarthMethods.isLavabendable(info.getBlock(), info.getPlayer()))) {
+		} else if (info.getSourceType() == BlockSourceType.LAVA && (!EarthAbility.isLava(info.getBlock()) || !EarthAbility.isLavabendable(info.getBlock()))) {
 			return false;
 		}
 		return true;

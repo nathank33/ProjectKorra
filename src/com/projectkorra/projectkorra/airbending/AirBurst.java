@@ -18,15 +18,15 @@ public class AirBurst extends AirAbility {
 	private static final int CHARGED_SNEAK_PARTICLES = 10;
 	private static final double PARTICLES_PERCENTAGE = 50;
 
+	private boolean isCharged;
+	private boolean isFallBurst;
+	private float playerFallDistance;
 	private long chargeTime;
 	private double fallThreshold;
 	private double pushFactor;
 	private double damage;
 	private double blastAngleTheta;
-	private double blastAnglePhi;
-	private float playerFallDistance;
-	private boolean isCharged;
-	private boolean isFallBurst;
+	private double blastAnglePhi;	
 	private ArrayList<AirBlast> blasts;
 	private ArrayList<Entity> affectedEntities;
 	
@@ -88,7 +88,7 @@ public class AirBurst extends AirAbility {
 			}
 		} else if (isCharged) {
 			Location location = player.getEyeLocation();
-			AirMethods.playAirbendingParticles(location, CHARGED_SNEAK_PARTICLES);
+			playAirbendingParticles(location, CHARGED_SNEAK_PARTICLES);
 		}
 	}
 
@@ -194,7 +194,7 @@ public class AirBurst extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override

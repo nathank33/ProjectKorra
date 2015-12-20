@@ -17,7 +17,6 @@ import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.firebending.FireCombo;
 import com.projectkorra.projectkorra.firebending.FireCombo.FireComboStream;
 import com.projectkorra.projectkorra.firebending.FireMethods;
@@ -29,12 +28,6 @@ public class AirCombo extends AirAbility {
 		TWISTER_MOVING, TWISTER_STATIONARY
 	}
 
-	private String abilityName;
-	private Location origin;
-	private Location currentLoc;
-	private Location destination;
-	private Vector direction;
-	private AbilityState state;
 	private boolean isEnabled;
 	private int progressCounter;
 	private long cooldown;
@@ -50,6 +43,12 @@ public class AirCombo extends AirAbility {
 	private double twisterDegreeParticles;
 	private double twisterHeightParticles;
 	private double twisterRemoveDelay;
+	private AbilityState state;
+	private String abilityName;
+	private Location origin;
+	private Location currentLoc;
+	private Location destination;
+	private Vector direction;
 	private ArrayList<Entity> affectedEntities;
 	private ArrayList<BukkitRunnable> tasks;
 	private ArrayList<Flight> flights;
@@ -150,10 +149,10 @@ public class AirCombo extends AirAbility {
 					Vector animDir = GeneralMethods.rotateXZ(new Vector(1, 0, 1), i);
 					Location animLoc = currentLoc.clone().add(animDir.multiply(animRadius));
 					animLoc.add(0, y, 0);
-					AirMethods.playAirbendingParticles(animLoc, 1, 0, 0, 0);
+					playAirbendingParticles(animLoc, 1, 0, 0, 0);
 				}
 			}
-			AirMethods.playAirbendingSound(currentLoc);
+			playAirbendingSound(currentLoc);
 
 			for (int i = 0; i < height; i += 3) {
 				for (Entity entity : GeneralMethods.getEntitiesAroundPoint(currentLoc.clone().add(0, i, 0), radius * 0.75)) {
@@ -187,12 +186,12 @@ public class AirCombo extends AirAbility {
 			if (target != null && target.getLocation().distanceSquared(currentLoc) > 7 * 7) {
 				destination = target.getLocation();
 			} else {
-				destination = GeneralMethods.getTargetedLocation(player, range, EarthMethods.transparentToEarthbending);
+				destination = GeneralMethods.getTargetedLocation(player, range, getTransparentMaterial());
 			}
 
 			direction = GeneralMethods.getDirection(currentLoc, destination).normalize();
 			currentLoc.add(direction.clone().multiply(speed));
-			if (!EarthMethods.isTransparentToEarthbending(player, currentLoc.getBlock())) {
+			if (!isTransparentToEarthbending(currentLoc.getBlock())) {
 				currentLoc.subtract(direction.clone().multiply(speed));
 			} else if (player.getWorld() != currentLoc.getWorld()) {
 				remove();
@@ -206,7 +205,7 @@ public class AirCombo extends AirAbility {
 			} else if (affectedEntities.size() > 0 && System.currentTimeMillis() - time >= airStreamEntityCarryDuration) {
 				remove();
 				return;
-			} else if (!EarthMethods.isTransparentToEarthbending(player, currentLoc.getBlock())) {
+			} else if (!isTransparentToEarthbending(currentLoc.getBlock())) {
 				remove();
 				return;
 			} else if (currentLoc.getY() - origin.getY() > airStreamMaxEntityHeight) {
@@ -218,7 +217,7 @@ public class AirCombo extends AirAbility {
 			} else if (FireMethods.isWithinFireShield(currentLoc)) {
 				remove();
 				return;
-			} else if (AirMethods.isWithinAirShield(currentLoc)) {
+			} else if (isWithinAirShield(currentLoc)) {
 				remove();
 				return;
 			}
@@ -232,7 +231,7 @@ public class AirCombo extends AirAbility {
 					public void run() {
 						for (int angle = -180; angle <= 180; angle += 45) {
 							Vector orthog = GeneralMethods.getOrthogonalVector(dir.clone(), angle, 0.5);
-							AirMethods.playAirbendingParticles(loc.clone().add(orthog), 1, 0F, 0F, 0F);
+							playAirbendingParticles(loc.clone().add(orthog), 1, 0F, 0F, 0F);
 						}
 					}
 				};
@@ -270,7 +269,7 @@ public class AirCombo extends AirAbility {
 					fs.setDensity(1);
 					fs.setSpread(0F);
 					fs.setUseNewParticles(true);
-					fs.setParticleEffect(AirMethods.getAirbendingParticles());
+					fs.setParticleEffect(getAirbendingParticles());
 					fs.setCollides(false);
 					fs.runTaskTimer(ProjectKorra.plugin, 0, 1L);
 					tasks.add(fs);
@@ -302,7 +301,7 @@ public class AirCombo extends AirAbility {
 					fs.setDensity(1);
 					fs.setSpread(0F);
 					fs.setUseNewParticles(true);
-					fs.setParticleEffect(AirMethods.getAirbendingParticles());
+					fs.setParticleEffect(getAirbendingParticles());
 					fs.setCollides(false);
 					fs.runTaskTimer(ProjectKorra.plugin, (long) (i / 2.5), 1L);
 					tasks.add(fs);
@@ -327,8 +326,8 @@ public class AirCombo extends AirAbility {
 			FireComboStream fstream = (FireComboStream) tasks.get(i);
 			Location loc = fstream.getLocation();
 
-			if (!EarthMethods.isTransparentToEarthbending(player, loc.getBlock())) {
-				if (!EarthMethods.isTransparentToEarthbending(player, loc.clone().add(0, 0.2, 0).getBlock())) {
+			if (!isTransparentToEarthbending(loc.getBlock())) {
+				if (!isTransparentToEarthbending(loc.clone().add(0, 0.2, 0).getBlock())) {
 					fstream.remove();
 					return;
 				}
@@ -416,8 +415,10 @@ public class AirCombo extends AirAbility {
 			return currentLoc;
 		} else if (origin != null) {
 			return origin;
+		} else if (player != null) {
+			return player.getLocation();
 		}
-		return player.getLocation();
+		return null;
 	}
 
 	@Override

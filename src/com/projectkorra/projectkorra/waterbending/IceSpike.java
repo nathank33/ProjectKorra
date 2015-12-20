@@ -3,7 +3,7 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.airbending.AirMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.util.TempPotionEffect;
 
 import org.bukkit.Location;
@@ -245,7 +245,7 @@ public class IceSpike {
 			PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 70, mod);
 			new TempPotionEffect(entity, effect);
 		}
-		AirMethods.breakBreathbendingHold(entity);
+		AirAbility.breakBreathbendingHold(entity);
 
 	}
 

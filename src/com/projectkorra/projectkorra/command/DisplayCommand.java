@@ -8,10 +8,10 @@ import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.ability.api.SubAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
 import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
@@ -78,7 +78,12 @@ public class DisplayCommand extends PKCommand {
 
 			else {
 				ChatColor w = ChatColor.WHITE;
-				sender.sendMessage(ChatColor.RED + "Not a valid argument." + ChatColor.WHITE + "\nElements: " + AirAbility.getChatColor() + "Air" + ChatColor.WHITE + " | " + WaterMethods.getWaterColor() + "Water" + ChatColor.WHITE + " | " + EarthMethods.getEarthColor() + "Earth" + ChatColor.WHITE + " | " + FireMethods.getFireColor() + "Fire" + ChatColor.WHITE + " | " + ChiMethods.getChiColor() + "Chi");
+				sender.sendMessage(ChatColor.RED + "Not a valid argument." + ChatColor.WHITE + "\nElements: " 
+						+ AirAbility.getChatColor() + "Air" + ChatColor.WHITE + " | " 
+						+ WaterMethods.getWaterColor() + "Water" + ChatColor.WHITE + " | " 
+						+ EarthAbility.getEarthColor() + "Earth" + ChatColor.WHITE + " | " 
+						+ FireMethods.getFireColor() + "Fire" + ChatColor.WHITE + " | " 
+						+ ChiMethods.getChiColor() + "Chi");
 				sender.sendMessage(w + "SubElements: "
 						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Air) + " Flight"
 						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Earth) + " Lavabending"
@@ -132,8 +137,7 @@ public class DisplayCommand extends PKCommand {
 	 */
 	private void displayElement(CommandSender sender, String element) {
 		ArrayList<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(element);
-		ProjectKorra.log.warning(abilities.toString());
-		ProjectKorra.log.warning(abilities.toString());
+		
 		if (abilities.isEmpty()) {
 			sender.sendMessage(ChatColor.RED + "You must select a valid element.");
 			return;
@@ -141,8 +145,9 @@ public class DisplayCommand extends PKCommand {
 			sender.sendMessage(ChatColor.YELLOW + "There are no " + GeneralMethods.getElementColor(Element.valueOf(element)) + element + ChatColor.YELLOW + " abilities enabled on the server.");
 		}
 		for (CoreAbility ability : abilities) {
-			if (ability instanceof SubAbility)
+			if (ability instanceof SubAbility) {
 				continue;
+			}
 			if (!(sender instanceof Player) || GeneralMethods.canView((Player) sender, ability.getName())) {
 				sender.sendMessage(ability.getElementColor() + ability.getName());
 			}

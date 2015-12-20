@@ -15,45 +15,43 @@ import com.projectkorra.projectkorra.util.ClickType;
 
 public class Collapse extends EarthAbility {
 
-	public static final ConcurrentHashMap<Block, Block> FINISHED_BLOCKS = new ConcurrentHashMap<Block, Block>();
-
-	private Location origin;
-	private Location location;
-	private Vector direction;
-	private Block block;
 	private int distance;
 	private int height;
 	private long time;
 	private long cooldown;
 	private double range;
 	private double speed;
+	private Location origin;
+	private Location location;
+	private Vector direction;
+	private Block block;
 	private ConcurrentHashMap<Block, Block> affectedBlocks;
 	
-	public Collapse() {}
+	public Collapse() {
+	}
 
 	public Collapse(Player player) {
 		super(player);
+		setFields();
+		
 		if (bPlayer.isOnCooldown(this)) {
 			return;
 		}
-
-		block = BlockSource.getEarthSourceBlock(player, range, ClickType.LEFT_CLICK); // TODO: why is this broken?
+		
+		block = BlockSource.getEarthSourceBlock(player, range, ClickType.LEFT_CLICK);
 		if (block == null) {
 			return;
 		}
 
-		setFields();
 		this.origin = block.getLocation();
 		this.location = origin.clone();
 		this.distance = getEarthbendableBlocksLength(block, direction.clone().multiply(-1), height);
 		loadAffectedBlocks();
 
 		if (distance != 0) {
-			if (canInstantiate()) {
-				start();
-				bPlayer.addCooldown(this);
-				time = System.currentTimeMillis() - (long) (1000.0 / speed);
-			}
+			start();
+			bPlayer.addCooldown(this);
+			time = System.currentTimeMillis() - (long) (1000.0 / speed);
 		} else {
 			remove();
 		}
@@ -70,17 +68,14 @@ public class Collapse extends EarthAbility {
 		loadAffectedBlocks();
 
 		if (distance != 0) {
-			if (canInstantiate()) {
-				start();
-				time = System.currentTimeMillis() - (long) (1000.0 / speed);
-			}
+			start();
+			time = System.currentTimeMillis() - (long) (1000.0 / speed);
 		} else {
 			remove();
 		}
 	}
 
 	private void setFields() {
-		// TODO: Add a Collapse config option for Height
 		this.height = getConfig().getInt("Abilities.Earth.RaiseEarth.Column.Height");
 		this.range = getConfig().getInt("Abilities.Earth.Collapse.Range");
 		this.speed = getConfig().getDouble("Abilities.Earth.Collapse.Speed");
@@ -91,12 +86,13 @@ public class Collapse extends EarthAbility {
 
 	private void loadAffectedBlocks() {
 		affectedBlocks.clear();
-		Block thisblock;
+		Block thisBlock;
+		
 		for (int i = 0; i <= distance; i++) {
-			thisblock = block.getWorld().getBlockAt(location.clone().add(direction.clone().multiply(-i)));
-			affectedBlocks.put(thisblock, thisblock);
-			if (EarthColumn.blockInAllAffectedBlocks(thisblock)) {
-				EarthColumn.revertBlock(thisblock);
+			thisBlock = block.getWorld().getBlockAt(location.clone().add(direction.clone().multiply(-i)));
+			affectedBlocks.put(thisBlock, thisBlock);
+			if (RaiseEarth.blockInAllAffectedBlocks(thisBlock)) {
+				RaiseEarth.revertBlock(thisBlock);
 			}
 		}
 	}
@@ -116,15 +112,6 @@ public class Collapse extends EarthAbility {
 		}
 	}
 
-	private boolean canInstantiate() {
-		for (Block block : affectedBlocks.keySet()) {
-			if (FINISHED_BLOCKS.containsKey(block)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	@Override
 	public void progress() {
 		if (System.currentTimeMillis() - time >= (long) (1000.0 / speed)) {
@@ -142,6 +129,7 @@ public class Collapse extends EarthAbility {
 		if (distance == 0) {
 			return false;
 		}
+		
 		moveEarth(block, direction, distance);
 		loadAffectedBlocks();
 		return location.distanceSquared(origin) < distance * distance;

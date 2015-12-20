@@ -30,14 +30,12 @@ import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 public class AirSwipe extends AirAbility {
 
-	public static final Integer[] BREAKABLES = { 6, 31, 32, 37, 38, 39, 40, 59, 81, 83, 106, 175 };
-
+	private static final Integer[] BREAKABLES = { 6, 31, 32, 37, 38, 39, 40, 59, 81, 83, 106, 175 };
 	private static byte FULL_LIQUID_DATA = 0x0;
 	private static final int STEP_SIZE = 4;
 	// Limiting the entities reduces the risk of crashing
 	private static final int MAX_AFFECTABLE_ENTITIES = 10;
 
-	private Location origin;
 	private boolean charging;
 	private int arc;
 	private int particleCount;
@@ -49,6 +47,7 @@ public class AirSwipe extends AirAbility {
 	private double range;
 	private double radius;
 	private double maxChargeFactor;
+	private Location origin;
 	private ConcurrentHashMap<Vector, Location> elements;
 	private ArrayList<Entity> affectedEntities;
 
@@ -60,13 +59,7 @@ public class AirSwipe extends AirAbility {
 
 	public AirSwipe(Player player, boolean charging) {
 		super(player);
-		if (bPlayer.isOnCooldown("AirSwipe")) {
-			return;
-		}
-		if (player.getEyeLocation().getBlock().isLiquid()) {
-			return;
-		}
-
+		
 		this.charging = charging;
 		this.origin = player.getEyeLocation();
 		this.charging = false;
@@ -76,19 +69,22 @@ public class AirSwipe extends AirAbility {
 		this.cooldown = getConfig().getLong("Abilities.Air.AirSwipe.Cooldown");
 		this.damage = getConfig().getDouble("Abilities.Air.AirSwipe.Damage");
 		this.pushFactor = getConfig().getDouble("Abilities.Air.AirSwipe.Push");
-		this.speed = getConfig().getDouble("Abilities.Air.AirSwipe.Speed");
+		this.speed = getConfig().getDouble("Abilities.Air.AirSwipe.Speed") * (ProjectKorra.time_step / 1000.0);
 		this.range = getConfig().getDouble("Abilities.Air.AirSwipe.Range");
 		this.radius = getConfig().getDouble("Abilities.Air.AirSwipe.Radius");
 		this.maxChargeFactor = getConfig().getDouble("Abilities.Air.AirSwipe.chargeFactor");
 		this.elements = new ConcurrentHashMap<>();
 		this.affectedEntities = new ArrayList<>();
-
-		bPlayer.addCooldown("AirSwipe", cooldown);
-
+		
+		if (bPlayer.isOnCooldown(this) || player.getEyeLocation().getBlock().isLiquid()) {
+			return;
+		}
+		
 		if (!charging) {
 			launch();
 		}
 		start();
+		bPlayer.addCooldown(this);
 	}
 
 	public static boolean removeSwipesAroundPoint(Location loc, double radius) {
@@ -117,10 +113,10 @@ public class AirSwipe extends AirAbility {
 				elements.replace(direction, location);
 
 				if (location.distanceSquared(origin) > range * range
-						|| GeneralMethods.isRegionProtectedFromBuild(player, "AirSwipe", location)) {
+						|| GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 					elements.remove(direction);
 				} else {
-					AirMethods.removeAirSpouts(location, player);
+					removeAirSpouts(location, player);
 					WaterMethods.removeWaterSpouts(location, player);
 					
 					if (EarthBlast.annihilateBlasts(location, radius, player)
@@ -149,7 +145,7 @@ public class AirSwipe extends AirAbility {
 						} else {
 							elements.remove(direction);
 						}
-						if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
+						if (isLava(block)) {
 							if (block.getData() == FULL_LIQUID_DATA) {
 								block.setType(Material.OBSIDIAN);
 							} else {
@@ -157,9 +153,9 @@ public class AirSwipe extends AirAbility {
 							}
 						}
 					} else {
-						AirMethods.playAirbendingParticles(location, particleCount, 0.2F, 0.2F, 0);
+						playAirbendingParticles(location, particleCount, 0.2F, 0.2F, 0);
 						if (GeneralMethods.rand.nextInt(4) == 0) {
-							AirMethods.playAirbendingSound(location);
+							playAirbendingSound(location);
 						}
 						affectPeople(location, direction);
 					}
@@ -173,7 +169,7 @@ public class AirSwipe extends AirAbility {
 
 	private void affectPeople(Location location, Vector direction) {
 		WaterMethods.removeWaterSpouts(location, player);
-		AirMethods.removeAirSpouts(location, player);
+		removeAirSpouts(location, player);
 		final List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(location, radius);
 		final Vector fDirection = direction;
 
@@ -181,7 +177,7 @@ public class AirSwipe extends AirAbility {
 			final Entity entity = entities.get(i);
 			new BukkitRunnable() {
 				public void run() {
-					if (GeneralMethods.isRegionProtectedFromBuild(player, "AirSwipe", entity.getLocation())) {
+					if (GeneralMethods.isRegionProtectedFromBuild(AirSwipe.this, entity.getLocation())) {
 						return;
 					}
 					if (entity.getEntityId() != player.getEntityId() && entity instanceof LivingEntity) {
@@ -206,7 +202,7 @@ public class AirSwipe extends AirAbility {
 						if (entity instanceof Player) {
 							new Flight((Player) entity, player);
 						}
-						AirMethods.breakBreathbendingHold(entity);
+						breakBreathbendingHold(entity);
 						if (elements.containsKey(fDirection)) {
 							elements.remove(fDirection);
 						}
@@ -286,7 +282,7 @@ public class AirSwipe extends AirAbility {
 				pushFactor *= factor;
 				return;
 			} else if (System.currentTimeMillis() >= startTime + maxChargeTime) {
-				AirMethods.playAirbendingParticles(player.getEyeLocation(), particleCount);
+				playAirbendingParticles(player.getEyeLocation(), particleCount);
 			}
 		}
 	}
@@ -298,7 +294,7 @@ public class AirSwipe extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return elements.size() == 0 ? null : elements.values().iterator().next();
+		return elements.size() != 0 ? elements.values().iterator().next() : null;
 	}
 
 	@Override

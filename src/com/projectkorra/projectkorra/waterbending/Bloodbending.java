@@ -6,7 +6,7 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.firebending.FireMethods;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.TempPotionEffect;
@@ -76,7 +76,7 @@ public class Bloodbending {
 							continue;
 					}
 					GeneralMethods.damageEntity(player, entity, 0, "Bloodbending");
-					AirMethods.breakBreathbendingHold(entity);
+					AirAbility.breakBreathbendingHold(entity);
 					targetentities.put(entity, entity.getLocation().clone());
 				}
 			}
@@ -96,7 +96,7 @@ public class Bloodbending {
 			}
 			GeneralMethods.damageEntity(player, target, 0, "Bloodbending");
 			HorizontalVelocityTracker.remove(target);
-			AirMethods.breakBreathbendingHold(target);
+			AirAbility.breakBreathbendingHold(target);
 			targetentities.put(target, target.getLocation().clone());
 		}
 		if (targetentities.size() > 0) {
@@ -205,7 +205,7 @@ public class Bloodbending {
 					if (entity instanceof Creature) {
 						((Creature) entity).setTarget(null);
 					}
-					AirMethods.breakBreathbendingHold(entity);
+					AirAbility.breakBreathbendingHold(entity);
 				}
 			}
 			for (Entity entity : targetentities.keySet()) {
@@ -242,7 +242,7 @@ public class Bloodbending {
 				if (entity instanceof Creature) {
 					((Creature) entity).setTarget(null);
 				}
-				AirMethods.breakBreathbendingHold(entity);
+				AirAbility.breakBreathbendingHold(entity);
 			}
 		}
 	}

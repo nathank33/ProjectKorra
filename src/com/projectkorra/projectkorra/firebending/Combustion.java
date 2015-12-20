@@ -1,6 +1,12 @@
 package com.projectkorra.projectkorra.firebending;
 
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,13 +16,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.util.ParticleEffect;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Combustion implements ConfigLoadable {
 
@@ -121,7 +121,7 @@ public class Combustion implements ConfigLoadable {
 				if (entity.getLocation().distance(block) < radius) { // They are close enough to the
 																		// explosion.
 					GeneralMethods.damageEntity(player, entity, damage, "Combustion");
-					AirMethods.breakBreathbendingHold(entity);
+					AirAbility.breakBreathbendingHold(entity);
 				}
 			}
 		}

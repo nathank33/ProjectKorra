@@ -1,5 +1,6 @@
 package com.projectkorra.projectkorra.util;
 
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.airbending.AirScooter;
 import com.projectkorra.projectkorra.airbending.AirSpout;
 import com.projectkorra.projectkorra.airbending.Tornado;
@@ -13,6 +14,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Flight {
@@ -64,20 +66,20 @@ public class Flight {
 		ArrayList<Player> players = new ArrayList<Player>();
 		ArrayList<Player> newflyingplayers = new ArrayList<Player>();
 		//ArrayList<Player> avatarstateplayers = new ArrayList<Player>();
-		ArrayList<Player> airscooterplayers = new ArrayList<Player>();
+		HashSet<Player> airscooterplayers = new HashSet<>();
 		ArrayList<Player> waterspoutplayers = new ArrayList<Player>();
 		ArrayList<Player> airspoutplayers = new ArrayList<Player>();
-		ArrayList<Player> sandspoutplayers = new ArrayList<Player>();
+		HashSet<Player> sandspoutplayers = new HashSet<>();
 
 		players.addAll(Tornado.getPlayers());
 		//		players.addAll(Speed.getPlayers());
 		players.addAll(FireJet.getPlayers());
 		players.addAll(Catapult.getPlayers());
 		//avatarstateplayers = AvatarState.getPlayers();
-		airscooterplayers = AirScooter.getPlayers();
+		airscooterplayers = CoreAbility.getPlayers(AirScooter.class);
 		waterspoutplayers = WaterSpout.getPlayers();
 		airspoutplayers = AirSpout.getPlayers();
-		sandspoutplayers = SandSpout.getPlayers();
+		sandspoutplayers = CoreAbility.getPlayers(SandSpout.class);
 
 		for (Player player : instances.keySet()) {
 			Flight flight = instances.get(player);

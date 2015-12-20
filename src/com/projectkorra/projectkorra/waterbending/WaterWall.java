@@ -4,7 +4,7 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
@@ -95,7 +95,7 @@ public class WaterWall {
 
 			Location eyeloc = player.getEyeLocation();
 			Block block = eyeloc.add(eyeloc.getDirection().normalize()).getBlock();
-			if (EarthMethods.isTransparentToEarthbending(player, block) && EarthMethods.isTransparentToEarthbending(player, eyeloc.getBlock())) {
+			if (EarthAbility.isTransparentToEarthbending(player, block) && EarthAbility.isTransparentToEarthbending(player, eyeloc.getBlock())) {
 				block.setType(Material.WATER);
 				block.setData(full);
 				Wave wave = new Wave(player);
@@ -185,7 +185,7 @@ public class WaterWall {
 	@SuppressWarnings("deprecation")
 	public void moveWater() {
 		if (sourceblock != null) {
-			targetdestination = player.getTargetBlock(EarthMethods.getTransparentEarthbending(), (int) range).getLocation();
+			targetdestination = player.getTargetBlock(EarthAbility.getTransparentMaterialSet(), (int) range).getLocation();
 
 			if (targetdestination.distance(location) <= 1) {
 				progressing = false;
@@ -468,7 +468,7 @@ public class WaterWall {
 
 				Location eyeloc = player.getEyeLocation();
 				Block block = eyeloc.add(eyeloc.getDirection().normalize()).getBlock();
-				if (EarthMethods.isTransparentToEarthbending(player, block) && EarthMethods.isTransparentToEarthbending(player, eyeloc.getBlock())) {
+				if (EarthAbility.isTransparentToEarthbending(player, block) && EarthAbility.isTransparentToEarthbending(player, eyeloc.getBlock())) {
 					block.setType(Material.WATER);
 					block.setData(full);
 					WaterWall wall = new WaterWall(player);

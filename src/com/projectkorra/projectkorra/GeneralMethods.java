@@ -1,5 +1,105 @@
 package com.projectkorra.projectkorra;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import net.sacredlabyrinth.Phaed.PreciousStones.FieldFlag;
+import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
+
+import com.google.common.reflect.ClassPath;
+import com.griefcraft.lwc.LWC;
+import com.griefcraft.lwc.LWCPlugin;
+import com.griefcraft.model.Protection;
+import com.massivecraft.factions.engine.EngineMain;
+import com.massivecraft.massivecore.ps.PS;
+import com.palmergames.bukkit.towny.Towny;
+import com.palmergames.bukkit.towny.TownyMessaging;
+import com.palmergames.bukkit.towny.TownySettings;
+import com.palmergames.bukkit.towny.object.Coord;
+import com.palmergames.bukkit.towny.object.PlayerCache;
+import com.palmergames.bukkit.towny.object.PlayerCache.TownBlockStatus;
+import com.palmergames.bukkit.towny.object.TownyPermission;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.palmergames.bukkit.towny.object.TownyWorld;
+import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
+import com.palmergames.bukkit.towny.war.flagwar.TownyWar;
+import com.palmergames.bukkit.towny.war.flagwar.TownyWarConfig;
+import com.projectkorra.projectkorra.ability.AbilityModule;
+import com.projectkorra.projectkorra.ability.AbilityModuleManager;
+import com.projectkorra.projectkorra.ability.StockAbility;
+import com.projectkorra.projectkorra.ability.api.Ability;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
+import com.projectkorra.projectkorra.ability.combo.ComboManager;
+import com.projectkorra.projectkorra.ability.combo.ComboManager.AbilityInformation;
+import com.projectkorra.projectkorra.ability.combo.ComboManager.ComboAbility;
+import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
+import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
+import com.projectkorra.projectkorra.ability.multiability.MultiAbilityModuleManager;
+import com.projectkorra.projectkorra.airbending.AirBlast;
+import com.projectkorra.projectkorra.airbending.AirCombo;
+import com.projectkorra.projectkorra.airbending.AirShield;
+import com.projectkorra.projectkorra.airbending.AirSpout;
+import com.projectkorra.projectkorra.airbending.AirSuction;
+import com.projectkorra.projectkorra.airbending.AirSwipe;
+import com.projectkorra.projectkorra.chiblocking.ChiMethods;
+import com.projectkorra.projectkorra.chiblocking.Paralyze;
+import com.projectkorra.projectkorra.command.Commands;
+import com.projectkorra.projectkorra.configuration.ConfigManager;
+import com.projectkorra.projectkorra.earthbending.EarthBlast;
+import com.projectkorra.projectkorra.earthbending.EarthPassive;
+import com.projectkorra.projectkorra.earthbending.MetalClips;
+import com.projectkorra.projectkorra.event.BendingReloadEvent;
+import com.projectkorra.projectkorra.event.PlayerBendingDeathEvent;
+import com.projectkorra.projectkorra.firebending.Combustion;
+import com.projectkorra.projectkorra.firebending.FireBlast;
+import com.projectkorra.projectkorra.firebending.FireCombo;
+import com.projectkorra.projectkorra.firebending.FireMethods;
+import com.projectkorra.projectkorra.firebending.FireShield;
+import com.projectkorra.projectkorra.storage.DBConnection;
+import com.projectkorra.projectkorra.util.Flight;
+import com.projectkorra.projectkorra.util.ParticleEffect;
+import com.projectkorra.projectkorra.util.TempBlock;
+import com.projectkorra.projectkorra.waterbending.Bloodbending;
+import com.projectkorra.projectkorra.waterbending.FreezeMelt;
+import com.projectkorra.projectkorra.waterbending.WaterCombo;
+import com.projectkorra.projectkorra.waterbending.WaterManipulation;
+import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import com.projectkorra.projectkorra.waterbending.WaterSpout;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.FallingSand;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -31,108 +131,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import net.sacredlabyrinth.Phaed.PreciousStones.FieldFlag;
-import net.sacredlabyrinth.Phaed.PreciousStones.PreciousStones;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FallingBlock;
-import org.bukkit.entity.FallingSand;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
-
-import com.google.common.reflect.ClassPath;
-import com.griefcraft.lwc.LWC;
-import com.griefcraft.lwc.LWCPlugin;
-import com.griefcraft.model.Protection;
-import com.massivecraft.factions.engine.EngineMain;
-import com.massivecraft.massivecore.ps.PS;
-import com.palmergames.bukkit.towny.Towny;
-import com.palmergames.bukkit.towny.TownyMessaging;
-import com.palmergames.bukkit.towny.TownySettings;
-import com.palmergames.bukkit.towny.object.Coord;
-import com.palmergames.bukkit.towny.object.PlayerCache;
-import com.palmergames.bukkit.towny.object.PlayerCache.TownBlockStatus;
-import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
-import com.palmergames.bukkit.towny.object.TownyWorld;
-import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
-import com.palmergames.bukkit.towny.war.flagwar.TownyWar;
-import com.palmergames.bukkit.towny.war.flagwar.TownyWarConfig;
-import com.projectkorra.projectkorra.ability.AbilityModule;
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.StockAbility;
-import com.projectkorra.projectkorra.ability.api.Ability;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
-import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.ability.combo.ComboManager.AbilityInformation;
-import com.projectkorra.projectkorra.ability.combo.ComboManager.ComboAbility;
-import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityModuleManager;
-import com.projectkorra.projectkorra.airbending.AirBlast;
-import com.projectkorra.projectkorra.airbending.AirCombo;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.airbending.AirShield;
-import com.projectkorra.projectkorra.airbending.AirSpout;
-import com.projectkorra.projectkorra.airbending.AirSuction;
-import com.projectkorra.projectkorra.airbending.AirSwipe;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.chiblocking.Paralyze;
-import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.configuration.ConfigManager;
-import com.projectkorra.projectkorra.earthbending.EarthBlast;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
-import com.projectkorra.projectkorra.earthbending.EarthPassive;
-import com.projectkorra.projectkorra.earthbending.MetalClips;
-import com.projectkorra.projectkorra.event.BendingReloadEvent;
-import com.projectkorra.projectkorra.event.PlayerBendingDeathEvent;
-import com.projectkorra.projectkorra.firebending.Combustion;
-import com.projectkorra.projectkorra.firebending.FireBlast;
-import com.projectkorra.projectkorra.firebending.FireCombo;
-import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.firebending.FireShield;
-import com.projectkorra.projectkorra.storage.DBConnection;
-import com.projectkorra.projectkorra.util.Flight;
-import com.projectkorra.projectkorra.util.ParticleEffect;
-import com.projectkorra.projectkorra.util.TempBlock;
-import com.projectkorra.projectkorra.waterbending.Bloodbending;
-import com.projectkorra.projectkorra.waterbending.FreezeMelt;
-import com.projectkorra.projectkorra.waterbending.WaterCombo;
-import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
-import com.projectkorra.projectkorra.waterbending.WaterSpout;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-
 @SuppressWarnings("deprecation")
 public class GeneralMethods {
 	
@@ -157,9 +155,7 @@ public class GeneralMethods {
 
 	public GeneralMethods(ProjectKorra plugin) {
 		GeneralMethods.plugin = plugin;
-		new AirMethods(plugin);
 		new ChiMethods(plugin);
-		new EarthMethods(plugin);
 		new FireMethods(plugin);
 		new WaterMethods(plugin);
 	}
@@ -212,8 +208,6 @@ public class GeneralMethods {
 			player.sendMessage(coreAbil.getElementColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (WaterMethods.isWaterAbility(ability)) {
 			player.sendMessage(WaterMethods.getWaterColor() + "Succesfully bound " + ability + " to slot " + slot);
-		} else if (EarthMethods.isEarthAbility(ability)) {
-			player.sendMessage(EarthMethods.getEarthColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (FireMethods.isFireAbility(ability)) {
 			player.sendMessage(FireMethods.getFireColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (ChiMethods.isChiAbility(ability)) {
@@ -314,7 +308,7 @@ public class GeneralMethods {
 			return false;
 		if (!p.hasPermission("bending.ability." + ability))
 			return false;
-		if (!canBind(player, ability))
+		if (!bPlayer.canBind(CoreAbility.getAbility(ability)))
 			return false;
 		if (bPlayer.isElementToggled(GeneralMethods.getAbilityElement(ability)) == false)
 			return false;
@@ -349,48 +343,6 @@ public class GeneralMethods {
 		if (isRegionProtectedFromBuild(p, null, p.getLocation()))
 			return false;
 		if (bPlayer.isChiBlocked())
-			return false;
-		return true;
-	}
-
-	public static boolean canBind(String player, String ability) {
-		Player p = Bukkit.getPlayer(player);
-		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(p);
-		CoreAbility abil = CoreAbility.getAbility(ability);
-		
-		if (p == null || bPlayer == null)
-			return false;
-		if (!p.hasPermission("bending.ability." + ability))
-			return false;
-		if (abil != null && !bPlayer.hasElement(abil.getElementName()))
-			return false;
-		
-		if (WaterMethods.isWaterAbility(ability) && !isBender(player, Element.Water))
-			return false;
-		if (EarthMethods.isEarthAbility(ability) && !isBender(player, Element.Earth))
-			return false;
-		if (FireMethods.isFireAbility(ability) && !isBender(player, Element.Fire))
-			return false;
-		if (ChiMethods.isChiAbility(ability) && !isBender(player, Element.Chi))
-			return false;
-
-		if (!EarthMethods.canLavabend(p) && EarthMethods.isLavabendingAbility(ability))
-			return false;
-		else if (!EarthMethods.canMetalbend(p) && EarthMethods.isMetalbendingAbility(ability))
-			return false;
-		else if (!EarthMethods.canSandbend(p) && EarthMethods.isSandbendingAbility(ability))
-			return false;
-		else if (!FireMethods.canCombustionbend(p) && FireMethods.isCombustionbendingAbility(ability))
-			return false;
-		else if (!FireMethods.canLightningbend(p) && FireMethods.isLightningbendingAbility(ability))
-			return false;
-		else if (!WaterMethods.canBloodbend(p) && WaterMethods.isBloodbendingAbility(ability))
-			return false;
-		else if (!WaterMethods.canIcebend(p) && WaterMethods.isIcebendingAbility(ability))
-			return false;
-		else if (!WaterMethods.canWaterHeal(p) && WaterMethods.isHealingAbility(ability))
-			return false;
-		else if (!WaterMethods.canPlantbend(p) && WaterMethods.isPlantbendingAbility(ability))
 			return false;
 		return true;
 	}
@@ -503,6 +455,10 @@ public class GeneralMethods {
 		} else {
 			damageEntity(player, entity, damage, null, null, ability);
 		}
+	}
+	
+	public static void damageEntity(Ability ability, Entity entity, double damage) {
+		damageEntity(ability.getPlayer(), entity, damage, ability.getName());
 	}
 	
 	/**
@@ -748,7 +704,7 @@ public class GeneralMethods {
 		if (AbilityModuleManager.earthbendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
 				return getSubBendingColor(Element.Earth);
-			return EarthMethods.getEarthColor();
+			return EarthAbility.getEarthColor();
 		}
 		if (AbilityModuleManager.firebendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
@@ -1019,14 +975,14 @@ public class GeneralMethods {
 					else if (module.getSubElement() == SubElement.Lightning || module.getSubElement() == SubElement.Combustion)
 						return FireMethods.getFireSubColor();
 					else if (module.getSubElement() == SubElement.Sandbending || module.getSubElement() == SubElement.Metalbending || module.getSubElement() == SubElement.Lavabending)
-						return EarthMethods.getEarthSubColor();
+						return EarthAbility.getEarthSubColor();
 					else if (module.getSubElement() == SubElement.Flight || module.getSubElement() == SubElement.SpiritualProjection)
 						return AirAbility.getSubChatColor();
 				}
 				if (module.getElement().equalsIgnoreCase(Element.Water.toString()))
 					return WaterMethods.getWaterColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Earth.toString()))
-					return EarthMethods.getEarthColor();
+					return EarthAbility.getEarthColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Fire.toString()))
 					return FireMethods.getFireColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Air.toString()))
@@ -1058,7 +1014,7 @@ public class GeneralMethods {
 						else if (sub == SubElement.Lightning || sub == SubElement.Combustion)
 							return FireMethods.getFireSubColor();
 						else if (sub == SubElement.Sandbending || sub == SubElement.Metalbending || sub == SubElement.Lavabending)
-							return EarthMethods.getEarthSubColor();
+							return EarthAbility.getEarthSubColor();
 						else if (sub == SubElement.Flight || sub == SubElement.SpiritualProjection)
 							return AirAbility.getSubChatColor();
 					}
@@ -1066,7 +1022,7 @@ public class GeneralMethods {
 				if (element == Element.Air)
 					return AirAbility.getChatColor();
 				if (element == Element.Earth)
-					return EarthMethods.getEarthColor();
+					return EarthAbility.getEarthColor();
 				if (element == Element.Fire)
 					return FireMethods.getFireColor();
 				if (element == Element.Water)
@@ -1393,10 +1349,6 @@ public class GeneralMethods {
 		return Bukkit.getServer().getPluginManager().getPlugin("ProjectKorraItems") != null;
 	}
 
-	public static boolean hasPermission(Player player, String ability) {
-		return player.hasPermission("bending.ability." + ability) && canBind(player.getName(), ability);
-	}
-
 	public static boolean hasRPG() {
 		return Bukkit.getServer().getPluginManager().getPlugin("ProjectKorraRPG") != null;
 	}
@@ -1467,7 +1419,7 @@ public class GeneralMethods {
 		for (double i = 0; i <= max; i++) {
 			loc = location1.clone().add(direction.clone().multiply(i));
 			Material type = loc.getBlock().getType();
-			if (type != Material.AIR && !(Arrays.asList(EarthMethods.getTransparentEarthbending()).contains(type.getId()) || WaterMethods.isWater(loc.getBlock())))
+			if (type != Material.AIR && !(Arrays.asList(EarthAbility.getTransparentMaterialSet()).contains(type.getId()) || WaterMethods.isWater(loc.getBlock())))
 				return true;
 		}
 		return false;
@@ -1501,8 +1453,12 @@ public class GeneralMethods {
 		return value;
 	}
 	
-	public static boolean isRegionProtectedFromBuild(CoreAbility ability, Location loc) {
+	public static boolean isRegionProtectedFromBuild(Ability ability, Location loc) {
 		return isRegionProtectedFromBuild(ability.getPlayer(), ability.getName(), loc);
+	}
+	
+	public static boolean isRegionProtectedFromBuild(Player player, Location loc) {
+		return isRegionProtectedFromBuild(player, null, loc);
 	}
 
 	public static boolean isRegionProtectedFromBuildPostCache(Player player, String ability, Location loc) {
@@ -1990,8 +1946,8 @@ public class GeneralMethods {
 			if (c.getComboType() instanceof ComboAbilityModule)
 				((ComboAbilityModule) c.getComboType()).stop();
 		}
-		AirMethods.stopBending();
-		EarthMethods.stopBending();
+
+		EarthAbility.stopBending();
 		WaterMethods.stopBending();
 		FireMethods.stopBending();
 
@@ -2101,7 +2057,7 @@ public class GeneralMethods {
 			case Fire:
 				return FireMethods.getFireColor();
 			case Earth:
-				return EarthMethods.getEarthColor();
+				return EarthAbility.getEarthColor();
 			case Water:
 				return WaterMethods.getWaterColor();
 			case Chi:

@@ -1,8 +1,11 @@
 package com.projectkorra.projectkorra.firebending;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -12,12 +15,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.util.ParticleEffect;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class WallOfFire implements ConfigLoadable {
 
@@ -102,7 +102,7 @@ public class WallOfFire implements ConfigLoadable {
 		if (entity instanceof LivingEntity) {
 			GeneralMethods.damageEntity(player, entity, damage, "WallOfFire");
 			new Enflamed(entity, player);
-			AirMethods.breakBreathbendingHold(entity);
+			AirAbility.breakBreathbendingHold(entity);
 		}
 	}
 

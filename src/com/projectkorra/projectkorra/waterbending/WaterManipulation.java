@@ -4,9 +4,9 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.firebending.Combustion;
 import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.util.BlockSource;
@@ -166,7 +166,7 @@ public class WaterManipulation {
 		Entity target = GeneralMethods.getTargetedEntity(player, range, new ArrayList<Entity>());
 		Location location;
 		if (target == null) {
-			location = GeneralMethods.getTargetedLocation(player, range, EarthMethods.transparentToEarthbending);
+			location = GeneralMethods.getTargetedLocation(player, range, EarthAbility.getTransparentMaterial());
 		} else {
 			// targetting = true;
 			location = ((LivingEntity) target).getEyeLocation();
@@ -317,7 +317,7 @@ public class WaterManipulation {
 
 				} else {
 					WaterMethods.removeWaterSpouts(location, player);
-					AirMethods.removeAirSpouts(location, player);
+					AirAbility.removeAirSpouts(location, player);
 
 					if (GeneralMethods.rand.nextInt(4) == 0) {
 						WaterMethods.playWaterbendingSound(location);
@@ -361,7 +361,7 @@ public class WaterManipulation {
 					}
 				}
 
-				if (EarthMethods.isTransparentToEarthbending(player, block) && !block.isLiquid()) {
+				if (EarthAbility.isTransparentToEarthbending(player, block) && !block.isLiquid()) {
 					GeneralMethods.breakBlock(block);
 				} else if (block.getType() != Material.AIR && !WaterMethods.isWater(block)) {
 					breakBlock();
@@ -389,7 +389,7 @@ public class WaterManipulation {
 							if (AvatarState.isAvatarState(player))
 								damage = AvatarState.getValue(damage);
 							GeneralMethods.damageEntity(player, entity, (int) WaterMethods.waterbendingNightAugment(damage, player.getWorld()), "WaterManipulation");
-							AirMethods.breakBreathbendingHold(entity);
+							AirAbility.breakBreathbendingHold(entity);
 							progressing = false;
 							// }
 						}
@@ -523,7 +523,7 @@ public class WaterManipulation {
 		} else if (WaterReturn.hasWaterBottle(player)) {
 			Location eyeloc = player.getEyeLocation();
 			Block block = eyeloc.add(eyeloc.getDirection().normalize()).getBlock();
-			if (EarthMethods.isTransparentToEarthbending(player, block) && EarthMethods.isTransparentToEarthbending(player, eyeloc.getBlock())) {
+			if (EarthAbility.isTransparentToEarthbending(player, block) && EarthAbility.isTransparentToEarthbending(player, eyeloc.getBlock())) {
 
 				if (getTargetLocation(player).distance(block.getLocation()) > 1) {
 					block.setType(Material.WATER);

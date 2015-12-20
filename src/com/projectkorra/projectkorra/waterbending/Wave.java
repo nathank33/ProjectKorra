@@ -4,8 +4,8 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
@@ -134,7 +134,7 @@ public class Wave {
 				factor = AvatarState.getValue(factor);
 			Entity target = GeneralMethods.getTargetedEntity(player, range, new ArrayList<Entity>());
 			if (target == null) {
-				targetdestination = player.getTargetBlock(EarthMethods.getTransparentEarthbending(), (int) range).getLocation();
+				targetdestination = player.getTargetBlock(EarthAbility.getTransparentMaterialSet(), (int) range).getLocation();
 			} else {
 				targetdestination = ((LivingEntity) target).getEyeLocation();
 			}
@@ -308,7 +308,7 @@ public class Wave {
 						if (entity.getFireTicks() > 0)
 							entity.getWorld().playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
 						entity.setFireTicks(0);
-						AirMethods.breakBreathbendingHold(entity);
+						AirAbility.breakBreathbendingHold(entity);
 					}
 
 				}

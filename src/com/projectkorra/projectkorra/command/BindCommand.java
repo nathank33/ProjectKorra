@@ -1,6 +1,8 @@
 package com.projectkorra.projectkorra.command;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -46,7 +48,8 @@ public class BindCommand extends PKCommand {
 			return;
 		}
 
-		if (!GeneralMethods.canBind(((Player) sender).getName(), ability)) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
+		if (!bPlayer.canBind(CoreAbility.getAbility(ability))) {
 			sender.sendMessage(ChatColor.RED + "You don't have permission to bend this element.");
 			return;
 		} else if (!GeneralMethods.getBendingPlayer(sender.getName()).isElementToggled(GeneralMethods.getAbilityElement(ability))) {

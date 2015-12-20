@@ -1,9 +1,16 @@
 package com.projectkorra.projectkorra.firebending;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.earthbending.EarthBlast;
+import com.projectkorra.projectkorra.util.ParticleEffect;
+import com.projectkorra.projectkorra.waterbending.Plantbending;
+import com.projectkorra.projectkorra.waterbending.WaterManipulation;
+import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,17 +22,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.earthbending.EarthBlast;
-import com.projectkorra.projectkorra.util.ParticleEffect;
-import com.projectkorra.projectkorra.waterbending.Plantbending;
-import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FireBlast implements ConfigLoadable {
 	
@@ -184,7 +184,7 @@ public class FireBlast implements ConfigLoadable {
 				entity.setFireTicks((int) (fireticks * 20));
 				GeneralMethods.damageEntity(player, entity,
 						(int) FireMethods.getFirebendingDayAugment((double) damage, entity.getWorld()), "FireBlast");
-				AirMethods.breakBreathbendingHold(entity);
+				AirAbility.breakBreathbendingHold(entity);
 				new Enflamed(entity, player);
 				remove();
 			}
@@ -281,7 +281,7 @@ public class FireBlast implements ConfigLoadable {
 		}
 
 		WaterMethods.removeWaterSpouts(location, player);
-		AirMethods.removeAirSpouts(location, player);
+		AirAbility.removeAirSpouts(location, player);
 
 		double radius = affectingradius;
 		Player source = player;

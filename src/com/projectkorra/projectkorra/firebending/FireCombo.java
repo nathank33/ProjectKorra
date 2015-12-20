@@ -5,7 +5,7 @@ import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
 import com.projectkorra.projectkorra.util.ClickType;
@@ -335,7 +335,7 @@ public class FireCombo implements ConfigLoadable {
 			for (FireComboStream stream : tasks) {
 				if (FireMethods.isWithinFireShield(stream.getLocation()))
 					stream.remove();
-				if (AirMethods.isWithinAirShield(stream.getLocation()))
+				if (AirAbility.isWithinAirShield(stream.getLocation()))
 					stream.remove();
 			}
 		} else if (ability.equalsIgnoreCase("JetBlast")) {

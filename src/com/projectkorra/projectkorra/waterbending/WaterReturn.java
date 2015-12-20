@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Location;
@@ -37,7 +37,7 @@ public class WaterReturn {
 		location = block.getLocation();
 		if (GeneralMethods.canBend(player.getName(), "WaterManipulation")) {
 			if (!GeneralMethods.isRegionProtectedFromBuild(player, "WaterManipulation", location) && GeneralMethods.canBend(player.getName(), "WaterManipulation")) {
-				if (EarthMethods.isTransparentToEarthbending(player, block) && !block.isLiquid() && hasEmptyWaterBottle())
+				if (EarthAbility.isTransparentToEarthbending(player, block) && !block.isLiquid() && hasEmptyWaterBottle())
 					this.block = new TempBlock(block, Material.WATER, full);
 			}
 		}
@@ -96,7 +96,7 @@ public class WaterReturn {
 		}
 
 		Block newblock = location.getBlock();
-		if (EarthMethods.isTransparentToEarthbending(player, newblock) && !newblock.isLiquid()) {
+		if (EarthAbility.isTransparentToEarthbending(player, newblock) && !newblock.isLiquid()) {
 			block.revertBlock();
 			block = new TempBlock(newblock, Material.WATER, full);
 		} else {

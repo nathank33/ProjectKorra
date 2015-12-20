@@ -16,10 +16,10 @@ public class AirFlight extends FlightAbility {
 	private static final ConcurrentHashMap<String, Integer> HITS = new ConcurrentHashMap<String, Integer>();
 	private static final ConcurrentHashMap<String, Boolean> HOVERING = new ConcurrentHashMap<String, Boolean>();
 	
-	private Flight flight;
 	private boolean firstProgressIteration;
 	private int maxHitsBeforeRemoval;
-	
+	private Flight flight;
+		
 	public AirFlight() {}
 
 	public AirFlight(Player player) {
@@ -123,7 +123,7 @@ public class AirFlight extends FlightAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override

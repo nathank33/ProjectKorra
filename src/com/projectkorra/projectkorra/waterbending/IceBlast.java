@@ -3,8 +3,8 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -193,7 +193,7 @@ public class IceBlast {
 			//entity.damage(damage, player);
 			GeneralMethods.damageEntity(player, entity, damage, "IceBlast");
 		}
-		AirMethods.breakBreathbendingHold(entity);
+		AirAbility.breakBreathbendingHold(entity);
 
 		for (int x = 0; x < 30; x++) {
 			ParticleEffect.ITEM_CRACK.display(new ParticleEffect.ItemData(Material.ICE, (byte) 0), new Vector(((Math.random() - 0.5) * .5), ((Math.random() - 0.5) * .5), ((Math.random() - 0.5) * .5)), .3f, location, 257.0D);
@@ -205,7 +205,7 @@ public class IceBlast {
 			return;
 		LivingEntity target = (LivingEntity) GeneralMethods.getTargetedEntity(player, range, new ArrayList<Entity>());
 		if (target == null) {
-			destination = GeneralMethods.getTargetedLocation(player, range, EarthMethods.transparentToEarthbending);
+			destination = GeneralMethods.getTargetedLocation(player, range, EarthAbility.getTransparentMaterial());
 		} else {
 			destination = target.getEyeLocation();
 		}
@@ -296,7 +296,7 @@ public class IceBlast {
 			source.revertBlock();
 			source = null;
 
-			if (EarthMethods.isTransparentToEarthbending(player, block) && !block.isLiquid()) {
+			if (EarthAbility.isTransparentToEarthbending(player, block) && !block.isLiquid()) {
 				GeneralMethods.breakBlock(block);
 			} else if (!WaterMethods.isWater(block)) {
 				breakParticles(20);

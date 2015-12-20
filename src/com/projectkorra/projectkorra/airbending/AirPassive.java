@@ -14,21 +14,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AirPassive {
 
-	private static final ConcurrentHashMap<Player, Float> food = new ConcurrentHashMap<Player, Float>();
+	private static final ConcurrentHashMap<Player, Float> FOOD = new ConcurrentHashMap<Player, Float>();
 
 	public static float getExhaustion(Player player, float level) {
-		if (!food.keySet().contains(player)) {
-			food.put(player, level);
+		if (!FOOD.keySet().contains(player)) {
+			FOOD.put(player, level);
 			return level;
 		} else {
-			float oldlevel = food.get(player);
+			float oldlevel = FOOD.get(player);
 			if (level < oldlevel) {
 				level = 0;
 			} else {
 				float factor = (float) ConfigManager.getConfig().getDouble("Abilities.Air.Passive.Factor");
 				level = (level - oldlevel) * factor + oldlevel;
 			}
-			food.replace(player, level);
+			FOOD.replace(player, level);
 			return level;
 		}
 	}

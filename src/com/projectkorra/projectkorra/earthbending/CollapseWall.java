@@ -21,12 +21,12 @@ public class CollapseWall extends EarthAbility {
 	private long cooldown;
 	private double radius;
 	private Location location;
-	private ConcurrentHashMap<Block, Block> blocks = new ConcurrentHashMap<Block, Block>();
-	private ConcurrentHashMap<Block, Integer> baseBlocks = new ConcurrentHashMap<Block, Integer>();
+	private ConcurrentHashMap<Block, Block> blocks;
+	private ConcurrentHashMap<Block, Integer> baseBlocks;
 	
-	public CollapseWall() {}
+	public CollapseWall() {
+	}
 
-	@SuppressWarnings("deprecation")
 	public CollapseWall(Player player) {
 		super(player);
 		if (bPlayer.isOnCooldown(this)) {
@@ -42,10 +42,11 @@ public class CollapseWall extends EarthAbility {
 
 		Block sblock = BlockSource.getEarthSourceBlock(player, range, ClickType.SHIFT_DOWN);
 		if (sblock == null) {
-			location = player.getTargetBlock(EarthMethods.getTransparentEarthbending(), range).getLocation();
+			location = getTargetEarthBlock(range).getLocation();
 		} else {
 			location = sblock.getLocation();
 		}
+		
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, radius)) {
 			if (isEarthbendable(block) && !blocks.containsKey(block) && block.getY() >= location.getBlockY()) {
 				getAffectedBlocks(block);
@@ -58,28 +59,28 @@ public class CollapseWall extends EarthAbility {
 		for (Block block : baseBlocks.keySet()) {
 			new Collapse(player, block.getLocation());
 		}
-		remove();
 	}
 
 	private void getAffectedBlocks(Block block) {
-		Block baseblock = block;
 		int tall = 0;
-		ArrayList<Block> bendableblocks = new ArrayList<Block>();
-		bendableblocks.add(block);
+		Block baseBlock = block;
+		ArrayList<Block> bendableBlocks = new ArrayList<Block>();
+		bendableBlocks.add(block);
 
 		for (int i = 1; i <= height; i++) {
 			Block blocki = block.getRelative(BlockFace.DOWN, i);
 			if (isEarthbendable(blocki)) {
-				baseblock = blocki;
-				bendableblocks.add(blocki);
+				baseBlock = blocki;
+				bendableBlocks.add(blocki);
 				tall++;
 			} else {
 				break;
 			}
 		}
-		baseBlocks.put(baseblock, tall);
-		for (Block blocki : bendableblocks) {
-			blocks.put(blocki, baseblock);
+		
+		baseBlocks.put(baseBlock, tall);
+		for (Block blocki : bendableBlocks) {
+			blocks.put(blocki, baseBlock);
 		}
 	}
 
@@ -89,9 +90,7 @@ public class CollapseWall extends EarthAbility {
 	}
 
 	@Override
-	public void progress() {
-		
-	}
+	public void progress() {}
 
 	@Override
 	public Location getLocation() {

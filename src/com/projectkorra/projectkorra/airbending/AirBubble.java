@@ -68,20 +68,12 @@ public class AirBubble extends AirAbility {
 
 	@Override
 	public void progress() {
-		if (!player.isSneaking()) {
+		if (!player.isSneaking() || !bPlayer.canBend(this)) {
 			remove();
 			return;
-		} 
-		if (bPlayer.canBend(this)) {
+		} else {
 			pushWater();
-			return;
-		} else if (GeneralMethods.getBoundAbility(player).equalsIgnoreCase("WaterBubble")
-				&& GeneralMethods.canBend(player.getName(), "WaterBubble")) {
-			pushWater();
-			return;
 		}
-		remove();
-		return;
 	}
 
 	private void pushWater() {
@@ -146,7 +138,7 @@ public class AirBubble extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override

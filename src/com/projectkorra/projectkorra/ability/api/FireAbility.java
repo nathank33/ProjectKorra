@@ -12,7 +12,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-public abstract class FireAbility extends CoreAbility {
+public abstract class FireAbility extends ElementalAbility {
 
 	private double dayFactor;
 	

@@ -7,7 +7,6 @@ import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
@@ -22,15 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AirSuction extends AirAbility {
 
-	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<>();
 	private static final int ORIGIN_PARTICLE_COUNT = 6;
 	private static final int ABILITY_PARTICLE_COUNT = 6;
 	private static final int MAX_TICKS = 10000;
 	private static final double ORIGIN_SELECT_RANGE = 10;
-
-	private Location location;
-	private Location origin;
-	private Vector direction;
+	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<>();
+	
 	private boolean hasOtherOrigin;
 	private int ticks;
 	private int particleCount;
@@ -39,6 +35,9 @@ public class AirSuction extends AirAbility {
 	private double range;
 	private double radius;
 	private double pushFactor;
+	private Location location;
+	private Location origin;
+	private Vector direction;
 	
 	public AirSuction() {}
 
@@ -107,7 +106,7 @@ public class AirSuction extends AirAbility {
 			return;
 		}
 
-		AirMethods.playAirbendingParticles(origin, ORIGIN_PARTICLE_COUNT);
+		playAirbendingParticles(origin, ORIGIN_PARTICLE_COUNT);
 	}
 
 	public static void progressOrigins() {
@@ -130,9 +129,9 @@ public class AirSuction extends AirAbility {
 	}
 
 	private void advanceLocation() {
-		AirMethods.playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
+		playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
 		if (GeneralMethods.rand.nextInt(4) == 0) {
-			AirMethods.playAirbendingSound(location);
+			playAirbendingSound(location);
 		}
 		double speedFactor = speed * (ProjectKorra.time_step / 1000.);
 		location = location.add(direction.clone().multiply(speedFactor));
@@ -142,8 +141,8 @@ public class AirSuction extends AirAbility {
 		Location location = origin.clone();
 		for (double i = 1; i <= range; i++) {
 			location = origin.clone().add(direction.clone().multiply(i));
-			if (!EarthMethods.isTransparentToEarthbending(player, location.getBlock())
-					|| GeneralMethods.isRegionProtectedFromBuild(player, "AirSuction", location)) {
+			if (!isTransparentToEarthbending(location.getBlock())
+					|| GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 				return origin.clone().add(direction.clone().multiply(i - 1));
 			}
 		}
@@ -217,7 +216,7 @@ public class AirSuction extends AirAbility {
 					entity.getWorld().playEffect(entity.getLocation(), Effect.EXTINGUISH, 0);
 				}
 				entity.setFireTicks(0);
-				AirMethods.breakBreathbendingHold(entity);
+				breakBreathbendingHold(entity);
 			}
 		}
 

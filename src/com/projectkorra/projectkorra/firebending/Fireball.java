@@ -1,7 +1,10 @@
 package com.projectkorra.projectkorra.firebending;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -14,11 +17,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.airbending.AirMethods;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.util.ParticleEffect;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Ability charged FireBlast
@@ -141,7 +141,7 @@ public class Fireball implements ConfigLoadable {
 		double damage = slope * (distance - innerradius) + maxdamage;
 		// Methods.verbose(damage);
 		GeneralMethods.damageEntity(player, entity, damage, "FireBlast");
-		AirMethods.breakBreathbendingHold(entity);
+		AirAbility.breakBreathbendingHold(entity);
 	}
 
 	public void explode() {

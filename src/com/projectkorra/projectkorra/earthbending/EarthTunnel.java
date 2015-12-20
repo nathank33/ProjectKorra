@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,74 +10,79 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class EarthTunnel {
-
-	public static ConcurrentHashMap<Player, EarthTunnel> instances = new ConcurrentHashMap<Player, EarthTunnel>();
-
-	private static final double MAX_RADIUS = ProjectKorra.plugin.getConfig().getDouble("Abilities.Earth.EarthTunnel.MaxRadius");
-	private static final double RANGE = ProjectKorra.plugin.getConfig().getDouble("Abilities.Earth.EarthTunnel.Range");
-	private static final double RADIUS = ProjectKorra.plugin.getConfig().getDouble("Abilities.Earth.EarthTunnel.Radius");
-
-	private static boolean revert = ProjectKorra.plugin.getConfig().getBoolean("Abilities.Earth.EarthTunnel.Revert");
-	private static final long INTERVAL = ProjectKorra.plugin.getConfig().getLong("Abilities.Earth.EarthTunnel.Interval");
-
-	private Player player;
-	private Block block;
-	private Location origin, location;
-	private Vector direction;
-	private double depth, radius, angle;
-	private double maxradius = MAX_RADIUS;
-	private double range = RANGE;
-	private double radiusinc = RADIUS;
-	private long interval = INTERVAL;
+public class EarthTunnel extends EarthAbility {
+	
+	private long interval;
 	private long time;
+	private long cooldown;
+	private double depth;
+	private double radius;
+	private double angle;
+	private double maxRadius;
+	private double range;
+	private double radiusIncrement;
+	private Block block;
+	private Location origin;
+	private Location location;
+	private Vector direction;
+	
+	public EarthTunnel() {}
 
 	public EarthTunnel(Player player) {
-		this.player = player;
+		super(player);
+		
+		this.maxRadius = getConfig().getDouble("Abilities.Earth.EarthTunnel.MaxRadius");
+		this.range = getConfig().getDouble("Abilities.Earth.EarthTunnel.Range");
+		this.radius = getConfig().getDouble("Abilities.Earth.EarthTunnel.Radius");
+		this.interval = getConfig().getLong("Abilities.Earth.EarthTunnel.Interval");
+		this.cooldown = 0;
+		
 		location = player.getEyeLocation().clone();
 		origin = player.getTargetBlock((HashSet<Material>) null, (int) range).getLocation();
 		block = origin.getBlock();
 		direction = location.getDirection().clone().normalize();
 		depth = origin.distance(location) - 1;
-		if (depth < 0)
-			depth = 0;
+		
+		depth = depth < 0 ? 0 : depth;
 		angle = 0;
-		radius = radiusinc;
+		radius = radiusIncrement;
 		time = System.currentTimeMillis();
 
-		instances.put(player, this);
+		start();
+		bPlayer.addCooldown(this);
 	}
 
-	private boolean progress() {
+	@Override
+	public void progress() {
 		if (player.isDead() || !player.isOnline()) {
-			instances.remove(player);
-			return false;
+			remove();
+			return;
 		}
 		if (System.currentTimeMillis() - time >= interval) {
 			time = System.currentTimeMillis();
 			if (Math.abs(Math.toDegrees(player.getEyeLocation().getDirection().angle(direction))) > 20 || !player.isSneaking()) {
-				instances.remove(player);
-				return false;
+				remove();
+				return;
 			} else {
-				while (!EarthMethods.isEarthbendable(player, block)) {
-					if (!EarthMethods.isTransparentToEarthbending(player, block)) {
-						instances.remove(player);
-						return false;
+				while (!isEarthbendable(block)) {
+					if (!isTransparentToEarthbending(block)) {
+						remove();
+						return;
 					}
+					
 					if (angle >= 360) {
 						angle = 0;
-						if (radius >= maxradius) {
-							radius = radiusinc;
+						if (radius >= maxRadius) {
+							radius = radiusIncrement;
 							if (depth >= range) {
-								instances.remove(player);
-								return false;
+								remove();
+								return;
 							} else {
-								depth += .5;
+								depth += 0.5;
 							}
 						} else {
-							radius += radiusinc;
+							radius += radiusIncrement;
 						}
 					} else {
 						angle += 20;
@@ -86,55 +91,29 @@ public class EarthTunnel {
 					block = location.clone().add(direction.clone().normalize().multiply(depth)).add(vec).getBlock();
 				}
 
-				if (revert) {
-					EarthMethods.addTempAirBlock(block);
+				if (isEarthRevertOn()) {
+					addTempAirBlock(block);
 				} else {
 					block.breakNaturally();
 				}
-
-				return true;
+				return;
 			}
-		} else {
-			return false;
 		}
 	}
 
-	public static void progressAll() {
-		for (Player player : instances.keySet()) {
-			instances.get(player).progress();
-		}
+	@Override
+	public String getName() {
+		return "EarthTunnel";
 	}
 
-	public static String getDescription() {
-		return "Earth Tunnel is a completely utility ability for earthbenders. " + "To use, simply sneak (default: shift) in the direction you want to tunnel. " + "You will slowly begin tunneling in the direction you're facing for as long as you " + "sneak or if the tunnel has been dug long enough. This ability will be interupted " + "if it hits a block that cannot be earthbent.";
+	@Override
+	public Location getLocation() {
+		return location;
 	}
 
-	public Player getPlayer() {
-		return player;
-	}
-
-	public double getMaxradius() {
-		return maxradius;
-	}
-
-	public void setMaxradius(double maxradius) {
-		this.maxradius = maxradius;
-	}
-
-	public double getRange() {
-		return range;
-	}
-
-	public void setRange(double range) {
-		this.range = range;
-	}
-
-	public double getRadiusinc() {
-		return radiusinc;
-	}
-
-	public void setRadiusinc(double radiusinc) {
-		this.radiusinc = radiusinc;
+	@Override
+	public long getCooldown() {
+		return cooldown;
 	}
 
 	public long getInterval() {
@@ -145,4 +124,92 @@ public class EarthTunnel {
 		this.interval = interval;
 	}
 
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public double getDepth() {
+		return depth;
+	}
+
+	public void setDepth(double depth) {
+		this.depth = depth;
+	}
+
+	public double getRadius() {
+		return radius;
+	}
+
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+
+	public double getAngle() {
+		return angle;
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+
+	public double getMaxRadius() {
+		return maxRadius;
+	}
+
+	public void setMaxRadius(double maxRadius) {
+		this.maxRadius = maxRadius;
+	}
+
+	public double getRange() {
+		return range;
+	}
+
+	public void setRange(double range) {
+		this.range = range;
+	}
+
+	public double getRadiusIncrement() {
+		return radiusIncrement;
+	}
+
+	public void setRadiusIncrement(double radiusIncrement) {
+		this.radiusIncrement = radiusIncrement;
+	}
+
+	public Block getBlock() {
+		return block;
+	}
+
+	public void setBlock(Block block) {
+		this.block = block;
+	}
+
+	public Location getOrigin() {
+		return origin;
+	}
+
+	public void setOrigin(Location origin) {
+		this.origin = origin;
+	}
+
+	public Vector getDirection() {
+		return direction;
+	}
+
+	public void setDirection(Vector direction) {
+		this.direction = direction;
+	}
+
+	public void setCooldown(long cooldown) {
+		this.cooldown = cooldown;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
 }

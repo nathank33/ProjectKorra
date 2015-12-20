@@ -19,8 +19,8 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.earthbending.EarthMethods;
 
 public class Lightning implements ConfigLoadable {
 	
@@ -267,7 +267,7 @@ public class Lightning implements ConfigLoadable {
 	 */
 	@SuppressWarnings("deprecation")
 	public boolean isTransparent(Player player, Block block) {
-		if (Arrays.asList(EarthMethods.transparentToEarthbending).contains(block.getTypeId())) {
+		if (Arrays.asList(EarthAbility.getTransparentMaterialSet()).contains(block.getTypeId())) {
 			if (GeneralMethods.isRegionProtectedFromBuild(player, "Lightning", block.getLocation()))
 				return false;
 			else if (isIce(block.getLocation()))

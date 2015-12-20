@@ -2,7 +2,7 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.airbending.AirMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.chiblocking.Smokescreen;
 import com.projectkorra.projectkorra.util.TempBlock;
 
@@ -86,7 +86,7 @@ public class HealingWaters {
 		if (!GeneralMethods.isRegionProtectedFromBuild(player, "HealingWaters", player.getLocation()))
 			if (player.getHealth() < player.getMaxHealth()) {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 70, power));
-				AirMethods.breakBreathbendingHold(player);
+				AirAbility.breakBreathbendingHold(player);
 			}
 		//			for(PotionEffect effect : player.getActivePotionEffects()) {
 		//				if(Methods.isNegativeEffect(effect.getType())) {
@@ -98,7 +98,7 @@ public class HealingWaters {
 	private static void applyHealingToEntity(LivingEntity le) {
 		if (le.getHealth() < le.getMaxHealth()) {
 			le.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 70, 1));
-			AirMethods.breakBreathbendingHold(le);
+			AirAbility.breakBreathbendingHold(le);
 		}
 		//		for(PotionEffect effect : le.getActivePotionEffects()) {
 		//			if(Methods.isNegativeEffect(effect.getType())) {

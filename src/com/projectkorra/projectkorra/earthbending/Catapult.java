@@ -15,9 +15,6 @@ import com.projectkorra.projectkorra.ability.api.EarthAbility;
 // TODO: Remove Catapult.Speed from the Configuration
 public class Catapult extends EarthAbility {
 
-	private Location origin;
-	private Location location;
-	private Vector direction;
 	private boolean catapult;
 	private boolean moving;
 	private boolean flying;
@@ -25,22 +22,28 @@ public class Catapult extends EarthAbility {
 	private int distance;
 	private long cooldown;
 	private double push;
+	private Location origin;
+	private Location location;
+	private Vector direction;
 	
-	public Catapult() {}
+	public Catapult() {
+		
+	}
 
 	public Catapult(Player player) {
 		super(player);
-		if (bPlayer.isOnCooldown(this)) {
-			return;
-		}
-		
 		setFields();
 		this.origin = player.getEyeLocation().clone();
 		this.direction = origin.getDirection().clone().normalize();
-		Vector neg = direction.clone().multiply(-1);
+		
+		if (bPlayer.isOnCooldown(this)) {
+			return;
+		}
 
+		Vector neg = direction.clone().multiply(-1);
 		Block block;
 		distance = 0;
+		
 		for (int i = 0; i <= length; i++) {
 			location = origin.clone().add(neg.clone().multiply((double) i));
 			block = location.getBlock();
@@ -61,10 +64,8 @@ public class Catapult extends EarthAbility {
 			}
 
 			moving = true;
-			bPlayer.addCooldown(this);
 			start();
-		} else {
-			remove();
+			bPlayer.addCooldown(this);
 		}
 	}
 
@@ -78,7 +79,7 @@ public class Catapult extends EarthAbility {
 		distance = source.distance;
 
 		start();
-		EarthMethods.playEarthbendingSound(player.getLocation());
+		playEarthbendingSound(player.getLocation());
 		fly();
 	}
 	
@@ -120,6 +121,7 @@ public class Catapult extends EarthAbility {
 				return;
 			}
 		}
+		
 		Vector vector = direction.clone().multiply(push * distance / length);
 		vector.setY(player.getVelocity().getY());
 		player.setVelocity(vector);
@@ -179,7 +181,10 @@ public class Catapult extends EarthAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		if (player != null) {
+			return player.getLocation();
+		}
+		return null;
 	}
 
 	@Override

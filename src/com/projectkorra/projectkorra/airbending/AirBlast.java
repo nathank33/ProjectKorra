@@ -31,16 +31,19 @@ import com.projectkorra.projectkorra.util.Flight;
 
 public class AirBlast extends AirAbility {
 
-	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<Player, Location>();
+	
 	private static final byte FULL_LIQUID_DATA = 0x0;
-	private static final double ORIGIN_SELECT_RANGE = 10;
 	private static final int MAX_TICKS = 10000;
 	private static final int ORIGIN_PARTICLE_COUNT = 4;
+	private static final double ORIGIN_SELECT_RANGE = 10;
+	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<Player, Location>();
 
-	private Location location;
-	private Location origin;
-	private Vector direction;
-	private AirBurst source;
+	private boolean canFlickLevers;
+	private boolean canOpenDoors;
+	private boolean canPressButtons;
+	private boolean canCoolLava;
+	private boolean isFromOtherOrigin;
+	private boolean showParticles;
 	private int ticks;
 	private int particleCount;
 	private long cooldown;
@@ -51,12 +54,10 @@ public class AirBlast extends AirAbility {
 	private double damage;
 	private double speed;
 	private double radius;
-	private boolean canFlickLevers;
-	private boolean canOpenDoors;
-	private boolean canPressButtons;
-	private boolean canCoolLava;
-	private boolean isFromOtherOrigin;
-	private boolean showParticles;
+	private Location location;
+	private Location origin;
+	private Vector direction;
+	private AirBurst source;
 	private ArrayList<Block> affectedLevers;
 	private ArrayList<Entity> affectedEntities;
 	
@@ -152,7 +153,7 @@ public class AirBlast extends AirAbility {
 			return;
 		}
 
-		AirMethods.playAirbendingParticles(origin, ORIGIN_PARTICLE_COUNT);
+		playAirbendingParticles(origin, ORIGIN_PARTICLE_COUNT);
 	}
 
 	public static void progressOrigins() {
@@ -178,10 +179,10 @@ public class AirBlast extends AirAbility {
 
 	private void advanceLocation() {
 		if (showParticles) {
-			AirMethods.playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
+			playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
 		}
 		if (GeneralMethods.rand.nextInt(4) == 0) {
-			AirMethods.playAirbendingSound(location);
+			playAirbendingSound(location);
 		}
 		location = location.add(direction.clone().multiply(speedFactor));
 	}
@@ -251,7 +252,7 @@ public class AirBlast extends AirAbility {
 			}
 
 			entity.setFireTicks(0);
-			AirMethods.breakBreathbendingHold(entity);
+			breakBreathbendingHold(entity);
 
 			if (damage > 0 && entity instanceof LivingEntity && !entity.equals(player) && !affectedEntities.contains(entity)) {
 				GeneralMethods.damageEntity(player, entity, damage, "AirBlast");
@@ -266,7 +267,7 @@ public class AirBlast extends AirAbility {
 		if (player.isDead() || !player.isOnline()) {
 			remove();
 			return;
-		} else if (GeneralMethods.isRegionProtectedFromBuild(player, "AirBlast", location)) {
+		} else if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 			remove();
 			return;
 		}

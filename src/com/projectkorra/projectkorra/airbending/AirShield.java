@@ -164,10 +164,10 @@ public class AirShield extends AirAbility {
 			z = origin.getZ() + radius * Math.sin(angle) * f;
 
 			Location effect = new Location(origin.getWorld(), x, y, z);
-			if (!GeneralMethods.isRegionProtectedFromBuild(player, "AirShield", effect)) {
-				AirMethods.playAirbendingParticles(effect, particleCount);
+			if (!GeneralMethods.isRegionProtectedFromBuild(this, effect)) {
+				playAirbendingParticles(effect, particleCount);
 				if (GeneralMethods.rand.nextInt(4) == 0) {
-					AirMethods.playAirbendingSound(effect);
+					playAirbendingSound(effect);
 				}
 			}
 
@@ -189,7 +189,7 @@ public class AirShield extends AirAbility {
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override
