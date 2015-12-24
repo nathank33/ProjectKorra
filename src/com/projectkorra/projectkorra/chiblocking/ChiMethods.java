@@ -47,10 +47,4 @@ public class ChiMethods {
 		}
 		return false;
 	}
-
-	public static void stopBending() {
-		RapidPunch.instances.clear();
-		WarriorStance.instances.clear();
-		AcrobatStance.instances.clear();
-	}
 }

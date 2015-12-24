@@ -1,8 +1,7 @@
 package com.projectkorra.projectkorra.chiblocking;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.command.Commands;
 
 import org.bukkit.Effect;
@@ -17,9 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Smokescreen {
+public class Smokescreen extends ChiAbility {
 
-	public static HashMap<String, Long> cooldowns = new HashMap<String, Long>();
+	//TODO re-write this to be more in line with the API standard
 	public static List<Integer> snowballs = new ArrayList<Integer>();
 	public static HashMap<String, Long> blinded = new HashMap<String, Long>();
 
@@ -27,14 +26,11 @@ public class Smokescreen {
 	public static int duration = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.Smokescreen.Duration");
 	public static double radius = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.Smokescreen.Radius");
 
+	public Smokescreen() {}
+	
 	public Smokescreen(Player player) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-
-		if (bPlayer.isOnCooldown("Smokescreen"))
-			return;
-
-		snowballs.add(player.launchProjectile(Snowball.class).getEntityId());
-		bPlayer.addCooldown("Smokescreen", cooldown);
+		super(player);
+		start();
 	}
 
 	public static void playEffect(Location loc) {
@@ -77,5 +73,27 @@ public class Smokescreen {
 				}
 			}
 		}
+	}
+
+	@Override
+	public String getName() {
+		return "ChiAbility";
+	}
+
+	@Override
+	public void progress() {
+		snowballs.add(player.launchProjectile(Snowball.class).getEntityId());
+		bPlayer.addCooldown("Smokescreen", cooldown);
+		remove();
+	}
+
+	@Override
+	public Location getLocation() {
+		return player.getLocation();
+	}
+
+	@Override
+	public long getCooldown() {
+		return cooldown;
 	}
 }

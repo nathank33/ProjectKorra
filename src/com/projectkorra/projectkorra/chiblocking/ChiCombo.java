@@ -13,7 +13,6 @@ import java.util.Map;
 
 /**
  * A representation of all chi combo moves.
- * @author kingbirdy
  *
  */
 public class ChiCombo {

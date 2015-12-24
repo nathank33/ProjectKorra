@@ -1994,7 +1994,6 @@ public class GeneralMethods {
 		EarthMethods.stopBending();
 		WaterMethods.stopBending();
 		FireMethods.stopBending();
-		ChiMethods.stopBending();
 
 		Flight.removeAll();
 		TempBlock.removeAll();

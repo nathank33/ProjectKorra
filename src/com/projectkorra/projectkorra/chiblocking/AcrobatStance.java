@@ -2,53 +2,41 @@ package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.earthbending.MetalClips;
 import com.projectkorra.projectkorra.waterbending.Bloodbending;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-public class AcrobatStance {
-
-	public static double CHI_BLOCK_BOOST = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ChiBlockBoost");
-	public static double PARA_DODGE_BOOST = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ParalyzeChanceDecrease");
-	public static ConcurrentHashMap<Player, AcrobatStance> instances = new ConcurrentHashMap<Player, AcrobatStance>();
+public class AcrobatStance extends ChiAbility {
 
 	private Player player;
-	public double chiBlockBost = CHI_BLOCK_BOOST;
-	public double paralyzeDodgeBoost = PARA_DODGE_BOOST;
+	public double chiBlockBoost = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ChiBlockBoost");
+	public double paralyzeDodgeBoost = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ParalyzeChanceDecrease");
 	public int speed = ChiPassive.speedPower + 1;
 	public int jump = ChiPassive.jumpPower + 1;
 
+	public AcrobatStance () {}
+	
 	public AcrobatStance(Player player) {
-		this.player = player;
-		if (instances.containsKey(player)) {
-			instances.remove(player);
-			return;
+		super(player);
+		chiBlockBoost = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ChiBlockBoost");
+		paralyzeDodgeBoost = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ParalyzeChanceDecrease");
+		ChiAbility stance = bPlayer.getStance();
+		if (!(stance instanceof AcrobatStance)) {
+			stance.remove();
+			bPlayer.setStance(this);
 		}
-
-		if (WarriorStance.isInWarriorStance(player)) {
-			WarriorStance.remove(player);
-		}
-
-		instances.put(player, this);
+		start();
 	}
 
+	@Override
 	public void progress() {
-		if (player.isDead() || !player.isOnline()) {
-			remove();
-			return;
-		}
-
-		if (!GeneralMethods.canBend(player.getName(), "AcrobatStance")) {
-			remove();
-			return;
-		}
-
-		if (MetalClips.isControlled(player) || Paralyze.isParalyzed(player) || Bloodbending.isBloodbended(player)) {
+		if (player.isDead() || !player.isOnline() || !GeneralMethods.canBend(player.getName(), "AcrobatStance") 
+				|| MetalClips.isControlled(player) || Paralyze.isParalyzed(player) || Bloodbending.isBloodbended(player)) {
 			remove();
 			return;
 		}
@@ -61,31 +49,13 @@ public class AcrobatStance {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 60, jump));
 		}
 	}
-
-	public static void progressAll() {
-		for (Player player : instances.keySet()) {
-			instances.get(player).progress();
-		}
+	
+	public double getChiBlockBoost() {
+		return chiBlockBoost;
 	}
 
-	private void remove() {
-		instances.remove(player);
-	}
-
-	public static void remove(Player player) {
-		instances.remove(player);
-	}
-
-	public static boolean isInAcrobatStance(Player player) {
-		return instances.containsKey(player);
-	}
-
-	public double getChiBlockBost() {
-		return chiBlockBost;
-	}
-
-	public void setChiBlockBost(double chiBlockBost) {
-		this.chiBlockBost = chiBlockBost;
+	public void setChiBlockBoost(double chiBlockBoost) {
+		this.chiBlockBoost = chiBlockBoost;
 	}
 
 	public double getParalyzeDodgeBoost() {
@@ -114,5 +84,20 @@ public class AcrobatStance {
 
 	public void setJump(int jump) {
 		this.jump = jump;
+	}
+
+	@Override
+	public String getName() {
+		return "AcrobatStance";
+	}
+
+	@Override
+	public Location getLocation() {
+		return player.getLocation();
+	}
+
+	@Override
+	public long getCooldown() {
+		return 0;
 	}
 }

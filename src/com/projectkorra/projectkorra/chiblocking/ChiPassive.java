@@ -4,6 +4,7 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.airbending.Suffocate;
 
 import org.bukkit.Bukkit;
@@ -25,8 +26,9 @@ public class ChiPassive {
 	static long ticks = (duration / 1000) * 20;
 
 	public static boolean willChiBlock(Player attacker, Player player) {
-		if (AcrobatStance.isInAcrobatStance(attacker)) {
-			chance = chance + AcrobatStance.CHI_BLOCK_BOOST;
+		ChiAbility stance = GeneralMethods.getBendingPlayer(player.getName()).getStance();
+		if (stance !=null && stance instanceof AcrobatStance) {
+			chance = chance + ((AcrobatStance) stance).getChiBlockBoost();
 		}
 		if (GeneralMethods.getBoundAbility(player) == "QuickStrike") {
 			chance = chance + QuickStrike.blockChance;
@@ -62,11 +64,12 @@ public class ChiPassive {
 	public static void handlePassive() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (GeneralMethods.canBendPassive(player.getName(), Element.Chi) && !GeneralMethods.canBendPassive(player.getName(), Element.Air)) { // If they're an airbender and gets the boosts we want to give them that instead of the Chi.
-				if (player.isSprinting()) {
-					if (!player.hasPotionEffect(PotionEffectType.JUMP) && !AcrobatStance.isInAcrobatStance(player)) {
+				ChiAbility stance = GeneralMethods.getBendingPlayer(player.getName()).getStance();
+				if (player.isSprinting() && !(stance instanceof AcrobatStance)) {
+					if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 60, jumpPower - 1));
 					}
-					if (!player.hasPotionEffect(PotionEffectType.SPEED) && !AcrobatStance.isInAcrobatStance(player)) {
+					if (!player.hasPotionEffect(PotionEffectType.SPEED)) {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, speedPower - 1));
 					}
 				}

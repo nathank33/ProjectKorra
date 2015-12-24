@@ -172,7 +172,6 @@ public class BendingManager implements Runnable, ConfigLoadable {
 			TempPotionEffect.progressAll();
 			handleDayNight();
 			Flight.handle();
-			RapidPunch.startPunchAll();
 			RevertChecker.revertAirBlocks();
 			ChiCombo.handleParalysis();
 			HorizontalVelocityTracker.updateAll();

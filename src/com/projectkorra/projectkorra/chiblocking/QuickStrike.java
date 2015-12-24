@@ -2,45 +2,53 @@ package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 
-public class QuickStrike {
+public class QuickStrike extends ChiAbility {
 	public static int damage = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.QuickStrike.Damage");
 	public static int blockChance = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.QuickStrike.ChiBlockChance");
 
+	private Entity target = null;
+	
+	public QuickStrike() {}
+	
 	public QuickStrike(Player player) {
-		if (!isEligible(player))
-			return;
-
-		Entity e = GeneralMethods.getTargetedEntity(player, 2, new ArrayList<Entity>());
-
-		if (e == null)
-			return;
-
-		GeneralMethods.damageEntity(player, e, damage, "QuickStrike");
-
-		if (e instanceof Player && ChiPassive.willChiBlock(player, (Player)e)) {
-			ChiPassive.blockChi((Player) e);
-		}
+		super(player);
+		target = GeneralMethods.getTargetedEntity(player, 2, new ArrayList<Entity>());
+		start();
 	}
 
-	public boolean isEligible(Player player) {
-		if (!GeneralMethods.canBend(player.getName(), "QuickStrike"))
-			return false;
+	@Override
+	public String getName() {
+		return "QuickStrike";
+	}
 
-		if (GeneralMethods.getBoundAbility(player) == null)
-			return false;
+	@Override
+	public void progress() {
+		if (target == null)
+			return;
 
-		if (!GeneralMethods.getBoundAbility(player).equalsIgnoreCase("QuickStrike"))
-			return false;
+		GeneralMethods.damageEntity(player, target, damage, "QuickStrike");
 
-		if (GeneralMethods.isRegionProtectedFromBuild(player, "QuickStrike", player.getLocation()))
-			return false;
+		if (target instanceof Player && ChiPassive.willChiBlock(player, (Player) target)) {
+			ChiPassive.blockChi((Player) target);
+		}
+		remove();
+	}
 
-		return true;
+	@Override
+	public Location getLocation() {
+		return player.getLocation();
+	}
+
+	@Override
+	public long getCooldown() {
+		return 0;
 	}
 }

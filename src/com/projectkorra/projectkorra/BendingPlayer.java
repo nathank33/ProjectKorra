@@ -1,19 +1,8 @@
 package com.projectkorra.projectkorra;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-
 import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.Ability;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.SubAbility;
@@ -27,6 +16,18 @@ import com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent;
 import com.projectkorra.projectkorra.event.PlayerCooldownChangeEvent.Result;
 import com.projectkorra.projectkorra.storage.DBConnection;
 import com.projectkorra.projectkorra.waterbending.Bloodbending;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Class that presents a player and stores all bending information about the player.
@@ -51,6 +52,7 @@ public class BendingPlayer {
 	private long slowTime = 0;
 	private boolean tremorSense = true;
 	private boolean chiBlocked = false;
+	private ChiAbility stance = null;
 
 	/**
 	 * Creates a new {@link BendingPlayer}.
@@ -589,4 +591,21 @@ public class BendingPlayer {
 		return getAbilities().get(slot);
 	}
 
+	/**
+	 * Gets the {@link ChiAbility Chi stance} the player is in
+	 * 
+	 * @return The player's stance object
+	 */
+	public ChiAbility getStance() {
+		return stance;
+	}
+	
+	/**
+	 * Sets the player's {@link ChiAbility Chi stance}
+	 * 
+	 * @param stance The player's new stance object
+	 */
+	public void setStance(ChiAbility stance) {
+		this.stance = stance;
+	}
 }
