@@ -74,7 +74,7 @@ public class MetalClips extends MetalAbility {
 		this.canThrow = (getConfig().getBoolean("Abilities.Earth.MetalClips.ThrowEnabled") && player.hasPermission("bending.ability.metalclips.throw"));
 		this.trackedIngots = new ArrayList<>();		
 		
-		if (!bPlayer.canBend(this) || !bPlayer.canMetalbend()) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 		

@@ -34,7 +34,7 @@ public class Collapse extends EarthAbility {
 		super(player);
 		setFields();
 		
-		if (bPlayer.isOnCooldown(this)) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 		

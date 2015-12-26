@@ -167,8 +167,7 @@ public class EarthArmor extends EarthAbility {
 
 	@Override
 	public void progress() {		
-		if (player.isDead() || !player.isOnline()) {
-			remove();
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			return;
 		}
 

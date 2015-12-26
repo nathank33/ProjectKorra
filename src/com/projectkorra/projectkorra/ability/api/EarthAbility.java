@@ -34,7 +34,8 @@ public abstract class EarthAbility extends BlockAbility {
 	private static final ArrayList<Block> PREVENT_PHYSICS = new ArrayList<Block>();
 	private static final ItemStack DIAMOND_PICKAXE = new ItemStack(Material.DIAMOND_PICKAXE);
 
-	public EarthAbility() {}
+	public EarthAbility() {
+	}
 
 	public EarthAbility(Player player) {
 		super(player);
@@ -302,8 +303,7 @@ public abstract class EarthAbility extends BlockAbility {
 				if (TempBlock.isTempBlock(block)) {
 					TempBlock tb = TempBlock.get(block);
 					byte full = 0x0;
-					if (tb.getState().getRawData() != full
-							&& (tb.getState().getType() != Material.LAVA || tb.getState().getType() != Material.STATIONARY_LAVA)) {
+					if (tb.getState().getRawData() != full && !isLava(tb.getState().getType())) {
 						continue;
 					}
 				}
@@ -444,7 +444,6 @@ public abstract class EarthAbility extends BlockAbility {
 		revertAirBlock(i, false);
 	}
 	
-	@SuppressWarnings("deprecation")
 	public static void revertAirBlock(int i, boolean force) {
 		if (!TEMP_AIR_LOCATIONS.containsKey(i)) {
 			return;
@@ -455,8 +454,6 @@ public abstract class EarthAbility extends BlockAbility {
 
 		if (block.getType() != Material.AIR && !block.isLiquid()) {
 			if (force || !MOVED_EARTH.containsKey(block)) {
-				GeneralMethods.dropItems(block,
-						GeneralMethods.getDrops(block, info.getState().getType(), info.getState().getRawData(), DIAMOND_PICKAXE));
 				TEMP_AIR_LOCATIONS.remove(i);
 			} else {
 				info.setTime(info.getTime() + 10000);
@@ -471,7 +468,7 @@ public abstract class EarthAbility extends BlockAbility {
 	@SuppressWarnings("deprecation")
 	public static boolean revertBlock(Block block) {
 		byte full = 0x0;
-		if (!ConfigManager.getConfig().getBoolean("Properties.Earth.RevertEarthbending")) {
+		if (!isEarthRevertOn()) {
 			MOVED_EARTH.remove(block);
 			return false;
 		}

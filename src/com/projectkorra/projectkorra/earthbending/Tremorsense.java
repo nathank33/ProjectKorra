@@ -35,7 +35,7 @@ public class Tremorsense extends EarthAbility {
 		this.lightThreshold = (byte) getConfig().getInt("Abilities.Earth.Tremorsense.LightThreshold");
 		this.cooldown = getConfig().getLong("Abilities.Earth.Tremorsense.Cooldown");
 
-		if (bPlayer.isOnCooldown(this)) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 		
@@ -80,27 +80,29 @@ public class Tremorsense extends EarthAbility {
 
 	@SuppressWarnings("deprecation")
 	private void tryToSetGlowBlock() {
-		Block standblock = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
+		Block standBlock = player.getLocation().getBlock().getRelative(BlockFace.DOWN);
 		if (!bPlayer.isTremorSensing()) {
 			if (block != null) {
 				remove();
 			}
 			return;
 		}
+		
+		boolean isBendable = isEarthbendable(standBlock);
 
-		if (isEarthbendable(standblock) && block == null) {
-			block = standblock;
+		if (isBendable && block == null) {
+			block = standBlock;
 			player.sendBlockChange(block.getLocation(), 89, (byte) 1);
-		} else if (isEarthbendable(standblock) && !block.equals(standblock)) {
+		} else if (isBendable && !block.equals(standBlock)) {
 			revertGlowBlock();
-			block = standblock;
+			block = standBlock;
 			player.sendBlockChange(block.getLocation(), 89, (byte) 1);
 		} else if (block == null) {
 			return;
 		} else if (!player.getWorld().equals(block.getWorld())) {
 			remove();
 			return;
-		} else if (!isEarthbendable(standblock)) {
+		} else if (!isBendable) {
 			revertGlowBlock();
 			return;
 		}
@@ -121,7 +123,7 @@ public class Tremorsense extends EarthAbility {
 	
 	@Override
 	public void progress() {
-		if (!bPlayer.canBend(this) || player.getLocation().getBlock().getLightLevel() > lightThreshold) { 
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this) || player.getLocation().getBlock().getLightLevel() > lightThreshold) { 
 			remove();
 			return;
 		} else {

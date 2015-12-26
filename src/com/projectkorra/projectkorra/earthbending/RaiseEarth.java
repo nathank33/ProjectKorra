@@ -38,7 +38,8 @@ public class RaiseEarth extends EarthAbility {
 	public RaiseEarth(Player player) {
 		super(player);
 		setFields();
-		if (bPlayer.isOnCooldown(this)) {
+		
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 

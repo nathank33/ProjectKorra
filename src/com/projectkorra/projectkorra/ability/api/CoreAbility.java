@@ -97,7 +97,7 @@ public abstract class CoreAbility implements Ability {
 			if (playerMap != null) {
 				playerMap.remove(this.id);
 				if (playerMap.size() == 0) {
-					classMap.remove(playerMap);
+					classMap.remove(player.getUniqueId());
 				}
 			}
 		}

@@ -37,28 +37,31 @@ public class EarthTunnel extends EarthAbility {
 		this.radius = getConfig().getDouble("Abilities.Earth.EarthTunnel.Radius");
 		this.interval = getConfig().getLong("Abilities.Earth.EarthTunnel.Interval");
 		this.cooldown = 0;
+		this.radiusIncrement = radius;
+		this.time = System.currentTimeMillis();
 		
-		location = player.getEyeLocation().clone();
-		origin = player.getTargetBlock((HashSet<Material>) null, (int) range).getLocation();
-		block = origin.getBlock();
-		direction = location.getDirection().clone().normalize();
-		depth = origin.distance(location) - 1;
-		
-		depth = depth < 0 ? 0 : depth;
-		angle = 0;
-		radius = radiusIncrement;
-		time = System.currentTimeMillis();
+		this.location = player.getEyeLocation().clone();
+		this.origin = player.getTargetBlock((HashSet<Material>) null, (int) range).getLocation();
+		this.block = origin.getBlock();
+		this.direction = location.getDirection().clone().normalize();
+		this.depth = Math.max(0, origin.distance(location) - 1);
+		this.angle = 0;
 
+		if (!bPlayer.canBend(this)) {
+			return;
+		}
+		
 		start();
 		bPlayer.addCooldown(this);
 	}
 
 	@Override
 	public void progress() {
-		if (player.isDead() || !player.isOnline()) {
+		if (!bPlayer.canBendIgnoreCooldowns(this)) {
 			remove();
 			return;
 		}
+		
 		if (System.currentTimeMillis() - time >= interval) {
 			time = System.currentTimeMillis();
 			if (Math.abs(Math.toDegrees(player.getEyeLocation().getDirection().angle(direction))) > 20 || !player.isSneaking()) {
@@ -87,6 +90,7 @@ public class EarthTunnel extends EarthAbility {
 					} else {
 						angle += 20;
 					}
+					
 					Vector vec = GeneralMethods.getOrthogonalVector(direction, angle, radius);
 					block = location.clone().add(direction.clone().normalize().multiply(depth)).add(vec).getBlock();
 				}

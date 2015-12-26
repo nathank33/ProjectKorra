@@ -30,7 +30,7 @@ public class RaiseEarthWall extends EarthAbility {
 		this.width = getConfig().getInt("Abilities.Earth.RaiseEarth.Wall.Width");
 		this.cooldown = GeneralMethods.getGlobalCooldown();
 
-		if (bPlayer.isOnCooldown(this)) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 

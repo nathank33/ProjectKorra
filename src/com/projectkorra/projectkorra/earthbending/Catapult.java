@@ -36,7 +36,7 @@ public class Catapult extends EarthAbility {
 		this.origin = player.getEyeLocation().clone();
 		this.direction = origin.getDirection().clone().normalize();
 		
-		if (bPlayer.isOnCooldown(this)) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 
@@ -155,7 +155,7 @@ public class Catapult extends EarthAbility {
 
 	@Override
 	public void progress() {
-		if (player.isDead() || !player.isOnline()) {
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			remove();
 			return;
 		}

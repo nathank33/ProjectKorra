@@ -25,13 +25,17 @@ public abstract class ElementalAbility extends CoreAbility {
 	}
 	
 	public boolean isEarthbendable(Block block) {
-		return isEarthbendable(player, block);
+		return isEarthbendable(player, getName(), block);
 	}
 	
 	public static boolean isEarthbendable(Player player, Block block) {
+		return isEarthbendable(player, null, block);
+	}
+	
+	public static boolean isEarthbendable(Player player, String abilityName, Block block) {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer == null || !isEarthbendable(block.getType()) || PREVENT_EARTHBENDING.contains(block)
-				|| GeneralMethods.isRegionProtectedFromBuild(player, block.getLocation())) {
+				|| GeneralMethods.isRegionProtectedFromBuild(player, abilityName, block.getLocation())) {
 			return false;
 		} else if (isMetal(block) && !bPlayer.canMetalbend()) {
 			return false;
@@ -102,11 +106,15 @@ public abstract class ElementalAbility extends CoreAbility {
 	}
 
 	public static boolean isLava(Block block) {
-		return block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA;
+		return block != null ? isLava(block.getType()) : false;
+	}
+	
+	public static boolean isLava(Material material) {
+		return material == Material.LAVA || material == Material.STATIONARY_LAVA;
 	}
 	
 	public static boolean isMetal(Block block) {
-		return isMetal(block.getType());
+		return block != null ? isMetal(block.getType()) : false;
 	}
 	
 	public static boolean isMetal(Material material) {

@@ -37,6 +37,7 @@ public class Shockwave extends EarthAbility {
 		if (!bPlayer.canBend(this)) {
 			return;
 		}
+		
 		start();
 		bPlayer.addCooldown(this);
 	}
@@ -110,7 +111,7 @@ public class Shockwave extends EarthAbility {
 	}
 
 	@Override
-	public String getName() {
+	public String getName() { // TODO: Shockwave getName() is being overridden by Ripple
 		return "Shockwave";
 	}
 

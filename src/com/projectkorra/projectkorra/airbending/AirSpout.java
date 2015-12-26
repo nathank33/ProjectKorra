@@ -1,16 +1,17 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.ArrayList;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.util.Flight;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class AirSpout extends AirAbility {
 
@@ -18,6 +19,7 @@ public class AirSpout extends AirAbility {
 
 	private int angle;
 	private long updateInterval;
+	private long cooldown;
 	private double height;
 	
 	public AirSpout() {}
@@ -25,18 +27,25 @@ public class AirSpout extends AirAbility {
 	public AirSpout(Player player) {
 		super(player);
 		
-		AirSpout ability = CoreAbility.getAbility(player, AirSpout.class);
-		if (ability != null) {
-			ability.remove();
+		AirSpout spout = CoreAbility.getAbility(player, AirSpout.class);
+		if (spout != null) {
+			spout.remove();
+			return;
+		}
+		
+		if (!bPlayer.canBend(this)) {
+			remove();
 			return;
 		}
 
 		this.angle = 0;
+		this.cooldown = 0;
 		this.height = getConfig().getDouble("Abilities.Air.AirSpout.Height");
 		this.updateInterval = 100;
 
 		new Flight(player);
 		start();
+		bPlayer.addCooldown(this);
 	}
 
 	public static ArrayList<Player> getPlayers() {
@@ -86,7 +95,7 @@ public class AirSpout extends AirAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBend(this)) {
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			remove();
 			return;
 		}
@@ -99,7 +108,7 @@ public class AirSpout extends AirAbility {
 
 		player.setFallDistance(0);
 		player.setSprinting(false);
-		if (GeneralMethods.rand.nextInt(4) == 0) {
+		if ((new Random()).nextInt(4) == 0) {
 			playAirbendingSound(player.getLocation());
 		}
 
@@ -161,7 +170,35 @@ public class AirSpout extends AirAbility {
 
 	@Override
 	public long getCooldown() {
-		return 0;
+		return cooldown;
 	}
 
+	public int getAngle() {
+		return angle;
+	}
+
+	public void setAngle(int angle) {
+		this.angle = angle;
+	}
+
+	public long getUpdateInterval() {
+		return updateInterval;
+	}
+
+	public void setUpdateInterval(long updateInterval) {
+		this.updateInterval = updateInterval;
+	}
+
+	public double getHeight() {
+		return height;
+	}
+
+	public void setHeight(double height) {
+		this.height = height;
+	}
+
+	public void setCooldown(long cooldown) {
+		this.cooldown = cooldown;
+	}
+	
 }

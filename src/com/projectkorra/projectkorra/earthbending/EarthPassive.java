@@ -33,10 +33,10 @@ public class EarthPassive {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer == null) {
 			return false;
-		} 
-		if (bPlayer.canMetalbend() && ElementalAbility.isMetalBlock(block)) {
+		} else if (bPlayer.canMetalbend() && ElementalAbility.isMetalBlock(block)) {
 			return true;
 		}
+		
 		if (ElementalAbility.isEarthbendable(player, block) || ElementalAbility.isTransparentToEarthbending(player, block)) {
 			if (!ElementalAbility.isTransparentToEarthbending(player, block)) {
 				MaterialData type = block.getState().getData();
@@ -76,14 +76,11 @@ public class EarthPassive {
 			return true;
 		}
 
-		if (ElementalAbility.isEarthbendable(player, block) || ElementalAbility.isTransparentToEarthbending(player, block)) {
-			return true;
-		}
-		return false;
+		return ElementalAbility.isEarthbendable(player, block) || ElementalAbility.isTransparentToEarthbending(player, block);
 	}
 
 	public static boolean isPassiveSand(Block block) {
-		return (sandBlocks.containsKey(block));
+		return sandBlocks.containsKey(block);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -91,6 +88,7 @@ public class EarthPassive {
 		MaterialData materialdata = sandIdEntities.get(block);
 		sandIdEntities.remove(block);
 		sandBlocks.remove(block);
+		
 		if (block.getType() == Material.SAND) {
 			block.setType(materialdata.getItemType());
 			block.setData(materialdata.getData());
@@ -102,8 +100,11 @@ public class EarthPassive {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 			
 			if (bPlayer != null) {
-				if (bPlayer.canSandbend() && bPlayer.hasElement("Earth") && !bPlayer.canBendPassive("Air") && !bPlayer.canBendPassive("Chi")) {
-					if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SAND || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SANDSTONE || player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.RED_SANDSTONE) {
+				if (bPlayer.canSandbend() && bPlayer.hasElement("Earth") 
+						&& !bPlayer.canBendPassive("Air") && !bPlayer.canBendPassive("Chi")) {
+					if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SAND
+							|| player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SANDSTONE 
+							|| player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.RED_SANDSTONE) {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, sandSpeed - 1));
 					}
 				}
@@ -164,17 +165,13 @@ public class EarthPassive {
 	public static boolean canPhysicsChange(Block block) {
 		if (LavaSurgeWall.getAffectedBlocks().containsKey(block)) {
 			return false;
-		}
-		if (LavaSurgeWall.getWallBlocks().containsKey(block)) {
+		} else if (LavaSurgeWall.getWallBlocks().containsKey(block)) {
 			return false;
-		}
-		if (LavaSurgeWave.isBlockWave(block)) {
+		} else if (LavaSurgeWave.isBlockWave(block)) {
 			return false;
-		}
-		if (TempBlock.isTempBlock(block)) {
+		} else if (TempBlock.isTempBlock(block)) {
 			return false;
-		}
-		if (TempBlock.isTouchingTempBlock(block)) {
+		} else if (TempBlock.isTouchingTempBlock(block)) {
 			return false;
 		}
 		return true;
@@ -183,14 +180,11 @@ public class EarthPassive {
 	public static boolean canFlowFromTo(Block from, Block to) {
 		if (LavaSurgeWall.getAffectedBlocks().containsKey(to) || LavaSurgeWall.getAffectedBlocks().containsKey(from)) {
 			return false;
-		}
-		if (LavaSurgeWall.getWallBlocks().containsKey(to) || LavaSurgeWall.getWallBlocks().containsKey(from)) {
+		} else if (LavaSurgeWall.getWallBlocks().containsKey(to) || LavaSurgeWall.getWallBlocks().containsKey(from)) {
 			return false;
-		}
-		if (LavaSurgeWave.isBlockWave(to) || LavaSurgeWave.isBlockWave(from)) {
+		} else if (LavaSurgeWave.isBlockWave(to) || LavaSurgeWave.isBlockWave(from)) {
 			return false;
-		}
-		if (TempBlock.isTempBlock(to) || TempBlock.isTempBlock(from)) {
+		} else if (TempBlock.isTempBlock(to) || TempBlock.isTempBlock(from)) {
 			return false;
 		}
 		return true;

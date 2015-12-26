@@ -29,21 +29,24 @@ public class EarthGrab extends EarthAbility {
 		super(player);
 		
 		this.range = getConfig().getDouble("Abilities.Earth.EarthGrab.Range");
+		this.height = 6;
 		this.cooldown = GeneralMethods.getGlobalCooldown();
 		this.origin = player.getEyeLocation();
 		this.direction = origin.getDirection();
 		this.lowestDistance = range + 1;
 		this.closestEntity = null;
 		
-		if (bPlayer.isOnCooldown(this)) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
 		
+		start();
 		if (isOtherEntity) {
 			earthGrabOtherEntity();
 		} else {
 			earthGrabSelf();
 		}
+		remove();
 	}
 	
 	public void earthGrabOtherEntity() {

@@ -373,7 +373,10 @@ public class BendingPlayer {
 	 * @return true if the cooldown map contains the ability
 	 */
 	public boolean isOnCooldown(String ability) {
-		return this.cooldowns.containsKey(ability);
+		if (this.cooldowns.containsKey(ability)) {
+			return System.currentTimeMillis() < cooldowns.get(ability);
+		}
+		return false;
 	}
 
 	public boolean isOnCooldown(Ability ability) {

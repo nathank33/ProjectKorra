@@ -27,9 +27,9 @@ public class SandSpout extends SandAbility {
 	private double damage;
 	private double height;
 	private double currentHeight;
+	private Flight flight;
 
 	public SandSpout() {
-		
 	}
 	
 	public SandSpout(Player player) {
@@ -49,6 +49,10 @@ public class SandSpout extends SandAbility {
 			oldSandSpout.remove();
 			return;
 		}
+		
+		if (!bPlayer.canBend(this)) {
+			return;
+		}
 
 		time = System.currentTimeMillis();
 		Block topBlock = GeneralMethods.getTopBlock(player.getLocation(), 0, -50);
@@ -61,7 +65,7 @@ public class SandSpout extends SandAbility {
 			return;
 		}
 		
-		new Flight(player);
+		flight = new Flight(player);
 		start();
 		bPlayer.addCooldown(this);
 	}
@@ -69,7 +73,7 @@ public class SandSpout extends SandAbility {
 	@Override
 	public void progress() {
 		Block eyeBlock = player.getEyeLocation().getBlock();
-		if (!bPlayer.canBend(this) || eyeBlock.isLiquid() || GeneralMethods.isSolid(eyeBlock)) {
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this) || eyeBlock.isLiquid() || GeneralMethods.isSolid(eyeBlock)) {
 			remove();
 			return;
 		}
@@ -217,8 +221,8 @@ public class SandSpout extends SandAbility {
 	@Override
 	public void remove() {
 		super.remove();
+		flight.revert();
 		removeFlight();
-		player.setFlySpeed(.1f);
 	}
 
 	@Override

@@ -63,10 +63,9 @@ public class LavaSurgeWall extends LavaAbility {
 			range = AvatarState.getValue(range);
 		}
 
-		if (bPlayer.isOnCooldown(this)) {
+		if (!bPlayer.canBend(this)) {
 			return;
 		}
-		// TODO: start() ??
 	}
 
 	public boolean prepare() {
@@ -141,11 +140,7 @@ public class LavaSurgeWall extends LavaAbility {
 
 	@Override
 	public void progress() {
-		if (player.isDead() || !player.isOnline()) {
-			breakBlock();
-			return;
-		}
-		if (!GeneralMethods.canBend(player.getName(), "LavaSurge")) {
+		if (!bPlayer.canBendIgnoreCooldowns(this)) {
 			if (!forming) {
 				breakBlock();
 			}
@@ -158,10 +153,8 @@ public class LavaSurgeWall extends LavaAbility {
 			if (progressing && !player.isSneaking()) {
 				remove();
 				return;
-			} else if (!bPlayer.getBoundAbilityName().equals(getName())) {
-				remove();
-				return;
-			}
+			} 
+			
 			if (!progressing) {
 				sourceBlock.getWorld().playEffect(location, Effect.SMOKE, 4, (int) range);
 				return;

@@ -30,24 +30,21 @@ public class EarthSmash extends EarthAbility {
 		START, LIFTING, LIFTED, GRABBED, SHOT, FLYING, REMOVED
 	}
 
-	private static final int REQUIRED_BENDABLE_BLOCKS = 11;
-	private static final int MAX_BLOCKS_TO_PASS_THROUGH = 3;
-	private static final double GRAB_DETECTION_RADIUS = 2.5;
-	private static final double FLIGHT_DETECTION_RADIUS = 3.8;
-	private static final long SHOOTING_ANIMATION_COOLDOWN = 25;
-	private static final long FLYING_ANIMATION_COOLDOWN = 0;
-	private static final long LIFT_ANIMATION_COOLDOWN = 30;
-
 	private boolean allowGrab;
 	private boolean allowFlight;
 	private int animationCounter;
 	private int progressCounter;
+	private int requiredBendableBlocks;
+	private int maxBlocksToPassThrough;
 	private long delay;
 	private long cooldown;
 	private long chargeTime;
 	private long removeTimer;
 	private long flightRemoveTimer;
 	private long flightStartTime;
+	private long shootAnimationCooldown;
+	private long flightAnimationCooldown;
+	private long liftAnimationCooldown;
 	private double grabRange;
 	private double shootRange;
 	private double damage;
@@ -55,6 +52,8 @@ public class EarthSmash extends EarthAbility {
 	private double knockup;
 	private double flySpeed;
 	private double grabbedDistance;
+	private double grabDetectionRadius;
+	private double flightDetectionRadius;
 	private State state;
 	private Block origin;
 	private Location location;
@@ -68,6 +67,14 @@ public class EarthSmash extends EarthAbility {
 	public EarthSmash(Player player, ClickType type) {
 		super(player);
 		
+		this.requiredBendableBlocks = 11;
+		this.maxBlocksToPassThrough = 3;
+		this.shootAnimationCooldown = 25;
+		this.flightAnimationCooldown = 0;
+		this.liftAnimationCooldown = 30;
+		this.grabDetectionRadius = 2.5;
+		this.flightDetectionRadius = 3.8;
+		this.state = State.START;
 		this.allowGrab = getConfig().getBoolean("Abilities.Earth.EarthSmash.AllowGrab");
 		this.allowFlight = getConfig().getBoolean("Abilities.Earth.EarthSmash.AllowFlight");
 		this.grabRange = getConfig().getDouble("Abilities.Earth.EarthSmash.GrabRange");
@@ -112,12 +119,15 @@ public class EarthSmash extends EarthAbility {
 				}
 				grabbedSmash = aimingAtSmashCheck(player, State.SHOT);
 			}
+			
 			if (grabbedSmash != null) {
 				grabbedSmash.state = State.GRABBED;
 				grabbedSmash.grabbedDistance = grabbedSmash.location.distance(player.getEyeLocation());
 				grabbedSmash.player = player;
 				return;
 			}
+			
+			start();
 		} else if (type == ClickType.LEFT_CLICK && player.isSneaking()) {
 			for (EarthSmash smash : CoreAbility.getAbilities(EarthSmash.class)) {
 				if (smash.state == State.GRABBED && smash.player == player) {
@@ -136,10 +146,7 @@ public class EarthSmash extends EarthAbility {
 				grabbedSmash.flightStartTime = System.currentTimeMillis();
 			}
 			return;
-		} else {
-			return;
 		}
-		start();
 	}
 
 	@Override
@@ -149,13 +156,9 @@ public class EarthSmash extends EarthAbility {
 			remove();
 			return;
 		}
-		if (state == State.START || state == State.FLYING || state == State.GRABBED) {
-			if (player.isDead() || !player.isOnline()) {
-				remove();
-				return;
-			}
-		} else if (state == State.START) {
-			if (!bPlayer.getBoundAbilityName().equals(this.getName()) || bPlayer.isOnCooldown(this)) {
+		
+		if (state == State.START) {
+			if (!bPlayer.canBend(this)) {
 				remove();
 				return;
 			}
@@ -168,7 +171,7 @@ public class EarthSmash extends EarthAbility {
 
 		if (state == State.START && progressCounter > 1) {
 			if (!player.isSneaking()) {
-				if (System.currentTimeMillis() - startTime > chargeTime) {
+				if (System.currentTimeMillis() - startTime >= chargeTime) {
 					origin = getEarthSourceBlock(grabRange);
 					if (origin == null) {
 						remove();
@@ -187,7 +190,7 @@ public class EarthSmash extends EarthAbility {
 				ParticleEffect.SMOKE.display(tempLoc, 0.3F, 0.1F, 0.3F, 0, 4);
 			}
 		} else if (state == State.LIFTING) {
-			if (System.currentTimeMillis() - delay >= LIFT_ANIMATION_COOLDOWN) {
+			if (System.currentTimeMillis() - delay >= liftAnimationCooldown) {
 				delay = System.currentTimeMillis();
 				animateLift();
 			}
@@ -214,7 +217,7 @@ public class EarthSmash extends EarthAbility {
 				return;
 			}
 		} else if (state == State.SHOT) {
-			if (System.currentTimeMillis() - delay >= SHOOTING_ANIMATION_COOLDOWN) {
+			if (System.currentTimeMillis() - delay >= shootAnimationCooldown) {
 				delay = System.currentTimeMillis();
 				if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 					remove();
@@ -238,7 +241,7 @@ public class EarthSmash extends EarthAbility {
 					}
 				}
 
-				if (badBlocksFound > MAX_BLOCKS_TO_PASS_THROUGH) {
+				if (badBlocksFound > maxBlocksToPassThrough) {
 					remove();
 					return;
 				}
@@ -253,7 +256,7 @@ public class EarthSmash extends EarthAbility {
 			if (!player.isSneaking()) {
 				remove();
 				return;
-			} else if (System.currentTimeMillis() - delay >= FLYING_ANIMATION_COOLDOWN) {
+			} else if (System.currentTimeMillis() - delay >= flightAnimationCooldown) {
 				delay = System.currentTimeMillis();
 				if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 					remove();
@@ -263,7 +266,7 @@ public class EarthSmash extends EarthAbility {
 				destination = player.getEyeLocation().clone().add(player.getEyeLocation().getDirection().normalize().multiply(shootRange));
 				Vector direction = GeneralMethods.getDirection(location, destination).normalize();
 
-				List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(location.clone().add(0, 2, 0), FLIGHT_DETECTION_RADIUS);
+				List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(location.clone().add(0, 2, 0), flightDetectionRadius);
 				if (entities.size() == 0) {
 					remove();
 					return;
@@ -319,7 +322,7 @@ public class EarthSmash extends EarthAbility {
 						}
 					}
 				}
-				if (totalBendableBlocks < REQUIRED_BENDABLE_BLOCKS) {
+				if (totalBendableBlocks < requiredBendableBlocks) {
 					remove();
 					return;
 				}
@@ -522,7 +525,7 @@ public class EarthSmash extends EarthAbility {
 			if (reqState == null || smash.state == reqState) {
 				for (Block block : blocks) {
 					if (block.getLocation().getWorld() == smash.location.getWorld() 
-							&& block.getLocation().distanceSquared(smash.location) <= Math.pow(GRAB_DETECTION_RADIUS, 2)) {
+							&& block.getLocation().distanceSquared(smash.location) <= Math.pow(grabDetectionRadius, 2)) {
 						return smash;
 					}
 				}
@@ -537,7 +540,7 @@ public class EarthSmash extends EarthAbility {
 	 * have already been shot.
 	 */
 	public void shootingCollisionDetection() {
-		List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(location, FLIGHT_DETECTION_RADIUS);
+		List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(location, flightDetectionRadius);
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity && entity != player && !affectedEntities.contains(entity)) {
 				affectedEntities.add(entity);
@@ -558,7 +561,7 @@ public class EarthSmash extends EarthAbility {
 	public void smashToSmashCollisionDetection() {
 		for (EarthSmash smash : CoreAbility.getAbilities(EarthSmash.class)) {
 			if (smash.location != null && smash != this && smash.location.getWorld() == location.getWorld() 
-					&& smash.location.distanceSquared(location) < Math.pow(FLIGHT_DETECTION_RADIUS, 2)) {
+					&& smash.location.distanceSquared(location) < Math.pow(flightDetectionRadius, 2)) {
 				smash.remove();
 				remove();
 				return;
@@ -579,7 +582,7 @@ public class EarthSmash extends EarthAbility {
 			//Check to see if the player is standing on top of the smash.
 			if (smash.state == State.LIFTED) {
 				if (smash.location.getWorld().equals(player.getWorld()) 
-						&& smash.location.clone().add(0, 2, 0).distanceSquared(player.getLocation()) <= Math.pow(FLIGHT_DETECTION_RADIUS, 2)) {
+						&& smash.location.clone().add(0, 2, 0).distanceSquared(player.getLocation()) <= Math.pow(smash.flightDetectionRadius, 2)) {
 					return smash;
 				}
 			}
@@ -864,6 +867,62 @@ public class EarthSmash extends EarthAbility {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public int getRequiredBendableBlocks() {
+		return requiredBendableBlocks;
+	}
+
+	public void setRequiredBendableBlocks(int requiredBendableBlocks) {
+		this.requiredBendableBlocks = requiredBendableBlocks;
+	}
+
+	public int getMaxBlocksToPassThrough() {
+		return maxBlocksToPassThrough;
+	}
+
+	public void setMaxBlocksToPassThrough(int maxBlocksToPassThrough) {
+		this.maxBlocksToPassThrough = maxBlocksToPassThrough;
+	}
+
+	public long getShootAnimationCooldown() {
+		return shootAnimationCooldown;
+	}
+
+	public void setShootAnimationCooldown(long shootAnimationCooldown) {
+		this.shootAnimationCooldown = shootAnimationCooldown;
+	}
+
+	public long getFlightAnimationCooldown() {
+		return flightAnimationCooldown;
+	}
+
+	public void setFlightAnimationCooldown(long flightAnimationCooldown) {
+		this.flightAnimationCooldown = flightAnimationCooldown;
+	}
+
+	public long getLiftAnimationCooldown() {
+		return liftAnimationCooldown;
+	}
+
+	public void setLiftAnimationCooldown(long liftAnimationCooldown) {
+		this.liftAnimationCooldown = liftAnimationCooldown;
+	}
+
+	public double getGrabDetectionRadius() {
+		return grabDetectionRadius;
+	}
+
+	public void setGrabDetectionRadius(double grabDetectionRadius) {
+		this.grabDetectionRadius = grabDetectionRadius;
+	}
+
+	public double getFlightDetectionRadius() {
+		return flightDetectionRadius;
+	}
+
+	public void setFlightDetectionRadius(double flightDetectionRadius) {
+		this.flightDetectionRadius = flightDetectionRadius;
 	}	
 	
 }

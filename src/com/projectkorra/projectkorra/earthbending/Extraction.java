@@ -20,7 +20,8 @@ public class Extraction extends EarthAbility {
 	private long cooldown;
 	private Block originBlock;
 	
-	public Extraction() {}
+	public Extraction() {
+	}
 	
 	public Extraction(Player player) {
 		super(player);
@@ -30,8 +31,9 @@ public class Extraction extends EarthAbility {
 		this.cooldown = getConfig().getLong("Abilities.Earth.Extraction.Cooldown");
 		this.range = 5;
 		
-		if (bPlayer.isOnCooldown("Extraction"))
+		if (!bPlayer.canBend(this)) {
 			return;
+		}
 
 		originBlock = player.getTargetBlock((HashSet<Material>) null, range);
 		if (originBlock == null) {
@@ -58,7 +60,7 @@ public class Extraction extends EarthAbility {
 						type = Material.NETHERRACK;
 						break;
 					default:
-						break; // shouldn't happen.
+						break;
 				}
 
 				if (type != null) {
@@ -73,7 +75,9 @@ public class Extraction extends EarthAbility {
 				}
 
 				playMetalbendingSound(originBlock.getLocation());
-				bPlayer.addCooldown("Extraction", cooldown);
+				start();
+				bPlayer.addCooldown(this);
+				remove();
 			}
 		}
 

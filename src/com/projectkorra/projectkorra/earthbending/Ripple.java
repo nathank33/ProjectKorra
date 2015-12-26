@@ -231,7 +231,7 @@ public class Ripple extends EarthAbility {
 		setMoved(block);
 		Block botBlock = block.getRelative(BlockFace.DOWN);
 		int length = 1;
-
+		
 		if (isEarthbendable(botBlock)) {
 			length = 2;
 			block = botBlock;
@@ -305,7 +305,7 @@ public class Ripple extends EarthAbility {
 
 	@Override
 	public String getName() {
-		return null;
+		return "Shockwave";
 	}
 
 	@Override
@@ -408,10 +408,6 @@ public class Ripple extends EarthAbility {
 
 	public ArrayList<Location> getLocations() {
 		return locations;
-	}
-
-	public void setLocations(ArrayList<Location> locations) {
-		this.locations = locations;
 	}
 
 	public ArrayList<Entity> getEntities() {
