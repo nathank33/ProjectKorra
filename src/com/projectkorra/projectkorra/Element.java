@@ -2,9 +2,9 @@ package com.projectkorra.projectkorra;
 
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.ChatColor;
 
@@ -13,8 +13,8 @@ import java.util.Arrays;
 public enum Element {
 	
 	Air (AirAbility.getChatColor(), AirAbility.getSubChatColor()), 
-	Water (WaterMethods.getWaterColor(), WaterMethods.getWaterSubColor()), 
-	Earth (EarthAbility.getEarthColor(), EarthAbility.getEarthSubColor()), 
+	Water (WaterAbility.getChatColor(), WaterAbility.getSubChatColor()), 
+	Earth (EarthAbility.getChatColor(), EarthAbility.getSubChatColor()), 
 	Fire (FireMethods.getFireColor(), FireMethods.getFireSubColor()), 
 	Chi (ChiMethods.getChiColor(), ChiMethods.getChiColor());
 	

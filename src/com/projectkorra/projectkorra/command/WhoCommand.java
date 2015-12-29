@@ -6,9 +6,9 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 import com.projectkorra.rpg.RPGMethods;
 
 import org.bukkit.Bukkit;
@@ -88,9 +88,9 @@ public class WhoCommand extends PKCommand {
 				}
 				if (bp.hasElement(Element.Earth)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getEarthColor() + "E");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getChatColor() + "E");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getEarthColor() + "E");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getChatColor() + "E");
 					}
 				}
 				if (bp.hasElement(Element.Fire)) {
@@ -102,9 +102,9 @@ public class WhoCommand extends PKCommand {
 				}
 				if (bp.hasElement(Element.Water)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Water) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : WaterMethods.getWaterColor() + "W");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Water) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : WaterAbility.getChatColor() + "W");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Water) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : WaterMethods.getWaterColor() + "W");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Water) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : WaterAbility.getChatColor() + "W");
 					}
 				}
 				if (bp.hasElement(Element.Chi)) {
@@ -198,26 +198,26 @@ public class WhoCommand extends PKCommand {
 				}
 			}
 			if (GeneralMethods.isBender(playerName, Element.Water)) {
-				sender.sendMessage(WaterMethods.getWaterColor() + "- Waterbender");
-				if (player_ != null && WaterMethods.canPlantbend((Player) player)) {
+				sender.sendMessage(WaterAbility.getChatColor() + "- Waterbender");
+				if (player_ != null && bPlayer.canPlantbend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Plantbend");
 				}
-				if (player_ != null && WaterMethods.canBloodbend((Player) player)) {
-					if (WaterMethods.canBloodbendAtAnytime((Player) player)) {
+				if (player_ != null && bPlayer.canBloodbend()) {
+					if (bPlayer.canBloodbendAtAnytime()) {
 						sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Bloodbend anytime, on any day");
 					} else {
 						sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Bloodbend");
 					}
 				}
-				if (player_ != null && WaterMethods.canIcebend((Player) player)) {
+				if (player_ != null && bPlayer.canIcebend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Icebend");
 				}
-				if (player_ != null && WaterMethods.canWaterHeal((Player) player)) {
+				if (player_ != null && bPlayer.canWaterHeal()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Heal");
 				}
 			}
 			if (GeneralMethods.isBender(playerName, Element.Earth)) {
-				sender.sendMessage(EarthAbility.getEarthColor() + "- Earthbender");
+				sender.sendMessage(EarthAbility.getChatColor() + "- Earthbender");
 				if (player_ != null && bPlayer.canMetalbend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Metalbend");
 				}

@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.waterbending.Melt;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import com.projectkorra.projectkorra.waterbending.PhaseChangeMelt;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,8 +21,8 @@ public class HeatMelt implements ConfigLoadable {
 				(int) FireMethods.getFirebendingDayAugment(range, player.getWorld()));
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location,
 				(int) FireMethods.getFirebendingDayAugment(radius, player.getWorld()))) {
-			if (WaterMethods.isMeltable(block)) {
-				Melt.melt(player, block);
+			if (WaterAbility.isMeltable(block)) {
+				PhaseChangeMelt.melt(player, block);
 			} else if (isHeatable(block)) {
 				heat(block);
 			}

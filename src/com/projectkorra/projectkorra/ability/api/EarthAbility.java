@@ -235,7 +235,7 @@ public abstract class EarthAbility extends BlockAbility {
 	 * 
 	 * @return Config specified ChatColor
 	 */
-	public static ChatColor getEarthColor() {
+	public static ChatColor getChatColor() {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Earth"));
 	}
 
@@ -272,7 +272,7 @@ public abstract class EarthAbility extends BlockAbility {
 		return null;
 	}
 	
-	public static ChatColor getEarthSubColor() {
+	public static ChatColor getSubChatColor() {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.EarthSub"));
 	}
 

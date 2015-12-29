@@ -5,12 +5,12 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.util.ParticleEffect;
-import com.projectkorra.projectkorra.waterbending.Plantbending;
+import com.projectkorra.projectkorra.waterbending.PlantRegrowth;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -223,11 +223,11 @@ public class FireBlast implements ConfigLoadable {
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, affectingradius)) {
 			if (FireStream.isIgnitable(player, block) && !safe.contains(block)) {
 				/*
-				 * if (WaterMethods.isPlantbendable(block)) { new Plantbending(block); }
+				 * if (WaterAbility.isPlantbendable(block)) { new Plantbending(block); }
 				 */
 				if (FireMethods.canFireGrief()) {
-					if (WaterMethods.isPlantbendable(block))
-						new Plantbending(block);
+					if (WaterAbility.isPlantbendable(block))
+						new PlantRegrowth(player, block);
 					block.setType(Material.FIRE);
 				} else
 					FireMethods.createTempFire(block.getLocation());
@@ -280,7 +280,7 @@ public class FireBlast implements ConfigLoadable {
 			return false;
 		}
 
-		WaterMethods.removeWaterSpouts(location, player);
+		WaterAbility.removeWaterSpouts(location, player);
 		AirAbility.removeAirSpouts(location, player);
 
 		double radius = affectingradius;

@@ -3,8 +3,8 @@ package com.projectkorra.projectkorra.firebending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -33,7 +33,7 @@ public class Extinguish implements ConfigLoadable {
 		// reloadVariables();
 
 		double range = FireMethods.getFirebendingDayAugment(defaultrange, player.getWorld());
-		if (WaterMethods.isMeltable(player.getTargetBlock((HashSet<Material>) null, (int) range))) {
+		if (WaterAbility.isMeltable(player.getTargetBlock((HashSet<Material>) null, (int) range))) {
 			new HeatMelt(player);
 			return;
 		}

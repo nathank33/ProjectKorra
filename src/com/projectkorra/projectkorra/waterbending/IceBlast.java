@@ -2,9 +2,9 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.IceAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -23,47 +23,49 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Random;
 
-public class IceBlast {
-
-	public static ConcurrentHashMap<Integer, IceBlast> instances = new ConcurrentHashMap<Integer, IceBlast>();
-	private static double defaultrange = ProjectKorra.plugin.getConfig().getDouble("Abilities.Water.IceBlast.Range");
-	private static int DAMAGE = ProjectKorra.plugin.getConfig().getInt("Abilities.Water.IceBlast.Damage");
-	private static int COOLDOWN = ProjectKorra.plugin.getConfig().getInt("Abilities.Water.IceBlast.Cooldown");
-	private static int ID = Integer.MIN_VALUE;
-
-	private static final long interval = 20;
-	private static final byte data = 0;
-	private static final double affectingradius = 2;
-	private static final double deflectrange = 3;
-
-	private int id;
-	private double range;
-	private boolean prepared = false;
-	private boolean settingup = false;
-	private boolean progressing = false;
+public class IceBlast extends IceAbility {
+	
+	private boolean prepared;
+	private boolean settingUp;
+	private boolean progressing;
+	private byte data;
 	private long time;
+	private long cooldown;
+	private long interval;
+	private double range;
+	private double damage;
+	private double radius;
+	private double deflectRange;
+	private Block sourceBlock;
 	private Location location;
-	private Location firstdestination;
+	private Location firstDestination;
 	private Location destination;
-	private Block sourceblock;
-	private Player player;
 	public TempBlock source;
-	private double defaultdamage = DAMAGE;
-	private long cooldown = COOLDOWN;
+	
+	public IceBlast() {
+	}
 
 	public IceBlast(Player player) {
-		if (!WaterMethods.canIcebend(player))
-			return;
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-		if (bPlayer.isOnCooldown("IceBlast")) {
+		super(player);
+		
+		this.data = 0;
+		this.interval = 20;
+		this.radius = 2;
+		this.deflectRange = 3;
+		this.range = getConfig().getDouble("Abilities.Water.IceBlast.Range");
+		this.damage = getConfig().getInt("Abilities.Water.IceBlast.Damage");
+		this.cooldown = getConfig().getInt("Abilities.Water.IceBlast.Cooldown");
+		
+		this.damage = waterbendingNightAugment(damage, player.getWorld());
+		
+		if (!bPlayer.canBend(this) || !bPlayer.canIcebend()) {
 			return;
 		}
 
 		block(player);
-		range = WaterMethods.waterbendingNightAugment(defaultrange, player.getWorld());
-		this.player = player;
+		range = waterbendingNightAugment(range, player.getWorld());
 		Block sourceblock = BlockSource.getWaterSourceBlock(player, range, ClickType.SHIFT_DOWN, false, true, false);
 
 		if (sourceblock == null) {
@@ -76,122 +78,89 @@ public class IceBlast {
 	}
 
 	private void prepare(Block block) {
-		for (IceBlast ice : getInstances(player)) {
-			if (ice.prepared) {
-				ice.cancel();
+		for (IceBlast iceBlast : CoreAbility.getAbilities(player, IceBlast.class)) {
+			if (iceBlast.prepared) {
+				iceBlast.remove();
 			}
 		}
 
-		sourceblock = block;
-		location = sourceblock.getLocation();
+		sourceBlock = block;
+		location = sourceBlock.getLocation();
 		prepared = true;
-		if (getInstances(player).isEmpty())
-			createInstance();
-	}
-
-	private void createInstance() {
-		id = ID++;
-		instances.put(id, this);
-		if (ID >= Integer.MAX_VALUE) {
-			ID = Integer.MIN_VALUE;
+		
+		if (CoreAbility.getAbilities(player, IceBlast.class).isEmpty()) {
+			start();
 		}
-	}
-
-	private static ArrayList<IceBlast> getInstances(Player player) {
-		ArrayList<IceBlast> list = new ArrayList<IceBlast>();
-		for (int id : instances.keySet()) {
-			IceBlast ice = instances.get(id);
-			if (ice.player.equals(player)) {
-				list.add(ice);
-			}
-		}
-
-		return list;
 	}
 
 	private static void block(Player player) {
-		for (int id : instances.keySet()) {
-			IceBlast ice = instances.get(id);
-
-			if (ice.player.equals(player))
+		for (IceBlast iceBlast : CoreAbility.getAbilities(player, IceBlast.class)) {
+			if (!iceBlast.location.getWorld().equals(player.getWorld())) {
 				continue;
-
-			if (!ice.location.getWorld().equals(player.getWorld()))
+			} else if (!iceBlast.progressing) {
 				continue;
-
-			if (!ice.progressing)
+			} else if (GeneralMethods.isRegionProtectedFromBuild(iceBlast, iceBlast.location)) {
 				continue;
-
-			if (GeneralMethods.isRegionProtectedFromBuild(player, "IceBlast", ice.location))
-				continue;
+			}
 
 			Location location = player.getEyeLocation();
 			Vector vector = location.getDirection();
-			Location mloc = ice.location;
-			if (mloc.distance(location) <= defaultrange && GeneralMethods.getDistanceFromLine(vector, location, ice.location) < deflectrange && mloc.distance(location.clone().add(vector)) < mloc.distance(location.clone().add(vector.clone().multiply(-1)))) {
-				ice.cancel();
+			Location mloc = iceBlast.location;
+			
+			if (mloc.distanceSquared(location) <= iceBlast.range * iceBlast.range
+					&& GeneralMethods.getDistanceFromLine(vector, location, iceBlast.location) < iceBlast.deflectRange 
+					&& mloc.distanceSquared(location.clone().add(vector)) < mloc.distanceSquared(location.clone().add(vector.clone().multiply(-1)))) {
+				iceBlast.remove();
 			}
-
 		}
 	}
 
 	public static void activate(Player player) {
-
 		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-
-		if (bPlayer.isOnCooldown("IceBlast"))
+		if (bPlayer != null && bPlayer.isOnCooldown("IceBlast")) {
 			return;
+		}
 
-		for (IceBlast ice : getInstances(player)) {
+		for (IceBlast ice : CoreAbility.getAbilities(IceBlast.class)) {
 			if (ice.prepared) {
 				ice.throwIce();
 			}
 		}
 	}
 
-	private void cancel() {
+	@Override
+	public void remove() {
+		super.remove();
 		if (progressing) {
-			if (source != null)
+			if (source != null) {
 				source.revertBlock();
+			}
 			progressing = false;
 		}
+		
 		if (player.isOnline()) {
-			BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
 			if (bPlayer != null) {
-				bPlayer.addCooldown("IceBlast", cooldown);
+				bPlayer.addCooldown(this);
 			}
 		}
-		instances.remove(id);
 	}
 
 	private void returnWater() {
-		new WaterReturn(player, sourceblock);
-	}
-
-	public static void removeAll() {
-		for (int id : instances.keySet()) {
-			instances.get(id).cancel();
-		}
-
-		instances.clear();
+		new WaterReturn(player, sourceBlock);
 	}
 
 	private void affect(LivingEntity entity) {
-		int damage = (int) WaterMethods.waterbendingNightAugment(defaultdamage, player.getWorld());
 		if (entity instanceof Player) {
-			BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
 			if (bPlayer.canBeSlowed()) {
 				PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 70, 2);
 				new TempPotionEffect(entity, effect);
 				bPlayer.slow(10);
-				//entity.damage(damage, player);
-				GeneralMethods.damageEntity(player, entity, damage, "IceBlast");
+				GeneralMethods.damageEntity(this, entity, damage);
 			}
 		} else {
 			PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 70, 2);
 			new TempPotionEffect(entity, effect);
-			//entity.damage(damage, player);
-			GeneralMethods.damageEntity(player, entity, damage, "IceBlast");
+			GeneralMethods.damageEntity(this, entity, damage);
 		}
 		AirAbility.breakBreathbendingHold(entity);
 
@@ -201,117 +170,110 @@ public class IceBlast {
 	}
 
 	private void throwIce() {
-		if (!prepared)
+		if (!prepared) {
 			return;
+		}
+		
 		LivingEntity target = (LivingEntity) GeneralMethods.getTargetedEntity(player, range, new ArrayList<Entity>());
 		if (target == null) {
-			destination = GeneralMethods.getTargetedLocation(player, range, EarthAbility.getTransparentMaterial());
+			destination = GeneralMethods.getTargetedLocation(player, range, getTransparentMaterial());
 		} else {
 			destination = target.getEyeLocation();
 		}
 
-		location = sourceblock.getLocation();
-		if (destination.distance(location) < 1)
+		location = sourceBlock.getLocation();
+		if (destination.distanceSquared(location) < 1) {
 			return;
-		firstdestination = location.clone();
-		if (destination.getY() - location.getY() > 2) {
-			firstdestination.setY(destination.getY() - 1);
-		} else {
-			firstdestination.add(0, 2, 0);
 		}
-		destination = GeneralMethods.getPointOnLine(firstdestination, destination, range);
+		
+		firstDestination = location.clone();
+		if (destination.getY() - location.getY() > 2) {
+			firstDestination.setY(destination.getY() - 1);
+		} else {
+			firstDestination.add(0, 2, 0);
+		}
+		
+		destination = GeneralMethods.getPointOnLine(firstDestination, destination, range);
 		progressing = true;
-		settingup = true;
+		settingUp = true;
 		prepared = false;
 
-		new TempBlock(sourceblock, Material.AIR, (byte) 0);
-
-		source = new TempBlock(sourceblock, Material.PACKED_ICE, data);
+		new TempBlock(sourceBlock, Material.AIR, (byte) 0);
+		source = new TempBlock(sourceBlock, Material.PACKED_ICE, data);
 	}
 
-	private void progress() {
-		if (player.isDead() || !player.isOnline()) {
-			cancel();
-			return;
-		}
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-		if (!GeneralMethods.canBend(player.getName(), "IceBlast") || bPlayer.isOnCooldown("IceBlast")) {
-			cancel();
+	@Override
+	public void progress() {
+		if (!bPlayer.canBendIgnoreBinds(this)) {
+			remove();
 			return;
 		}
 
-		if (!player.getWorld().equals(location.getWorld())) {
-			cancel();
-			return;
-		}
-
-		if (player.getEyeLocation().distance(location) >= range) {
+		if (player.getEyeLocation().distanceSquared(location) >= range * range) {
 			if (progressing) {
 				breakParticles(20);
-				cancel();
+				remove();
 				returnWater();
 			} else {
 				breakParticles(20);
-				cancel();
+				remove();
 			}
 			return;
 		}
 
-		if ((GeneralMethods.getBoundAbility(player) == null || !GeneralMethods.getBoundAbility(player).equalsIgnoreCase("IceBlast")) && prepared) {
-			cancel();
+		if (!bPlayer.getBoundAbilityName().equalsIgnoreCase(getName()) && prepared) {
+			remove();
 			return;
 		}
 
-		if (System.currentTimeMillis() < time + interval)
+		if (System.currentTimeMillis() < time + interval) {
 			return;
+		}
 
 		time = System.currentTimeMillis();
-
 		if (progressing) {
-
 			Vector direction;
+			if (location.getBlockY() == firstDestination.getBlockY()) {
+				settingUp = false;
+			}
 
-			if (location.getBlockY() == firstdestination.getBlockY())
-				settingup = false;
-
-			if (location.distance(destination) <= 2) {
-				cancel();
+			if (location.distanceSquared(destination) <= 4) {
+				remove();
 				returnWater();
 				return;
 			}
 
-			if (settingup) {
-				direction = GeneralMethods.getDirection(location, firstdestination).normalize();
+			if (settingUp) {
+				direction = GeneralMethods.getDirection(location, firstDestination).normalize();
 			} else {
 				direction = GeneralMethods.getDirection(location, destination).normalize();
 			}
 
 			location.add(direction);
-
 			Block block = location.getBlock();
-
-			if (block.equals(sourceblock))
+			if (block.equals(sourceBlock)) {
 				return;
+			}
 
 			source.revertBlock();
 			source = null;
 
-			if (EarthAbility.isTransparentToEarthbending(player, block) && !block.isLiquid()) {
+			if (isTransparentToEarthbending(player, block) && !block.isLiquid()) {
 				GeneralMethods.breakBlock(block);
-			} else if (!WaterMethods.isWater(block)) {
+			} else if (!isWater(block)) {
 				breakParticles(20);
-				cancel();
+				remove();
 				returnWater();
 				return;
 			}
 
-			if (GeneralMethods.isRegionProtectedFromBuild(player, "IceBlast", location)) {
-				cancel();
+			if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
+				remove();
 				returnWater();
 				return;
 			}
 
-			for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, affectingradius)) {
+			for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, radius)) {
 				if (entity.getEntityId() != player.getEntityId() && entity instanceof LivingEntity) {
 					affect((LivingEntity) entity);
 					progressing = false;
@@ -320,52 +282,24 @@ public class IceBlast {
 			}
 
 			if (!progressing) {
-				cancel();
+				remove();
 				return;
 			}
 
-			sourceblock = block;
-			source = new TempBlock(sourceblock, Material.PACKED_ICE, data);
+			sourceBlock = block;
+			source = new TempBlock(sourceBlock, Material.PACKED_ICE, data);
 
 			for (int x = 0; x < 10; x++) {
 				ParticleEffect.ITEM_CRACK.display(new ParticleEffect.ItemData(Material.ICE, (byte) 0), new Vector(((Math.random() - 0.5) * .5), ((Math.random() - 0.5) * .5), ((Math.random() - 0.5) * .5)), .5f, location, 257.0D);
 				ParticleEffect.SNOW_SHOVEL.display(location, (float) (Math.random() - 0.5), (float) (Math.random() - 0.5), (float) (Math.random() - 0.5), 0, 5);
 			}
-			if (GeneralMethods.rand.nextInt(4) == 0) {
-				WaterMethods.playIcebendingSound(location);
+			if ((new Random()).nextInt(4) == 0) {
+				playIcebendingSound(location);
 			}
 			location = location.add(direction.clone());
-
 		} else if (prepared) {
-			WaterMethods.playFocusWaterEffect(sourceblock);
+			playFocusWaterEffect(sourceBlock);
 		}
-	}
-
-	public static void progressAll() {
-		for (int id : instances.keySet()) {
-			instances.get(id).progress();
-		}
-	}
-
-	public Player getPlayer() {
-		return player;
-	}
-
-	public double getDefaultdamage() {
-		return defaultdamage;
-	}
-
-	public void setDefaultdamage(double defaultdamage) {
-		this.defaultdamage = defaultdamage;
-	}
-
-	public double getRange() {
-		return range;
-	}
-
-	public void setRange(double range) {
-		this.range = range;
-
 	}
 
 	public void breakParticles(int amount) {
@@ -376,4 +310,144 @@ public class IceBlast {
 		location.getWorld().playSound(location, Sound.GLASS, 5, 1.3f);
 	}
 
+	@Override
+	public String getName() {
+		return "IceBlast";
+	}
+
+	@Override
+	public Location getLocation() {
+		if (location != null) {
+			return location;
+		} else if (sourceBlock != null) {
+			return sourceBlock.getLocation();
+		}
+		return player != null ? player.getLocation() : null;
+	}
+
+	@Override
+	public long getCooldown() {
+		return cooldown;
+	}
+
+	public boolean isPrepared() {
+		return prepared;
+	}
+
+	public void setPrepared(boolean prepared) {
+		this.prepared = prepared;
+	}
+
+	public boolean isSettingUp() {
+		return settingUp;
+	}
+
+	public void setSettingUp(boolean settingUp) {
+		this.settingUp = settingUp;
+	}
+
+	public boolean isProgressing() {
+		return progressing;
+	}
+
+	public void setProgressing(boolean progressing) {
+		this.progressing = progressing;
+	}
+
+	public byte getData() {
+		return data;
+	}
+
+	public void setData(byte data) {
+		this.data = data;
+	}
+
+	public long getTime() {
+		return time;
+	}
+
+	public void setTime(long time) {
+		this.time = time;
+	}
+
+	public long getInterval() {
+		return interval;
+	}
+
+	public void setInterval(long interval) {
+		this.interval = interval;
+	}
+
+	public double getRange() {
+		return range;
+	}
+
+	public void setRange(double range) {
+		this.range = range;
+	}
+
+	public double getDamage() {
+		return damage;
+	}
+
+	public void setDamage(double damage) {
+		this.damage = damage;
+	}
+
+	public double getRadius() {
+		return radius;
+	}
+
+	public void setRadius(double radius) {
+		this.radius = radius;
+	}
+
+	public double getDeflectRange() {
+		return deflectRange;
+	}
+
+	public void setDeflectRange(double deflectRange) {
+		this.deflectRange = deflectRange;
+	}
+
+	public Block getSourceBlock() {
+		return sourceBlock;
+	}
+
+	public void setSourceBlock(Block sourceBlock) {
+		this.sourceBlock = sourceBlock;
+	}
+
+	public Location getFirstDestination() {
+		return firstDestination;
+	}
+
+	public void setFirstDestination(Location firstDestination) {
+		this.firstDestination = firstDestination;
+	}
+
+	public Location getDestination() {
+		return destination;
+	}
+
+	public void setDestination(Location destination) {
+		this.destination = destination;
+	}
+
+	public TempBlock getSource() {
+		return source;
+	}
+
+	public void setSource(TempBlock source) {
+		this.source = source;
+	}
+
+	public void setCooldown(long cooldown) {
+		this.cooldown = cooldown;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+	
 }

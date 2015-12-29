@@ -1,9 +1,18 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.command.Commands;
+import com.projectkorra.projectkorra.earthbending.EarthBlast;
+import com.projectkorra.projectkorra.firebending.Combustion;
+import com.projectkorra.projectkorra.firebending.FireBlast;
+import com.projectkorra.projectkorra.firebending.Illumination;
+import com.projectkorra.projectkorra.util.Flight;
+import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,19 +23,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.earthbending.EarthBlast;
-import com.projectkorra.projectkorra.firebending.Combustion;
-import com.projectkorra.projectkorra.firebending.FireBlast;
-import com.projectkorra.projectkorra.firebending.Illumination;
-import com.projectkorra.projectkorra.util.Flight;
-import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AirSwipe extends AirAbility {
 
@@ -117,7 +117,7 @@ public class AirSwipe extends AirAbility {
 					elements.remove(direction);
 				} else {
 					removeAirSpouts(location, player);
-					WaterMethods.removeWaterSpouts(location, player);
+					WaterAbility.removeWaterSpouts(location, player);
 					
 					if (EarthBlast.annihilateBlasts(location, radius, player)
 							|| WaterManipulation.annihilateBlasts(location, radius, player)
@@ -168,7 +168,7 @@ public class AirSwipe extends AirAbility {
 	}
 
 	private void affectPeople(Location location, Vector direction) {
-		WaterMethods.removeWaterSpouts(location, player);
+		WaterAbility.removeWaterSpouts(location, player);
 		removeAirSpouts(location, player);
 		final List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(location, radius);
 		final Vector fDirection = direction;

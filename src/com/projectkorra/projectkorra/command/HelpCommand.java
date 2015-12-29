@@ -4,10 +4,10 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -50,11 +50,11 @@ public class HelpCommand extends PKCommand {
 			sender.sendMessage(ChatColor.YELLOW + "Airbenders can chain their abilities into combos, type " + AirAbility.getChatColor() + "/b help AirCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/qffg9m3");
 		} else if (Arrays.asList(Commands.wateraliases).contains(args.get(0))) {
-			sender.sendMessage(WaterMethods.getWaterColor() + "Water is the element of change. Waterbending focuses on using your " + "opponents own force against them. Using redirection and various dodging tactics, you can be made " + "practically untouchable by an opponent. Waterbending provides agility, along with strong offensive " + "skills while in or near water.");
-			sender.sendMessage(ChatColor.YELLOW + "Waterbenders can chain their abilities into combos, type " + WaterMethods.getWaterColor() + "/b help WaterCombos" + ChatColor.YELLOW + " for more information.");
+			sender.sendMessage(WaterAbility.getChatColor() + "Water is the element of change. Waterbending focuses on using your " + "opponents own force against them. Using redirection and various dodging tactics, you can be made " + "practically untouchable by an opponent. Waterbending provides agility, along with strong offensive " + "skills while in or near water.");
+			sender.sendMessage(ChatColor.YELLOW + "Waterbenders can chain their abilities into combos, type " + WaterAbility.getChatColor() + "/b help WaterCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/lod3plv");
 		} else if (Arrays.asList(Commands.earthaliases).contains(args.get(0))) {
-			sender.sendMessage(EarthAbility.getEarthColor() + "Earth is the element of substance. Earthbenders share many of the " + "same fundamental techniques as Waterbenders, but their domain is quite different and more readily " + "accessible. Earthbenders dominate the ground and subterranean, having abilities to pull columns " + "of rock straight up from the earth or drill their way through the mountain. They can also launch " + "themselves through the air using pillars of rock, and will not hurt themselves assuming they land " + "on something they can bend. The more skilled Earthbenders can even bend metal.");
+			sender.sendMessage(EarthAbility.getChatColor() + "Earth is the element of substance. Earthbenders share many of the " + "same fundamental techniques as Waterbenders, but their domain is quite different and more readily " + "accessible. Earthbenders dominate the ground and subterranean, having abilities to pull columns " + "of rock straight up from the earth or drill their way through the mountain. They can also launch " + "themselves through the air using pillars of rock, and will not hurt themselves assuming they land " + "on something they can bend. The more skilled Earthbenders can even bend metal.");
 			//sender.sendMessage(ChatColor.YELLOW + "Earthbenders can chain their abilities into combos, type " + EarthMethods.getEarthColor() + "/b help EarthCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/qaudl42");
 		} else if (Arrays.asList(Commands.firealiases).contains(args.get(0))) {

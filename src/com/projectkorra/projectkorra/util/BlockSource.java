@@ -1,11 +1,10 @@
 package com.projectkorra.projectkorra.util;
 
 import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -46,25 +45,24 @@ public class BlockSource {
 	 */
 	public static void update(Player player, ClickType clickType) {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
-		String boundAbil = GeneralMethods.getBoundAbility(player);
 		CoreAbility coreAbil = bPlayer.getBoundAbility();
 		
-		if (boundAbil == null) {
+		if (coreAbil == null) {
 			return;
 		}
 		
-		if (WaterMethods.isWaterAbility(boundAbil)) {
-			Block waterBlock = WaterMethods.getWaterSourceBlock(player, MAX_RANGE, true);
+		if (coreAbil instanceof WaterAbility) {
+			Block waterBlock = WaterAbility.getWaterSourceBlock(player, MAX_RANGE, true);
 			if (waterBlock != null) {
 				putSource(player, waterBlock, BlockSourceType.WATER, clickType);
-				if (WaterMethods.isPlant(waterBlock)) {
+				if (WaterAbility.isPlant(waterBlock)) {
 					putSource(player, waterBlock, BlockSourceType.PLANT, clickType);
 				}
-				if (WaterMethods.isIcebendable(waterBlock)) {
+				if (WaterAbility.isIcebendable(waterBlock)) {
 					putSource(player, waterBlock, BlockSourceType.ICE, clickType);
 				}
 			}
-		} else if (coreAbil != null && coreAbil instanceof EarthAbility) {
+		} else if (coreAbil instanceof EarthAbility) {
 			Block earthBlock = EarthAbility.getEarthSourceBlock(player, null, MAX_RANGE);
 			if (earthBlock != null) {
 				putSource(player, earthBlock, BlockSourceType.EARTH, clickType);
@@ -231,7 +229,7 @@ public class BlockSource {
 		if (allowWaterBottles) {
 			// Check the block in front of the player's eyes, it may have been created by a
 			// WaterBottle.
-			sourceBlock = WaterMethods.getWaterSourceBlock(player, range, allowPlant);
+			sourceBlock = WaterAbility.getWaterSourceBlock(player, range, allowPlant);
 			if (sourceBlock == null || sourceBlock.getLocation().distance(player.getEyeLocation()) > 3) {
 				sourceBlock = null;
 			}
@@ -355,11 +353,11 @@ public class BlockSource {
 			return false;
 		} else if (Math.abs(info.getPlayer().getLocation().distance(info.getBlock().getLocation())) > range) {
 			return false;
-		} else if (info.getSourceType() == BlockSourceType.WATER && !WaterMethods.isWaterbendable(info.getBlock(), info.getPlayer())) {
+		} else if (info.getSourceType() == BlockSourceType.WATER && !WaterAbility.isWaterbendable(info.getBlock(), info.getPlayer())) {
 			return false;
-		} else if (info.getSourceType() == BlockSourceType.ICE && !WaterMethods.isIcebendable(info.getBlock())) {
+		} else if (info.getSourceType() == BlockSourceType.ICE && !WaterAbility.isIcebendable(info.getBlock())) {
 			return false;
-		} else if (info.getSourceType() == BlockSourceType.PLANT && (!WaterMethods.isPlant(info.getBlock()) || !WaterMethods.isWaterbendable(info.getBlock(), info.getPlayer()))) {
+		} else if (info.getSourceType() == BlockSourceType.PLANT && (!WaterAbility.isPlant(info.getBlock()) || !WaterAbility.isWaterbendable(info.getBlock(), info.getPlayer()))) {
 			return false;
 		} else if (info.getSourceType() == BlockSourceType.EARTH && !EarthAbility.isEarthbendable(info.getPlayer(), info.getBlock())) {
 			return false;

@@ -50,11 +50,9 @@ public class HighJump extends ChiAbility {
 		}
 
 		jump(player);
-		if (WaterArmsWhip.grabbedEntities.containsKey(player)) {
-			WaterArmsWhip waw = WaterArmsWhip.instances.get(WaterArmsWhip.grabbedEntities.get(player));
-			if (waw != null) {
-				waw.setGrabbed(false);
-			}
+		WaterArmsWhip waw = WaterArmsWhip.getGrabbedEntities().get(player);
+		if (waw != null) {
+			waw.setGrabbed(false);
 		}
 		bPlayer.addCooldown("HighJump", cooldown);
 	}

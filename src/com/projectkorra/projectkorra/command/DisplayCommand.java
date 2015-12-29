@@ -10,10 +10,10 @@ import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.ability.api.SubAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -80,8 +80,8 @@ public class DisplayCommand extends PKCommand {
 				ChatColor w = ChatColor.WHITE;
 				sender.sendMessage(ChatColor.RED + "Not a valid argument." + ChatColor.WHITE + "\nElements: " 
 						+ AirAbility.getChatColor() + "Air" + ChatColor.WHITE + " | " 
-						+ WaterMethods.getWaterColor() + "Water" + ChatColor.WHITE + " | " 
-						+ EarthAbility.getEarthColor() + "Earth" + ChatColor.WHITE + " | " 
+						+ WaterAbility.getChatColor() + "Water" + ChatColor.WHITE + " | " 
+						+ EarthAbility.getChatColor() + "Earth" + ChatColor.WHITE + " | " 
 						+ FireMethods.getFireColor() + "Fire" + ChatColor.WHITE + " | " 
 						+ ChiMethods.getChiColor() + "Chi");
 				sender.sendMessage(w + "SubElements: "

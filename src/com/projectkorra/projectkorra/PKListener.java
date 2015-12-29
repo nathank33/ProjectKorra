@@ -4,6 +4,7 @@ import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirBlast;
@@ -76,21 +77,20 @@ import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.TempBlock;
 import com.projectkorra.projectkorra.waterbending.Bloodbending;
-import com.projectkorra.projectkorra.waterbending.FreezeMelt;
 import com.projectkorra.projectkorra.waterbending.IceBlast;
-import com.projectkorra.projectkorra.waterbending.IceSpike2;
-import com.projectkorra.projectkorra.waterbending.Melt;
+import com.projectkorra.projectkorra.waterbending.IceSpikeBlast;
 import com.projectkorra.projectkorra.waterbending.OctopusForm;
+import com.projectkorra.projectkorra.waterbending.PhaseChangeFreeze;
+import com.projectkorra.projectkorra.waterbending.PhaseChangeMelt;
 import com.projectkorra.projectkorra.waterbending.PlantArmor;
+import com.projectkorra.projectkorra.waterbending.SurgeWall;
+import com.projectkorra.projectkorra.waterbending.SurgeWave;
 import com.projectkorra.projectkorra.waterbending.Torrent;
 import com.projectkorra.projectkorra.waterbending.WaterArms;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 import com.projectkorra.projectkorra.waterbending.WaterPassive;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
-import com.projectkorra.projectkorra.waterbending.WaterWall;
-import com.projectkorra.projectkorra.waterbending.WaterWave;
-import com.projectkorra.projectkorra.waterbending.Wave;
+import com.projectkorra.projectkorra.waterbending.WaterSpoutWave;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -189,10 +189,10 @@ public class PKListener implements Listener {
 			color = AirAbility.getChatColor();
 		} else if (GeneralMethods.isBender(player.getName(), Element.Water) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Water");
-			color = WaterMethods.getWaterColor();
+			color = WaterAbility.getChatColor();
 		} else if (GeneralMethods.isBender(player.getName(), Element.Earth) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Earth");
-			color = EarthAbility.getEarthColor();
+			color = EarthAbility.getChatColor();
 		} else if (GeneralMethods.isBender(player.getName(), Element.Fire) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Fire");
 			color = FireMethods.getFireColor();
@@ -231,7 +231,7 @@ public class PKListener implements Listener {
 
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
-		if (WaterWall.wasBrokenFor(player, block) || OctopusForm.wasBrokenFor(player, block) || Torrent.wasBrokenFor(player, block) || WaterWave.wasBrokenFor(player, block)) {
+		if (SurgeWall.wasBrokenFor(player, block) || OctopusForm.wasBrokenFor(player, block) || Torrent.wasBrokenFor(player, block) || WaterSpoutWave.wasBrokenFor(player, block)) {
 			event.setCancelled(true);
 			return;
 		}
@@ -240,21 +240,21 @@ public class PKListener implements Listener {
 			blast.remove();
 		}
 
-		if (FreezeMelt.frozenblocks.containsKey(block)) {
-			FreezeMelt.thaw(block);
+		if (PhaseChangeFreeze.getFrozenBlocks().containsKey(block)) {
+			PhaseChangeFreeze.thaw(block);
 			event.setCancelled(true);
 			// } else if (!WalkOnWater.canThaw(block)) {
 			// WalkOnWater.thaw(block);
-		} else if (WaterWall.wallblocks.containsKey(block)) {
-			WaterWall.thaw(block);
+		} else if (SurgeWall.getWallBlocks().containsKey(block)) {
+			SurgeWall.thaw(block);
 			event.setCancelled(true);
 		} else if (Illumination.blocks.containsKey(block)) {
 			event.setCancelled(true);
 			// } else if (Illumination.blocks.containsKey(block
 			// .getRelative(BlockFace.UP))) {
 			// event.setCancelled(true);
-		} else if (!Wave.canThaw(block)) {
-			Wave.thaw(block);
+		} else if (!SurgeWave.canThaw(block)) {
+			SurgeWave.thaw(block);
 			event.setCancelled(true);
 			// event.setCancelled(true);
 		} else if (EarthAbility.getMovedEarth().containsKey(block)) {
@@ -274,7 +274,7 @@ public class PKListener implements Listener {
 		if (EarthAbility.isLava(fromblock)) {
 			event.setCancelled(!EarthPassive.canFlowFromTo(fromblock, toblock));
 		}
-		if (WaterMethods.isWater(fromblock)) {
+		if (WaterAbility.isWater(fromblock)) {
 			event.setCancelled(!AirBubble.canFlowTo(toblock));
 			if (!event.isCancelled()) {
 				event.setCancelled(!WaterManipulation.canFlowFromTo(fromblock, toblock));
@@ -321,10 +321,10 @@ public class PKListener implements Listener {
 			event.setCancelled(!EarthPassive.canPhysicsChange(block));
 		}
 		if (!event.isCancelled()) {
-			event.setCancelled(FreezeMelt.frozenblocks.containsKey(block));
+			event.setCancelled(PhaseChangeFreeze.getFrozenBlocks().containsKey(block));
 		}
 		if (!event.isCancelled()) {
-			event.setCancelled(!Wave.canThaw(block));
+			event.setCancelled(!SurgeWave.canThaw(block));
 		}
 		if (!event.isCancelled()) {
 			event.setCancelled(!Torrent.canThaw(block));
@@ -373,10 +373,10 @@ public class PKListener implements Listener {
 			color = AirAbility.getChatColor();
 		} else if (e == Element.Water && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Water");
-			color = WaterMethods.getWaterColor();
+			color = WaterAbility.getChatColor();
 		} else if (e == Element.Earth && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Earth");
-			color = EarthAbility.getEarthColor();
+			color = EarthAbility.getChatColor();
 		} else if (e == Element.Fire && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Fire");
 			color = FireMethods.getFireColor();
@@ -502,14 +502,14 @@ public class PKListener implements Listener {
 			if (blast != null) {
 				blast.remove();
 			}
-			if (FreezeMelt.frozenblocks.containsKey(block)) {
-				FreezeMelt.thaw(block);
+			if (PhaseChangeFreeze.getFrozenBlocks().containsKey(block)) {
+				PhaseChangeFreeze.thaw(block);
 			}
-			if (WaterWall.wallblocks.containsKey(block)) {
+			if (SurgeWall.getWallBlocks().containsKey(block)) {
 				block.setType(Material.AIR);
 			}
-			if (!Wave.canThaw(block)) {
-				Wave.thaw(block);
+			if (!SurgeWave.canThaw(block)) {
+				SurgeWave.thaw(block);
 			}
 			if (EarthAbility.getMovedEarth().containsKey(block)) {
 				EarthAbility.removeRevertIndex(block);
@@ -857,6 +857,7 @@ public class PKListener implements Listener {
 		
 		Player player = (Player) event.getEntity();
 		EarthArmor earthArmor = CoreAbility.getAbility(player, EarthArmor.class);
+		PlantArmor plantArmor = CoreAbility.getAbility(player, PlantArmor.class);
 		
 		if (earthArmor != null) {
 			List<ItemStack> drops = event.getDrops();
@@ -879,22 +880,24 @@ public class PKListener implements Listener {
 			earthArmor.remove();
 		}
 		
-		if (PlantArmor.instances.containsKey(event.getEntity())) {
+		if (plantArmor != null) {
 			List<ItemStack> drops = event.getDrops();
 			List<ItemStack> newdrops = new ArrayList<ItemStack>();
+			
 			for (int i = 0; i < drops.size(); i++) {
 				if (!(drops.get(i).getType() == Material.LEATHER_BOOTS || drops.get(i).getType() == Material.LEATHER_CHESTPLATE || drops.get(i).getType() == Material.LEAVES || drops.get(i).getType() == Material.LEAVES_2 || drops.get(i).getType() == Material.LEATHER_LEGGINGS || drops.get(i).getType() == Material.AIR))
 					newdrops.add((drops.get(i)));
 			}
-			if (PlantArmor.instances.get(event.getEntity()).oldarmor != null) {
-				for (ItemStack is : PlantArmor.instances.get(event.getEntity()).oldarmor) {
+			if (plantArmor.getOldArmor() != null) {
+				for (ItemStack is : plantArmor.getOldArmor()) {
 					if (!(is.getType() == Material.AIR))
 						newdrops.add(is);
 				}
 			}
+			
 			event.getDrops().clear();
 			event.getDrops().addAll(newdrops);
-			PlantArmor.removeEffect(event.getEntity());
+			plantArmor.remove();
 		}
 		
 		if (MetalClips.getEntityClipsCount().containsKey(event.getEntity())) {
@@ -1013,7 +1016,7 @@ public class PKListener implements Listener {
 			return;
 		}
 
-		if (WaterSpout.instances.containsKey(event.getPlayer()) || AirSpout.getPlayers().contains(event.getPlayer()) || CoreAbility.getPlayers(SandSpout.class).contains(event.getPlayer())) {
+		if (CoreAbility.hasAbility(event.getPlayer(), WaterSpout.class) || AirSpout.getPlayers().contains(event.getPlayer()) || CoreAbility.getPlayers(SandSpout.class).contains(event.getPlayer())) {
 			Vector vel = new Vector();
 			vel.setX(event.getTo().getX() - event.getFrom().getX());
 			vel.setY(event.getTo().getY() - event.getFrom().getY());
@@ -1087,15 +1090,17 @@ public class PKListener implements Listener {
 		Preset.unloadPreset(player);
 
 		EarthArmor earthArmor = CoreAbility.getAbility(player, EarthArmor.class);
+		PlantArmor plantArmor = CoreAbility.getAbility(player, PlantArmor.class);
+		MetalClips metalClips = CoreAbility.getAbility(player, MetalClips.class);
+		
 		if (earthArmor != null) {
 			earthArmor.remove();
 		}
-		if (PlantArmor.instances.containsKey(event.getPlayer())) {
-			PlantArmor.removeEffect(event.getPlayer());
+		if (plantArmor != null) {
+			plantArmor.remove();
 		}
-
-		if (CoreAbility.hasAbility(player, MetalClips.class)) {
-			CoreAbility.getAbility(player, MetalClips.class).remove();
+		if (metalClips != null) {
+			metalClips.remove();
 		}
 
 		MultiAbilityManager.remove(player);
@@ -1130,8 +1135,9 @@ public class PKListener implements Listener {
 			BlockSource.update(player, ClickType.SHIFT_DOWN);
 		}
 
-		if (!player.isSneaking() && WaterArms.hasPlayer(player)) {
-			WaterArms.displayBoundMsg(player);
+		WaterArms waterArms = CoreAbility.getAbility(player, WaterArms.class);
+		if (!player.isSneaking() && waterArms != null) {
+			waterArms.displayBoundMsg();
 			return;
 		}
 
@@ -1151,7 +1157,7 @@ public class PKListener implements Listener {
 		if (!player.isSneaking() && GeneralMethods.canBend(player.getName(), abil)) {
 			if (GeneralMethods.isDisabledStockAbility(abil))
 				return;
-			if (coreAbil != null && coreAbil instanceof AirAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
+			if (coreAbil instanceof AirAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {
 					return;
 				}
@@ -1183,7 +1189,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (WaterMethods.isWaterAbility(abil) && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Water) == true) {
+			if (coreAbil instanceof WaterAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Water) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Water.CanBendWithWeapons")) {
 					return;
 				}
@@ -1194,19 +1200,19 @@ public class PKListener implements Listener {
 					new IceBlast(player);
 				}
 				if (abil.equalsIgnoreCase("IceSpike")) {
-					new IceSpike2(player);
+					new IceSpikeBlast(player);
 				}
 				if (abil.equalsIgnoreCase("OctopusForm")) {
 					OctopusForm.form(player);
 				}
 				if (abil.equalsIgnoreCase("PhaseChange")) {
-					new Melt(player);
+					new PhaseChangeMelt(player);
 				}
 				if (abil.equalsIgnoreCase("WaterManipulation")) {
 					new WaterManipulation(player);
 				}
 				if (abil.equalsIgnoreCase("Surge")) {
-					WaterWall.form(player);
+					SurgeWall.form(player);
 				}
 				if (abil.equalsIgnoreCase("Torrent")) {
 					Torrent.create(player);
@@ -1376,7 +1382,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (WaterMethods.isWaterAbility(abil) && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Water) == true) {
+			if (coreAbil instanceof WaterAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Water) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Water.CanBendWithWeapons")) {
 					return;
 				}
@@ -1387,13 +1393,13 @@ public class PKListener implements Listener {
 					IceBlast.activate(player);
 				}
 				if (abil.equalsIgnoreCase("IceSpike")) {
-					IceSpike2.activate(player);
+					IceSpikeBlast.activate(player);
 				}
 				if (abil.equalsIgnoreCase("OctopusForm")) {
 					new OctopusForm(player);
 				}
 				if (abil.equalsIgnoreCase("PhaseChange")) {
-					new FreezeMelt(player);
+					new PhaseChangeFreeze(player);
 				}
 				if (abil.equalsIgnoreCase("PlantArmor")) {
 					new PlantArmor(player);
@@ -1405,7 +1411,7 @@ public class PKListener implements Listener {
 					WaterManipulation.moveWater(player);
 				}
 				if (abil.equalsIgnoreCase("Surge")) {
-					new WaterWall(player);
+					new SurgeWall(player);
 				}
 				if (abil.equalsIgnoreCase("Torrent")) {
 					new Torrent(player);

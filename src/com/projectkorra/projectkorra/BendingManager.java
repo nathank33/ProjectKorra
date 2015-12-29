@@ -2,6 +2,7 @@ package com.projectkorra.projectkorra;
 
 import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
 import com.projectkorra.projectkorra.firebending.FireMethods;
@@ -9,7 +10,6 @@ import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.RevertChecker;
 import com.projectkorra.projectkorra.util.TempPotionEffect;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 import com.projectkorra.rpg.RPGMethods;
 import com.projectkorra.rpg.WorldEvents;
 
@@ -81,13 +81,13 @@ public class BendingManager implements Runnable, ConfigLoadable {
 					if (GeneralMethods.hasRPG()) {
 						if (RPGMethods.isLunarEclipse(world)) {
 							events.put(world, WorldEvents.LunarEclipse.toString());
-						} else if (WaterMethods.isFullMoon(world)) {
+						} else if (WaterAbility.isFullMoon(world)) {
 							events.put(world, "FullMoon");
 						} else {
 							events.put(world, "");
 						}
 					} else {
-						if (WaterMethods.isFullMoon(world)) {
+						if (WaterAbility.isFullMoon(world)) {
 							events.put(world, "FullMoon");
 						} else {
 							events.put(world, "");
@@ -101,17 +101,17 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						if (GeneralMethods.isBender(player.getName(), Element.Water)) {
 							if (GeneralMethods.hasRPG()) {
 								if (RPGMethods.isLunarEclipse(world)) {
-									player.sendMessage(WaterMethods.getWaterColor() + lunarEclipseMessage);
-								} else if (WaterMethods.isFullMoon(world)) {
-									player.sendMessage(WaterMethods.getWaterColor() + fullMoonriseMessage);
+									player.sendMessage(WaterAbility.getChatColor() + lunarEclipseMessage);
+								} else if (WaterAbility.isFullMoon(world)) {
+									player.sendMessage(WaterAbility.getChatColor() + fullMoonriseMessage);
 								} else {
-									player.sendMessage(WaterMethods.getWaterColor() + moonriseMessage);
+									player.sendMessage(WaterAbility.getChatColor() + moonriseMessage);
 								}
 							} else {
-								if (WaterMethods.isFullMoon(world)) {
-									player.sendMessage(WaterMethods.getWaterColor() + fullMoonriseMessage);
+								if (WaterAbility.isFullMoon(world)) {
+									player.sendMessage(WaterAbility.getChatColor() + fullMoonriseMessage);
 								} else {
-									player.sendMessage(WaterMethods.getWaterColor() + moonriseMessage);
+									player.sendMessage(WaterAbility.getChatColor() + moonriseMessage);
 								}
 							}
 						}
@@ -139,7 +139,7 @@ public class BendingManager implements Runnable, ConfigLoadable {
 					}
 					for (Player player : world.getPlayers()) {
 						if (GeneralMethods.isBender(player.getName(), Element.Water) && player.hasPermission("bending.message.nightmessage")) {
-							player.sendMessage(WaterMethods.getWaterColor() + moonsetMessage);
+							player.sendMessage(WaterAbility.getChatColor() + moonsetMessage);
 						}
 						if (GeneralMethods.isBender(player.getName(), Element.Fire) && player.hasPermission("bending.message.daymessage")) {
 							if (GeneralMethods.hasRPG()) {

@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.firebending;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.waterbending.PlantRegrowth;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.waterbending.Plantbending;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FireStream implements ConfigLoadable {
 	
@@ -171,8 +171,8 @@ public class FireStream implements ConfigLoadable {
 	private void ignite(Block block) {
 		if (block.getType() != Material.AIR) {
 			if (FireMethods.canFireGrief()) {
-				if (WaterMethods.isPlant(block))
-					new Plantbending(block);
+				if (WaterAbility.isPlant(block))
+					new PlantRegrowth(player, block);
 			} else if (block.getType() != Material.FIRE) {
 				replacedBlocks.put(block.getLocation(), block.getState().getData());
 			}

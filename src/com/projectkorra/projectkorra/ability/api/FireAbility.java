@@ -41,8 +41,12 @@ public abstract class FireAbility extends ElementalAbility {
 	 * 
 	 * @return Config specified ChatColor
 	 */
-	public static ChatColor getFireColor() {
+	public static ChatColor getChatColor() {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Fire"));
+	}
+	
+	public static ChatColor getSubChatColor() {
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.FireSub"));
 	}
 	
 	public static boolean canFireGrief() {

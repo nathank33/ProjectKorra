@@ -9,6 +9,5 @@ public interface SourceAbility {
 	public boolean canAutoSource();
 	
 	public boolean canDynamicSource();
-	
-	public boolean canSelfSource();
+
 }

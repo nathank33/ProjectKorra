@@ -38,22 +38,21 @@ public class BendingPlayer {
 	/**
 	 * ConcurrentHashMap that contains all instances of BendingPlayer, with UUID key.
 	 */
-	private static ConcurrentHashMap<UUID, BendingPlayer> players = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<UUID, BendingPlayer> PLAYERS = new ConcurrentHashMap<>();
 
+	private boolean permaRemoved;
+	private boolean toggled;
+	private boolean tremorSense;
+	private boolean chiBlocked;
+	private long slowTime;
+	private Player player;
 	private UUID uuid;
 	private String name;
-	private Player player;
-	private FileConfiguration config;
+	private ChiAbility stance;
 	private ArrayList<Element> elements;
 	private HashMap<Integer, String> abilities;
 	private ConcurrentHashMap<String, Long> cooldowns;
-	private ConcurrentHashMap<Element, Boolean> toggledElements;
-	private boolean permaRemoved;
-	private boolean toggled = true;
-	private long slowTime = 0;
-	private boolean tremorSense = true;
-	private boolean chiBlocked = false;
-	private ChiAbility stance = null;
+	private ConcurrentHashMap<Element, Boolean> toggledElements;	
 
 	/**
 	 * Creates a new {@link BendingPlayer}.
@@ -72,7 +71,9 @@ public class BendingPlayer {
 		this.setAbilities(abilities);
 		this.permaRemoved = permaRemoved;
 		this.player = Bukkit.getPlayer(uuid);
-		this.config = ConfigManager.getConfig();
+		this.toggled = true;
+		this.tremorSense = true;
+		this.chiBlocked = false;
 		cooldowns = new ConcurrentHashMap<String, Long>();
 		toggledElements = new ConcurrentHashMap<Element, Boolean>();
 		toggledElements.put(Element.Air, true);
@@ -81,17 +82,16 @@ public class BendingPlayer {
 		toggledElements.put(Element.Water, true);
 		toggledElements.put(Element.Chi, true);
 
-		players.put(uuid, this);
+		PLAYERS.put(uuid, this);
 		PKListener.login(this);
 	}
+	
+	public void addCooldown(Ability ability, long cooldown) {
+		addCooldown(ability.getName(), cooldown);
+	}
 
-	/**
-	 * Gets the map of {@link BendingPlayer}s.
-	 * 
-	 * @return {@link #players}
-	 */
-	public static ConcurrentHashMap<UUID, BendingPlayer> getPlayers() {
-		return players;
+	public void addCooldown(CoreAbility ability) {
+		addCooldown(ability, ability.getCooldown());
 	}
 
 	/**
@@ -108,14 +108,6 @@ public class BendingPlayer {
 		}
 	}
 
-	public void addCooldown(Ability ability, long cooldown) {
-		addCooldown(ability.getName(), cooldown);
-	}
-
-	public void addCooldown(CoreAbility ability) {
-		addCooldown(ability, ability.getCooldown());
-	}
-
 	/**
 	 * Adds an element to the {@link BendingPlayer}'s known list.
 	 * 
@@ -130,34 +122,6 @@ public class BendingPlayer {
 	 */
 	public void blockChi() {
 		chiBlocked = true;
-	}
-
-	/**
-	 * Checks to see if {@link BendingPlayer} can be slowed.
-	 * 
-	 * @return true If player can be slowed
-	 */
-	public boolean canBeSlowed() {
-		return (System.currentTimeMillis() > slowTime);
-	}
-
-	/**
-	 * Checks to see if a player can use Flight.
-	 * 
-	 * @return true If player has permission node "bending.air.flight"
-	 */
-	public boolean canUseFlight() {
-		return player.hasPermission("bending.air.flight");
-	}
-
-	/**
-	 * Checks to see if a player can use SpiritualProjection.
-	 * 
-	 * @param player The player to check
-	 * @return true If player has permission node "bending.air.spiritualprojection"
-	 */
-	public boolean canUseSpiritualProjection() {
-		return player.hasPermission("bending.air.spiritualprojection");
 	}
 
 	/**
@@ -179,6 +143,118 @@ public class BendingPlayer {
 		return true;
 	}
 
+	public boolean canBend(CoreAbility ability) {
+		return canBend(ability, false, false);
+	}
+
+	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns) {
+		if (ability == null) {
+			return false;
+		}
+		
+		List<String> disabledWorlds = getConfig().getStringList("Properties.DisabledWorlds");
+		Location location = ability.getLocation();
+		
+		if (location == null && player != null) {
+			location = player.getLocation();
+		}
+
+		if (player == null || !player.isOnline() || player.isDead()) {
+			return false;
+		} else if (location != null && !location.getWorld().equals(player.getWorld())) {
+			return false;
+		} else if (!ignoreCooldowns && isOnCooldown(ability.getName())) {
+			return false;
+		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbilityName())) {
+			return false;
+		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
+			return false;
+		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getName())) {
+			return false;
+		} else if (player.getGameMode() == GameMode.SPECTATOR) {
+			return false;
+		}
+		if (!ignoreCooldowns && cooldowns.containsKey(name)) { // TODO: wtf is this
+			if (cooldowns.get(name) + getConfig().getLong("Properties.GlobalCooldown") >= System.currentTimeMillis()) {
+				return false;
+			}
+			cooldowns.remove(name);
+		}
+
+		if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
+			return false;
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
+			return false;
+		} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
+				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
+			return false;
+		} else if (ability instanceof WaterAbility && BendingManager.events.get(player.getWorld()) != null
+				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("LunarEclipse")) {
+			return false;
+		} else if (!ignoreBinds && !canBind(ability)) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean canBendIgnoreBinds(CoreAbility ability) {
+		return canBend(ability, true, false);
+	}
+
+	public boolean canBendIgnoreBindsCooldowns(CoreAbility ability) {
+		return canBend(ability, true, true);
+	}
+
+	public boolean canBendIgnoreCooldowns(CoreAbility ability) {
+		return canBend(ability, false, true);
+	}
+
+	public boolean canBendPassive(String element) {
+		if (element == null || player == null) {
+			return false;
+		} else if (!player.hasPermission("bending." + element + ".passive")) {
+			return false;
+		} else if (!isToggled() || !hasElement(element) || !isElementToggled(element)) {
+			return false;
+		} else if (isChiBlocked() || isParalyzed() || isBloodbended()) {
+			return false;
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, player.getLocation())) {
+			return false;
+		} 
+		return true;
+	}
+
+	/**
+	 * Checks to see if {@link BendingPlayer} can be slowed.
+	 * 
+	 * @return true If player can be slowed
+	 */
+	public boolean canBeSlowed() {
+		return (System.currentTimeMillis() > slowTime);
+	}
+
+	/*
+	 * TODO: Combos are broken with canBind in BendingTabCommand.
+	 * The fake CoreAbility will always return "FireCombo", however
+	 * we need to be able to check the permissions of every combo permission.
+	 * We should split up the combos into their own files.
+	 */
+	public boolean canBind(CoreAbility ability) {
+		if (ability == null || player == null && player.isOnline()) {
+			return false;
+		} else if (!player.hasPermission("bending.ability." + ability.getName())) {
+			return false;
+		} else if (!hasElement(ability.getElementName())) {
+			return false;
+		} else if (ability instanceof SubAbility) {
+			SubAbility subAbil = (SubAbility) ability;
+			if (!hasElement(subAbil.getSubElementName())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/**
 	 * Checks to see if a player can BloodBend.
 	 * 
@@ -187,14 +263,46 @@ public class BendingPlayer {
 	public boolean canBloodbend() {
 		return player.hasPermission("bending.water.bloodbending");
 	}
-
+	
 	public boolean canBloodbendAtAnytime() {
 		return canBloodbend() && player.hasPermission("bending.water.bloodbending.anytime");
+	}
+
+	public boolean canCombustionbend() {
+		return player.hasPermission("bending.fire.combustionbending");
 	}
 
 	public boolean canIcebend() {
 		return player.hasPermission("bending.water.icebending");
 
+	}
+
+	/**
+	 * Checks to see if a player can LavaBend.
+	 * 
+	 * @param player The player to check
+	 * @return true If player has permission node "bending.earth.lavabending"
+	 */
+	public boolean canLavabend() {
+		return player.hasPermission("bending.earth.lavabending");
+	}
+
+	public boolean canLightningbend() {
+		return player.hasPermission("bending.fire.lightningbending");
+	}
+
+	/**
+	 * Checks to see if a player can MetalBend.
+	 * 
+	 * @param player The player to check
+	 * @return true If player has permission node "bending.earth.metalbending"
+	 */
+	public boolean canMetalbend() {
+		return player.hasPermission("bending.earth.metalbending");
+	}
+
+	public boolean canPackedIcebend() {
+		return getConfig().getBoolean("Properties.Water.CanBendPackedIce");
 	}
 
 	/**
@@ -205,10 +313,6 @@ public class BendingPlayer {
 	 */
 	public boolean canPlantbend() {
 		return player.hasPermission("bending.water.plantbending");
-	}
-
-	public boolean canWaterHeal() {
-		return player.hasPermission("bending.water.healing");
 	}
 
 	/**
@@ -222,31 +326,26 @@ public class BendingPlayer {
 	}
 
 	/**
-	 * Checks to see if a player can MetalBend.
+	 * Checks to see if a player can use Flight.
 	 * 
-	 * @param player The player to check
-	 * @return true If player has permission node "bending.earth.metalbending"
+	 * @return true If player has permission node "bending.air.flight"
 	 */
-	public boolean canMetalbend() {
-		return player.hasPermission("bending.earth.metalbending");
+	public boolean canUseFlight() {
+		return player.hasPermission("bending.air.flight");
 	}
 
 	/**
-	 * Checks to see if a player can LavaBend.
+	 * Checks to see if a player can use SpiritualProjection.
 	 * 
 	 * @param player The player to check
-	 * @return true If player has permission node "bending.earth.lavabending"
+	 * @return true If player has permission node "bending.air.spiritualprojection"
 	 */
-	public boolean canLavabend() {
-		return player.hasPermission("bending.earth.lavabending");
+	public boolean canUseSpiritualProjection() {
+		return player.hasPermission("bending.air.spiritualprojection");
 	}
 
-	public boolean canCombustionbend() {
-		return player.hasPermission("bending.fire.combustionbending");
-	}
-
-	public boolean canLightningbend() {
-		return player.hasPermission("bending.fire.lightningbending");
+	public boolean canWaterHeal() {
+		return player.hasPermission("bending.water.healing");
 	}
 
 	/**
@@ -256,6 +355,20 @@ public class BendingPlayer {
 	 */
 	public HashMap<Integer, String> getAbilities() {
 		return this.abilities;
+	}
+
+	public CoreAbility getBoundAbility() {
+		return CoreAbility.getAbility(getBoundAbilityName());
+	}
+
+	/**
+	 * Gets the Ability bound to the slot that the player is in.
+	 * 
+	 * @return The Ability name bounded to the slot
+	 */
+	public String getBoundAbilityName() {
+		int slot = player.getInventory().getHeldItemSlot() + 1;
+		return getAbilities().get(slot);
 	}
 
 	/**
@@ -273,7 +386,7 @@ public class BendingPlayer {
 		}
 		return -1;
 	}
-
+	
 	/**
 	 * Gets the map of cooldowns of the {@link BendingPlayer}.
 	 * 
@@ -299,6 +412,15 @@ public class BendingPlayer {
 	 */
 	public String getName() {
 		return this.name;
+	}
+
+	/**
+	 * Gets the {@link ChiAbility Chi stance} the player is in
+	 * 
+	 * @return The player's stance object
+	 */
+	public ChiAbility getStance() {
+		return stance;
 	}
 
 	/**
@@ -333,9 +455,13 @@ public class BendingPlayer {
 		// TODO: Finish this
 		return true;
 	}
-	
-	public boolean isAvatarstate() {
+
+	public boolean isAvatarState() {
 		return AvatarState.isAvatarState(player);
+	}
+
+	public boolean isBloodbended() {
+		return Bloodbending.isBloodbended(player);
 	}
 
 	/**
@@ -347,14 +473,6 @@ public class BendingPlayer {
 		return this.chiBlocked;
 	}
 
-	public boolean isParalyzed() {
-		return Paralyze.isParalyzed(player);
-	}
-
-	public boolean isBloodbended() {
-		return Bloodbending.isBloodbended(player);
-	}
-
 	public boolean isControlledByMetalClips() {
 		return MetalClips.isControlled(player);
 	}
@@ -364,6 +482,15 @@ public class BendingPlayer {
 			return this.toggledElements.get(e);
 		}
 		return true;
+	}
+
+	public boolean isElementToggled(String elementName) {
+		// TODO: Finish this
+		return true;
+	}
+
+	public boolean isOnCooldown(Ability ability) {
+		return isOnCooldown(ability.getName());
 	}
 
 	/**
@@ -379,8 +506,8 @@ public class BendingPlayer {
 		return false;
 	}
 
-	public boolean isOnCooldown(Ability ability) {
-		return isOnCooldown(ability.getName());
+	public boolean isParalyzed() {
+		return Paralyze.isParalyzed(player);
 	}
 
 	/**
@@ -399,11 +526,6 @@ public class BendingPlayer {
 	 */
 	public boolean isToggled() {
 		return this.toggled;
-	}
-
-	public boolean isElementToggled(String elementName) {
-		// TODO: Finish this
-		return true;
 	}
 
 	/**
@@ -460,6 +582,15 @@ public class BendingPlayer {
 	public void setPermaRemoved(boolean permaRemoved) {
 		this.permaRemoved = permaRemoved;
 	}
+	
+	/**
+	 * Sets the player's {@link ChiAbility Chi stance}
+	 * 
+	 * @param stance The player's new stance object
+	 */
+	public void setStance(ChiAbility stance) {
+		this.stance = stance;
+	}
 
 	/**
 	 * Slow the {@link BendingPlayer} for a certain amount of time.
@@ -469,7 +600,7 @@ public class BendingPlayer {
 	public void slow(long cooldown) {
 		slowTime = System.currentTimeMillis() + cooldown;
 	}
-
+	
 	/**
 	 * Toggles the {@link BendingPlayer}'s bending.
 	 */
@@ -480,7 +611,7 @@ public class BendingPlayer {
 	public void toggleElement(Element e) {
 		toggledElements.put(e, !toggledElements.get(e));
 	}
-
+	
 	/**
 	 * Toggles the {@link BendingPlayer}'s tremor sensing.
 	 */
@@ -494,124 +625,21 @@ public class BendingPlayer {
 	public void unblockChi() {
 		chiBlocked = false;
 	}
-
-	public boolean canBend(CoreAbility ability) {
-		return canBend(ability, false, false);
-	}
-
-	public boolean canBendIgnoreCooldowns(CoreAbility ability) {
-		return canBend(ability, false, true);
-	}
-
-	public boolean canBendIgnoreBinds(CoreAbility ability) {
-		return canBend(ability, true, false);
-	}
-	
-	public boolean canBendIgnoreBindsCooldowns(CoreAbility ability) {
-		return canBend(ability, true, true);
-	}
-
-	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns) {
-		if (ability == null) {
-			return false;
-		}
-		
-		List<String> disabledWorlds = config.getStringList("Properties.DisabledWorlds");
-		Location location = ability.getLocation();
-		
-		if (location == null && player != null) {
-			location = player.getLocation();
-		}
-
-		if (player == null || !player.isOnline() || player.isDead()) {
-			return false;
-		} else if (location != null && !location.getWorld().equals(player.getWorld())) {
-			return false;
-		} else if (!ignoreCooldowns && isOnCooldown(ability.getName())) {
-			return false;
-		} else if (!ignoreBinds && !ability.getName().equals(getBoundAbilityName())) {
-			return false;
-		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
-			return false;
-		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getName())) {
-			return false;
-		} else if (player.getGameMode() == GameMode.SPECTATOR) {
-			return false;
-		}
-		if (!ignoreCooldowns && cooldowns.containsKey(name)) { // TODO: wtf is this
-			if (cooldowns.get(name) + config.getLong("Properties.GlobalCooldown") >= System.currentTimeMillis()) {
-				return false;
-			}
-			cooldowns.remove(name);
-		}
-
-		if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
-			return false;
-		} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
-			return false;
-		} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
-				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
-			return false;
-		} else if (ability instanceof WaterAbility && BendingManager.events.get(player.getWorld()) != null
-				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("LunarEclipse")) {
-			return false;
-		} else if (!ignoreBinds && !canBind(ability)) {
-			return false;
-		}
-		return true;
-	}
-	
-	public boolean canBendPassive(String element) {
-		if (element == null || player == null) {
-			return false;
-		} else if (!player.hasPermission("bending." + element + ".passive")) {
-			return false;
-		} else if (!isToggled()) {
-			return false;
-		} else if (!hasElement(element)) {
-			return false;
-		} else if (isElementToggled(element) == false) {
-			return false;
-		} else if (GeneralMethods.isRegionProtectedFromBuild(player, player.getLocation())) {
-			return false;
-		} else if (isChiBlocked()) {
-			return false;
-		}
-		return true;
-	}
-
-	/*
-	 * TODO: Combos are broken with canBind in BendingTabCommand.
-	 * The fake CoreAbility will always return "FireCombo", however
-	 * we need to be able to check the permissions of every combo permission.
-	 * We should split up the combos into their own files.
-	 */
-	public boolean canBind(CoreAbility ability) {
-		if (ability == null || player == null && player.isOnline()) {
-			return false;
-		} else if (!player.hasPermission("bending.ability." + ability.getName())) {
-			return false;
-		} else if (!hasElement(ability.getElementName())) {
-			return false;
-		} else if (ability instanceof SubAbility) {
-			SubAbility subAbil = (SubAbility) ability;
-			if (!hasElement(subAbil.getSubElementName())) {
-				return false;
-			}
-		}
-		return true;
-	}
 	
 	public static BendingPlayer getBendingPlayer(OfflinePlayer oPlayer) {
 		return BendingPlayer.getPlayers().get(oPlayer.getUniqueId());
 	}
-
+	
+	public static BendingPlayer getBendingPlayer(Player player) {
+		return getBendingPlayer(player.getName());
+	}
+	
 	/**
 	 * Attempts to get a {@link BendingPlayer} from specified player name. this method tries to get
 	 * a {@link Player} object and gets the uuid and then calls {@link #getBendingPlayer(UUID)}
 	 * 
 	 * @param playerName The name of the Player
-	 * @return The BendingPlayer object if {@link BendingPlayer#players} contains the player name
+	 * @return The BendingPlayer object if {@link BendingPlayer#PLAYERS} contains the player name
 	 * 
 	 * @see #getBendingPlayer(UUID)
 	 */
@@ -622,40 +650,17 @@ public class BendingPlayer {
 		}
 		return getBendingPlayer(oPlayer);
 	}
-	
-	public static BendingPlayer getBendingPlayer(Player player) {
-		return getBendingPlayer(player.getName());
-	}
-	
-	/**
-	 * Gets the Ability bound to the slot that the player is in.
-	 * 
-	 * @return The Ability name bounded to the slot
-	 */
-	public String getBoundAbilityName() {
-		int slot = player.getInventory().getHeldItemSlot() + 1;
-		return getAbilities().get(slot);
-	}
-	
-	public CoreAbility getBoundAbility() {
-		return CoreAbility.getAbility(getBoundAbilityName());
-	}
 
-	/**
-	 * Gets the {@link ChiAbility Chi stance} the player is in
-	 * 
-	 * @return The player's stance object
-	 */
-	public ChiAbility getStance() {
-		return stance;
+	private static FileConfiguration getConfig() {
+		return ConfigManager.getConfig();
 	}
 	
 	/**
-	 * Sets the player's {@link ChiAbility Chi stance}
+	 * Gets the map of {@link BendingPlayer}s.
 	 * 
-	 * @param stance The player's new stance object
+	 * @return {@link #PLAYERS}
 	 */
-	public void setStance(ChiAbility stance) {
-		this.stance = stance;
+	public static ConcurrentHashMap<UUID, BendingPlayer> getPlayers() {
+		return PLAYERS;
 	}
 }

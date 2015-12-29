@@ -113,7 +113,7 @@ public class LavaFlow extends LavaAbility {
 		this.downwardFlow = getConfig().getInt("Abilities.Earth.LavaFlow.DownwardFlow");
 		this.allowNaturalFlow = getConfig().getBoolean("Abilities.Earth.LavaFlow.AllowNaturalFlow");
 
-		if (bPlayer.isAvatarstate()) {
+		if (bPlayer.isAvatarState()) {
 			shiftCooldown = 0;
 			clickLavaCooldown = 0;
 			clickLandCooldown = 0;

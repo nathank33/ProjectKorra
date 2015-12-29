@@ -4,12 +4,12 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.LavaAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.BlockSource.BlockSourceType;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.TempBlock;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -171,7 +171,7 @@ public class LavaSurgeWave extends LavaAbility {
 			if (!GeneralMethods.isRegionProtectedFromBuild(this, location) && blockl.getType() != Material.LEAVES
 					&& (blockl.getType() == Material.AIR 
 						|| blockl.getType() == Material.FIRE 
-						|| WaterMethods.isPlant(blockl) 
+						|| WaterAbility.isPlant(blockl) 
 						|| isLava(blockl)))  {
 				for (double i = 0; i <= radius; i += 0.5) {
 					for (double angle = 0; angle < 360; angle += 10) {

@@ -6,11 +6,11 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -418,11 +418,11 @@ public class FireCombo implements ConfigLoadable {
 			}
 
 			Block topBlock = GeneralMethods.getTopBlock(currentLoc, 2, -4);
-			if (topBlock == null || (WaterMethods.isWaterbendable(topBlock, player) && !WaterMethods.isPlant(topBlock))) {
+			if (topBlock == null || (WaterAbility.isWaterbendable(topBlock, player) && !WaterAbility.isPlant(topBlock))) {
 				remove();
 				return;
 			}
-			if (topBlock.getType() == Material.FIRE || WaterMethods.isPlant(topBlock))
+			if (topBlock.getType() == Material.FIRE || WaterAbility.isPlant(topBlock))
 				topBlock = topBlock.getLocation().add(0, -1, 0).getBlock();
 			currentLoc.setY(topBlock.getY() + FIRE_WHEEL_STARTING_HEIGHT);
 
@@ -545,7 +545,7 @@ public class FireCombo implements ConfigLoadable {
 
 		public void run() {
 			Block block = currentLoc.getBlock();
-			if (block.getRelative(BlockFace.UP).getType() != Material.AIR && !WaterMethods.isPlant(block)) {
+			if (block.getRelative(BlockFace.UP).getType() != Material.AIR && !WaterAbility.isPlant(block)) {
 				remove();
 				return;
 			}

@@ -33,6 +33,7 @@ import com.projectkorra.projectkorra.ability.api.Ability;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.ability.combo.ComboManager.AbilityInformation;
@@ -65,10 +66,9 @@ import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
 import com.projectkorra.projectkorra.waterbending.Bloodbending;
-import com.projectkorra.projectkorra.waterbending.FreezeMelt;
+import com.projectkorra.projectkorra.waterbending.PhaseChangeFreeze;
 import com.projectkorra.projectkorra.waterbending.WaterCombo;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -157,7 +157,6 @@ public class GeneralMethods {
 		GeneralMethods.plugin = plugin;
 		new ChiMethods(plugin);
 		new FireMethods(plugin);
-		new WaterMethods(plugin);
 	}
 
 	/**
@@ -206,8 +205,6 @@ public class GeneralMethods {
 		CoreAbility coreAbil = CoreAbility.getAbility(ability);
 		if (coreAbil != null) {
 			player.sendMessage(coreAbil.getElementColor() + "Succesfully bound " + ability + " to slot " + slot);
-		} else if (WaterMethods.isWaterAbility(ability)) {
-			player.sendMessage(WaterMethods.getWaterColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (FireMethods.isFireAbility(ability)) {
 			player.sendMessage(FireMethods.getFireColor() + "Succesfully bound " + ability + " to slot " + slot);
 		} else if (ChiMethods.isChiAbility(ability)) {
@@ -320,7 +317,7 @@ public class GeneralMethods {
 			return false;
 		if (BendingManager.events.get(p.getWorld()) != null && BendingManager.events.get(p.getWorld()).equalsIgnoreCase("SolarEclipse") && FireMethods.isFireAbility(ability))
 			return false;
-		if (BendingManager.events.get(p.getWorld()) != null && BendingManager.events.get(p.getWorld()).equalsIgnoreCase("LunarEclipse") && WaterMethods.isWaterAbility(ability))
+		if (BendingManager.events.get(p.getWorld()) != null && BendingManager.events.get(p.getWorld()).equalsIgnoreCase("LunarEclipse"))
 			return false;
 		return true;
 	}
@@ -683,8 +680,8 @@ public class GeneralMethods {
 	 * @param ability The ability name
 	 * @return {@link ChiMethods#getChiColor()} <br />
 	 *         {@link AirMethods#getAirColor()} <br />
-	 *         {@link WaterMethods#getWaterColor()} <br />
-	 *         {@link EarthMethods#getEarthColor()} <br />
+	 *         {@link WaterAbility#getChatColor()} <br />
+	 *         {@link EarthMethods#getChatColor()} <br />
 	 *         {@link FireMethods#getFireColor()} <br />
 	 *         else {@link #getAvatarColor()}
 	 */
@@ -699,12 +696,12 @@ public class GeneralMethods {
 		if (AbilityModuleManager.waterbendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
 				return getSubBendingColor(Element.Water);
-			return WaterMethods.getWaterColor();
+			return WaterAbility.getChatColor();
 		}
 		if (AbilityModuleManager.earthbendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
 				return getSubBendingColor(Element.Earth);
-			return EarthAbility.getEarthColor();
+			return EarthAbility.getChatColor();
 		}
 		if (AbilityModuleManager.firebendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
@@ -971,18 +968,18 @@ public class GeneralMethods {
 				ComboAbilityModule module = (ComboAbilityModule) comboability.getComboType();
 				if (module.getSubElement() != null) {
 					if (module.getSubElement() == SubElement.Bloodbending || module.getSubElement() == SubElement.Icebending || module.getSubElement() == SubElement.Plantbending || module.getSubElement() == SubElement.Healing)
-						return WaterMethods.getWaterSubColor();
+						return WaterAbility.getSubChatColor();
 					else if (module.getSubElement() == SubElement.Lightning || module.getSubElement() == SubElement.Combustion)
 						return FireMethods.getFireSubColor();
 					else if (module.getSubElement() == SubElement.Sandbending || module.getSubElement() == SubElement.Metalbending || module.getSubElement() == SubElement.Lavabending)
-						return EarthAbility.getEarthSubColor();
+						return EarthAbility.getSubChatColor();
 					else if (module.getSubElement() == SubElement.Flight || module.getSubElement() == SubElement.SpiritualProjection)
 						return AirAbility.getSubChatColor();
 				}
 				if (module.getElement().equalsIgnoreCase(Element.Water.toString()))
-					return WaterMethods.getWaterColor();
+					return WaterAbility.getChatColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Earth.toString()))
-					return EarthAbility.getEarthColor();
+					return EarthAbility.getChatColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Fire.toString()))
 					return FireMethods.getFireColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Air.toString()))
@@ -992,9 +989,9 @@ public class GeneralMethods {
 				else
 					return getAvatarColor();
 			} else if (combo.equalsIgnoreCase("IceBullet") || combo.equalsIgnoreCase("IceWave")) {
-				return WaterMethods.getWaterSubColor();
+				return WaterAbility.getSubChatColor();
 			} else if (comboability.getComboType().equals(WaterCombo.class)) {
-				return WaterMethods.getWaterColor();
+				return WaterAbility.getChatColor();
 			} else if (comboability.getComboType().equals(FireCombo.class)) {
 				return FireMethods.getFireColor();
 			} else if (comboability.getComboType().equals(AirCombo.class)) {
@@ -1010,11 +1007,11 @@ public class GeneralMethods {
 					if (getAbilitySubElement(abilityinfo.getAbilityName()) != null) {
 						SubElement sub = getAbilitySubElement(abilityinfo.getAbilityName());
 						if (sub == SubElement.Bloodbending || sub == SubElement.Icebending || sub == SubElement.Plantbending || sub == SubElement.Healing)
-							return WaterMethods.getWaterSubColor();
+							return WaterAbility.getSubChatColor();
 						else if (sub == SubElement.Lightning || sub == SubElement.Combustion)
 							return FireMethods.getFireSubColor();
 						else if (sub == SubElement.Sandbending || sub == SubElement.Metalbending || sub == SubElement.Lavabending)
-							return EarthAbility.getEarthSubColor();
+							return EarthAbility.getSubChatColor();
 						else if (sub == SubElement.Flight || sub == SubElement.SpiritualProjection)
 							return AirAbility.getSubChatColor();
 					}
@@ -1022,11 +1019,11 @@ public class GeneralMethods {
 				if (element == Element.Air)
 					return AirAbility.getChatColor();
 				if (element == Element.Earth)
-					return EarthAbility.getEarthColor();
+					return EarthAbility.getChatColor();
 				if (element == Element.Fire)
 					return FireMethods.getFireColor();
 				if (element == Element.Water)
-					return WaterMethods.getWaterColor();
+					return WaterAbility.getChatColor();
 				if (element == Element.Chi)
 					return ChiMethods.getChiColor();
 				return getAvatarColor();
@@ -1370,7 +1367,7 @@ public class GeneralMethods {
 				sources++;
 			if ((blocki.getType() == Material.WATER || blocki.getType() == Material.STATIONARY_WATER) && blocki.getData() == full && WaterManipulation.canPhysicsChange(blocki))
 				sources++;
-			if (FreezeMelt.frozenblocks.containsKey(blocki)) {
+			if (PhaseChangeFreeze.getFrozenBlocks().containsKey(blocki)) {
 				//if (FreezeMelt.frozenblocks.get(blocki) == full)
 				//sources++;
 			} else if (blocki.getType() == Material.ICE) {
@@ -1419,7 +1416,7 @@ public class GeneralMethods {
 		for (double i = 0; i <= max; i++) {
 			loc = location1.clone().add(direction.clone().multiply(i));
 			Material type = loc.getBlock().getType();
-			if (type != Material.AIR && !(Arrays.asList(EarthAbility.getTransparentMaterialSet()).contains(type.getId()) || WaterMethods.isWater(loc.getBlock())))
+			if (type != Material.AIR && !(Arrays.asList(EarthAbility.getTransparentMaterialSet()).contains(type.getId()) || WaterAbility.isWater(loc.getBlock())))
 				return true;
 		}
 		return false;
@@ -1948,7 +1945,7 @@ public class GeneralMethods {
 		}
 
 		EarthAbility.stopBending();
-		WaterMethods.stopBending();
+		WaterAbility.stopBending();
 		FireMethods.stopBending();
 
 		Flight.removeAll();
@@ -2057,9 +2054,9 @@ public class GeneralMethods {
 			case Fire:
 				return FireMethods.getFireColor();
 			case Earth:
-				return EarthAbility.getEarthColor();
+				return EarthAbility.getChatColor();
 			case Water:
-				return WaterMethods.getWaterColor();
+				return WaterAbility.getChatColor();
 			case Chi:
 				return ChiMethods.getChiColor();
 		}

@@ -5,10 +5,10 @@ import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -208,7 +208,7 @@ public class EarthSmash extends EarthAbility {
 					}
 				}
 				
-				WaterMethods.removeWaterSpouts(location, 2, player);
+				WaterAbility.removeWaterSpouts(location, 2, player);
 				AirAbility.removeAirSpouts(location, 2, player);
 				draw();
 				return;
@@ -245,7 +245,7 @@ public class EarthSmash extends EarthAbility {
 					remove();
 					return;
 				}
-				WaterMethods.removeWaterSpouts(location, 2, player);
+				WaterAbility.removeWaterSpouts(location, 2, player);
 				AirAbility.removeAirSpouts(location, 2, player);
 				shootingCollisionDetection();
 				draw();

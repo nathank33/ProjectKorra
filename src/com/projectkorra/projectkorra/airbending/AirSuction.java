@@ -49,7 +49,7 @@ public class AirSuction extends AirAbility {
 		if (player.getEyeLocation().getBlock().isLiquid()) {
 			return;
 		}
-		if (AirSpout.getPlayers().contains(player) || WaterSpout.getPlayers().contains(player)) {
+		if ( CoreAbility.hasAbility(player, AirSpout.class) || CoreAbility.hasAbility(player, WaterSpout.class)) {
 			return;
 		}
 

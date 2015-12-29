@@ -67,7 +67,7 @@ public class Flight {
 		ArrayList<Player> newflyingplayers = new ArrayList<Player>();
 		//ArrayList<Player> avatarstateplayers = new ArrayList<Player>();
 		HashSet<Player> airscooterplayers = new HashSet<>();
-		ArrayList<Player> waterspoutplayers = new ArrayList<Player>();
+		HashSet<Player> waterspoutplayers = new HashSet<>();
 		ArrayList<Player> airspoutplayers = new ArrayList<Player>();
 		HashSet<Player> sandspoutplayers = new HashSet<>();
 
@@ -77,7 +77,7 @@ public class Flight {
 		players.addAll(Catapult.getPlayers());
 		//avatarstateplayers = AvatarState.getPlayers();
 		airscooterplayers = CoreAbility.getPlayers(AirScooter.class);
-		waterspoutplayers = WaterSpout.getPlayers();
+		waterspoutplayers = CoreAbility.getPlayers(WaterSpout.class);
 		airspoutplayers = AirSpout.getPlayers();
 		sandspoutplayers = CoreAbility.getPlayers(SandSpout.class);
 

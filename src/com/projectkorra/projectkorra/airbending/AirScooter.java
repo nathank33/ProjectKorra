@@ -1,6 +1,10 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.ArrayList;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -9,11 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.util.Flight;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.ArrayList;
 
 public class AirScooter extends AirAbility {
 
@@ -115,7 +115,7 @@ public class AirScooter extends AirAbility {
 		}
 
 		Location loc = player.getLocation();
-		if (!WaterMethods.isWater(player.getLocation().add(0, 2, 0).getBlock())) {
+		if (!WaterAbility.isWater(player.getLocation().add(0, 2, 0).getBlock())) {
 			loc.setY((double) floorblock.getY() + 1.5);
 		} else {
 			return;

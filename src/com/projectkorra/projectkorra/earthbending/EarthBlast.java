@@ -5,12 +5,12 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.firebending.Combustion;
 import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -213,7 +213,7 @@ public class EarthBlast extends EarthAbility {
 				location = location.clone().add(direction);
 				Block block = location.getBlock();
 				
-				WaterMethods.removeWaterSpouts(location, player);
+				WaterAbility.removeWaterSpouts(location, player);
 				AirAbility.removeAirSpouts(location, player);
 				
 				if (block.getLocation().equals(sourceBlock.getLocation())) {
@@ -231,7 +231,7 @@ public class EarthBlast extends EarthAbility {
 					direction = GeneralMethods.getDirection(location, destination).normalize();
 					location = location.clone().add(direction);
 
-					WaterMethods.removeWaterSpouts(location, player);
+					WaterAbility.removeWaterSpouts(location, player);
 					AirAbility.removeAirSpouts(location, player);
 					
 					if (EarthBlast.annihilateBlasts(location, collisionRadius, player) 

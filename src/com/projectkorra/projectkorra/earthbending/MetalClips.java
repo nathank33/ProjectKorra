@@ -78,7 +78,7 @@ public class MetalClips extends MetalAbility {
 			return;
 		}
 		
-		if (bPlayer.isAvatarstate()) {
+		if (bPlayer.isAvatarState()) {
 			cooldown = 0;
 			range = AvatarState.getValue(range);
 			crushDamage = AvatarState.getValue(crushDamage);

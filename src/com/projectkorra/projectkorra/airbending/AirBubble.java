@@ -1,6 +1,11 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,12 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.waterbending.WaterManipulation;
-import com.projectkorra.projectkorra.waterbending.WaterMethods;
+import java.util.concurrent.ConcurrentHashMap;
 
 // TODO: Split WaterBubble into its own class
 public class AirBubble extends AirAbility {
@@ -82,8 +82,8 @@ public class AirBubble extends AirAbility {
 		} else {
 			radius = waterRadius;
 		}
-		if (GeneralMethods.isBender(player.getName(), Element.Water) && WaterMethods.isNight(player.getWorld())) {
-			radius = WaterMethods.waterbendingNightAugment(waterRadius, player.getWorld());
+		if (GeneralMethods.isBender(player.getName(), Element.Water) && WaterAbility.isNight(player.getWorld())) {
+			radius = WaterAbility.waterbendingNightAugment(waterRadius, player.getWorld());
 		}
 		if (airRadius > radius && GeneralMethods.isBender(player.getName(), Element.Air)) {
 			radius = airRadius;
@@ -93,12 +93,12 @@ public class AirBubble extends AirAbility {
 
 		for (Block block : waterOrigins.keySet()) {
 			if (block.getWorld() != location.getWorld()) {
-				if (block.getType() == Material.AIR || WaterMethods.isWater(block)) {
+				if (block.getType() == Material.AIR || WaterAbility.isWater(block)) {
 					waterOrigins.get(block).update(true);
 				}
 				waterOrigins.remove(block);
 			} else if (block.getLocation().distanceSquared(location) > radius * radius) {
-				if (block.getType() == Material.AIR || WaterMethods.isWater(block)) {
+				if (block.getType() == Material.AIR || WaterAbility.isWater(block)) {
 					waterOrigins.get(block).update(true);
 				}
 				waterOrigins.remove(block);
@@ -108,7 +108,7 @@ public class AirBubble extends AirAbility {
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, radius)) {
 			if (waterOrigins.containsKey(block)) {
 				continue;
-			} else if (!WaterMethods.isWater(block)) {
+			} else if (!WaterAbility.isWater(block)) {
 				continue;
 			} else if (GeneralMethods.isRegionProtectedFromBuild(player, "AirBubble", block.getLocation())) {
 				continue;

@@ -34,8 +34,10 @@ public abstract class CoreAbility implements Ability {
 	protected long startTime;
 	protected Player player;
 	protected BendingPlayer bPlayer;
-	protected int id;
+	
+	private int id;
 	private boolean hasStarted;
+	private boolean hasBeenRemoved;
 
 	static {
 		idCounter = Integer.MIN_VALUE;
@@ -90,6 +92,8 @@ public abstract class CoreAbility implements Ability {
 		if (player == null) {
 			throw new IllegalStateException(INVALID_PLAYER);
 		}
+		
+		hasBeenRemoved = true;
 		
 		ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>> classMap = CoreAbility.INSTANCES.get(getClass());
 		if (classMap != null) {
@@ -241,6 +245,10 @@ public abstract class CoreAbility implements Ability {
 
 	public boolean hasStarted() {
 		return hasStarted;
+	}
+	
+	public boolean hasBeenRemoved() {
+		return hasBeenRemoved;
 	}
 
 	public Player getPlayer() {
