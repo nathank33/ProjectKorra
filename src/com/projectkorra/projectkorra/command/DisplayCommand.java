@@ -9,11 +9,11 @@ import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.SubAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -82,7 +82,7 @@ public class DisplayCommand extends PKCommand {
 						+ AirAbility.getChatColor() + "Air" + ChatColor.WHITE + " | " 
 						+ WaterAbility.getChatColor() + "Water" + ChatColor.WHITE + " | " 
 						+ EarthAbility.getChatColor() + "Earth" + ChatColor.WHITE + " | " 
-						+ FireMethods.getFireColor() + "Fire" + ChatColor.WHITE + " | " 
+						+ FireAbility.getChatColor() + "Fire" + ChatColor.WHITE + " | " 
 						+ ChiMethods.getChiColor() + "Chi");
 				sender.sendMessage(w + "SubElements: "
 						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Air) + " Flight"

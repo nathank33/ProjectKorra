@@ -63,28 +63,21 @@ public class Flight {
 	}
 
 	public static void handle() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		ArrayList<Player> newflyingplayers = new ArrayList<Player>();
-		//ArrayList<Player> avatarstateplayers = new ArrayList<Player>();
-		HashSet<Player> airscooterplayers = new HashSet<>();
-		HashSet<Player> waterspoutplayers = new HashSet<>();
-		ArrayList<Player> airspoutplayers = new ArrayList<Player>();
-		HashSet<Player> sandspoutplayers = new HashSet<>();
+		ArrayList<Player> players = new ArrayList<>();
+		ArrayList<Player> newFlyingPlayers = new ArrayList<Player>();
+		HashSet<Player> airScooterPlayers = CoreAbility.getPlayers(AirScooter.class);
+		HashSet<Player> waterSpoutPlayers = CoreAbility.getPlayers(WaterSpout.class);
+		HashSet<Player> airSpoutPlayers = CoreAbility.getPlayers(AirSpout.class);
+		HashSet<Player> sandSpoutPlayers = CoreAbility.getPlayers(SandSpout.class);
 
-		players.addAll(Tornado.getPlayers());
-		//		players.addAll(Speed.getPlayers());
-		players.addAll(FireJet.getPlayers());
-		players.addAll(Catapult.getPlayers());
-		//avatarstateplayers = AvatarState.getPlayers();
-		airscooterplayers = CoreAbility.getPlayers(AirScooter.class);
-		waterspoutplayers = CoreAbility.getPlayers(WaterSpout.class);
-		airspoutplayers = AirSpout.getPlayers();
-		sandspoutplayers = CoreAbility.getPlayers(SandSpout.class);
+		players.addAll(CoreAbility.getPlayers(Tornado.class));
+		players.addAll(CoreAbility.getPlayers(FireJet.class));
+		players.addAll(CoreAbility.getPlayers(Catapult.class));
 
 		for (Player player : instances.keySet()) {
 			Flight flight = instances.get(player);
 			if (System.currentTimeMillis() <= flight.time + duration) {
-				if (airscooterplayers.contains(player) || waterspoutplayers.contains(player) || airspoutplayers.contains(player) || sandspoutplayers.contains(player)) {
+				if (airScooterPlayers.contains(player) || waterSpoutPlayers.contains(player) || airSpoutPlayers.contains(player) || sandSpoutPlayers.contains(player)) {
 					continue;
 				}
 				if (Bloodbending.isBloodbended(player)) {
@@ -98,7 +91,7 @@ public class Flight {
 					player.setAllowFlight(true);
 					if (player.getGameMode() != GameMode.CREATIVE)
 						player.setFlying(false);
-					newflyingplayers.add(player);
+					newFlyingPlayers.add(player);
 					continue;
 				}
 				if (flight.source == null) {

@@ -3,9 +3,9 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 import com.projectkorra.projectkorra.firebending.Lightning;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -344,13 +344,13 @@ public class WaterArms extends WaterAbility {
 	}
 
 	private void checkIfZapped() {
-		for (Lightning lightning : Lightning.instances.values()) {
+		for (Lightning lightning : getAbilities(Lightning.class)) {
 			for (Lightning.Arc arc : lightning.getArcs()) {
 				for (Block arm : BLOCK_REVERT_TIMES.keySet()) {
 					for (Location loc : arc.getPoints()) {
 						if (arm.getLocation().getWorld() == loc.getWorld() && loc.distance(arm.getLocation()) <= 2.5) {
 							for (Location l1 : getOffsetLocations(4, arm.getLocation(), 1.25)) {
-								FireMethods.playLightningbendingParticle(l1);
+								FireAbility.playLightningbendingParticle(l1);
 							}
 							if (lightningKill) {
 								GeneralMethods.damageEntity(lightning.getPlayer(), player, 60D, Element.Water, "Electrocution");

@@ -4,10 +4,10 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -58,8 +58,8 @@ public class HelpCommand extends PKCommand {
 			//sender.sendMessage(ChatColor.YELLOW + "Earthbenders can chain their abilities into combos, type " + EarthMethods.getEarthColor() + "/b help EarthCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/qaudl42");
 		} else if (Arrays.asList(Commands.firealiases).contains(args.get(0))) {
-			sender.sendMessage(FireMethods.getFireColor() + "Fire is the element of power. Firebenders focus on destruction and " + "incineration. Their abilities are pretty straight forward: set things on fire. They do have a bit " + "of utility however, being able to make themselves un-ignitable, extinguish large areas, cook food " + "in their hands, extinguish large areas, small bursts of flight, and then comes the abilities to shoot " + "fire from your hands.");
-			sender.sendMessage(ChatColor.YELLOW + "Firebenders can chain their abilities into combos, type " + FireMethods.getFireColor() + "/b help FireCombos" + ChatColor.YELLOW + " for more information.");
+			sender.sendMessage(FireAbility.getChatColor() + "Fire is the element of power. Firebenders focus on destruction and " + "incineration. Their abilities are pretty straight forward: set things on fire. They do have a bit " + "of utility however, being able to make themselves un-ignitable, extinguish large areas, cook food " + "in their hands, extinguish large areas, small bursts of flight, and then comes the abilities to shoot " + "fire from your hands.");
+			sender.sendMessage(ChatColor.YELLOW + "Firebenders can chain their abilities into combos, type " + FireAbility.getChatColor() + "/b help FireCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/k4fkjhb");
 		} else if (Arrays.asList(Commands.chialiases).contains(args.get(0))) {
 			sender.sendMessage(ChiMethods.getChiColor() + "Chiblockers focus on bare handed combat, utilizing their agility and " + "speed to stop any bender right in their path. Although they lack the ability to bend any of the " + "other elements, they are great in combat, and a serious threat to any bender. Chiblocking was " + "first shown to be used by Ty Lee in Avatar: The Last Airbender, then later by members of the " + "Equalists in The Legend of Korra.");

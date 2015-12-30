@@ -9,7 +9,7 @@ import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.earthbending.SandSpout;
 import com.projectkorra.projectkorra.firebending.Combustion;
 import com.projectkorra.projectkorra.firebending.FireBlast;
-import com.projectkorra.projectkorra.firebending.FireStream;
+import com.projectkorra.projectkorra.firebending.BlazeArc;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
 
@@ -98,7 +98,7 @@ public class AirShield extends AirAbility {
 		Location origin = player.getLocation();
 		FireBlast.removeFireBlastsAroundPoint(origin, radius);
 		Combustion.removeAroundPoint(origin, radius);
-		FireStream.removeAroundPoint(origin, radius);
+		BlazeArc.removeAroundPoint(origin, radius);
 		AirBlast.removeAirBlastsAroundPoint(origin, radius);
 		AirSuction.removeAirSuctionsAroundPoint(origin, radius);
 		EarthBlast.removeAroundPoint(origin, radius);

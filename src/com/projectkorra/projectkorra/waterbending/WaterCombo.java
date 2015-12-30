@@ -193,7 +193,7 @@ public class WaterCombo extends WaterAbility {
 					}
 				}
 
-				if (GeneralMethods.blockAbilities(player, FireCombo.abilitiesToBlock, loc, 1)) {
+				if (GeneralMethods.blockAbilities(player, FireCombo.getBlockableAbilities(), loc, 1)) {
 					fstream.remove();
 				}
 			}

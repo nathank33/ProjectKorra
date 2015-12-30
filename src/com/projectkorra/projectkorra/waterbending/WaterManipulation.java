@@ -45,6 +45,7 @@ public class WaterManipulation extends WaterAbility {
 	private double damage;
 	private double speed;
 	private double deflectRange;
+	private double affectingRadius;
 	private Block sourceBlock;
 	private Location location;
 	private TempBlock trail;
@@ -65,6 +66,7 @@ public class WaterManipulation extends WaterAbility {
 		this.falling = false;
 		this.settingUp = false;
 		this.displacing = false;
+		this.affectingRadius = 2.0;
 		this.cooldown = getConfig().getLong("Abilities.Water.WaterManipulation.Cooldown");
 		this.range = getConfig().getDouble("Abilities.Water.WaterManipulation.Range");
 		this.pushFactor = getConfig().getDouble("Abilities.Water.WaterManipulation.Push");
@@ -224,7 +226,7 @@ public class WaterManipulation extends WaterAbility {
 						playWaterbendingSound(location);
 					}
 
-					double radius = FireBlast.AFFECTING_RADIUS;
+					double radius = affectingRadius;
 					Player source = player;
 					if (!(location == null)) {
 						if (EarthBlast.annihilateBlasts(location, radius, source) 
@@ -272,7 +274,7 @@ public class WaterManipulation extends WaterAbility {
 				}
 
 				if (!displacing) {
-					for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, FireBlast.AFFECTING_RADIUS)) {
+					for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, affectingRadius)) {
 						if (entity instanceof LivingEntity && entity.getEntityId() != player.getEntityId()) {
 							Location location = player.getEyeLocation();
 							Vector vector = location.getDirection();
@@ -369,8 +371,8 @@ public class WaterManipulation extends WaterAbility {
 
 	public static boolean annihilateBlasts(Location location, double radius, Player player) {
 		boolean broke = false;
-		for (WaterManipulation manip : CoreAbility.getAbilities(player, WaterManipulation.class)) {
-			if (manip.location.getWorld().equals(location.getWorld())) {
+		for (WaterManipulation manip : CoreAbility.getAbilities(WaterManipulation.class)) {
+			if (manip.location.getWorld().equals(location.getWorld()) && !player.equals(manip.player)) {
 				if (manip.location.distanceSquared(location) <= radius * radius) {
 					manip.remove();
 					broke = true;

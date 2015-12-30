@@ -128,6 +128,10 @@ public class AvatarState {
 	public static int getValue(int value) {
 		return (int) factor * value;
 	}
+	
+	public static double getValue(double value, Player player) {
+		return isAvatarState(player) ? AvatarState.getValue(value) : value;
+	}
 
 	public static ArrayList<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<Player>();

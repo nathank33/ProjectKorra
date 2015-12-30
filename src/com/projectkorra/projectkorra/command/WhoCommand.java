@@ -6,9 +6,9 @@ import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 import com.projectkorra.rpg.RPGMethods;
 
 import org.bukkit.Bukkit;
@@ -95,9 +95,9 @@ public class WhoCommand extends PKCommand {
 				}
 				if (bp.hasElement(Element.Fire)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Fire) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : FireMethods.getFireColor() + "F");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Fire) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : FireAbility.getChatColor() + "F");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Fire) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : FireMethods.getFireColor() + "F");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Fire) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : FireAbility.getChatColor() + "F");
 					}
 				}
 				if (bp.hasElement(Element.Water)) {
@@ -229,11 +229,11 @@ public class WhoCommand extends PKCommand {
 				}
 			}
 			if (GeneralMethods.isBender(playerName, Element.Fire)) {
-				sender.sendMessage(FireMethods.getFireColor() + "- Firebender");
-				if (player_ != null && FireMethods.canCombustionbend((Player) player)) {
+				sender.sendMessage(FireAbility.getChatColor() + "- Firebender");
+				if (player_ != null && bPlayer.canCombustionbend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Fire) + "    Can Combustionbend");
 				}
-				if (player_ != null && FireMethods.canLightningbend((Player) player)) {
+				if (player_ != null && bPlayer.canLightningbend()) {
 					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Fire) + "    Can Lightningbend");
 				}
 			}

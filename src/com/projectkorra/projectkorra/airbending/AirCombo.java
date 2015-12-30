@@ -1,6 +1,16 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.ArrayList;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.command.Commands;
+import com.projectkorra.projectkorra.firebending.FireCombo;
+import com.projectkorra.projectkorra.firebending.FireCombo.FireComboStream;
+import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -10,17 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.firebending.FireCombo;
-import com.projectkorra.projectkorra.firebending.FireCombo.FireComboStream;
-import com.projectkorra.projectkorra.firebending.FireMethods;
-import com.projectkorra.projectkorra.util.Flight;
+import java.util.ArrayList;
 
 public class AirCombo extends AirAbility {
 
@@ -214,7 +214,7 @@ public class AirCombo extends AirAbility {
 			} else if (GeneralMethods.isRegionProtectedFromBuild(this, currentLoc)) {
 				remove();
 				return;
-			} else if (FireMethods.isWithinFireShield(currentLoc)) {
+			} else if (FireAbility.isWithinFireShield(currentLoc)) {
 				remove();
 				return;
 			} else if (isWithinAirShield(currentLoc)) {
@@ -356,7 +356,7 @@ public class AirCombo extends AirAbility {
 					}
 				}
 
-				if (GeneralMethods.blockAbilities(player, FireCombo.abilitiesToBlock, loc, 1)) {
+				if (GeneralMethods.blockAbilities(player, FireCombo.getBlockableAbilities(), loc, 1)) {
 					fstream.remove();
 				}
 			}

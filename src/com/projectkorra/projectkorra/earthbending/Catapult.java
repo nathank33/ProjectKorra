@@ -1,16 +1,13 @@
 package com.projectkorra.projectkorra.earthbending;
 
-import java.util.ArrayList;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.EarthAbility;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
 
 // TODO: Remove Catapult.Speed from the Configuration
 public class Catapult extends EarthAbility {
@@ -91,14 +88,6 @@ public class Catapult extends EarthAbility {
 		this.catapult = false;
 		this.moving = false;
 		this.flying = false;
-	}
-
-	public static ArrayList<Player> getPlayers() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (Catapult cata : CoreAbility.getAbilities(Catapult.class)) {
-			players.add(cata.getPlayer());
-		}
-		return players;
 	}
 
 	private void fly() {

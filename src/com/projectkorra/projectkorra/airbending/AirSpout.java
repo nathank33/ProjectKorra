@@ -10,7 +10,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class AirSpout extends AirAbility {
@@ -46,14 +45,6 @@ public class AirSpout extends AirAbility {
 		new Flight(player);
 		start();
 		bPlayer.addCooldown(this);
-	}
-
-	public static ArrayList<Player> getPlayers() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (AirSpout spout : CoreAbility.getAbilities(AirSpout.class)) {
-			players.add(spout.getPlayer());
-		}
-		return players;
 	}
 
 	public static boolean removeSpouts(Location loc0, double radius, Player sourceplayer) {

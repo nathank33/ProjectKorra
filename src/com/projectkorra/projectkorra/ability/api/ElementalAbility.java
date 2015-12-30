@@ -67,6 +67,17 @@ public abstract class ElementalAbility extends CoreAbility {
 		}
 		return set;
 	}
+	
+	public static boolean isDay(World world) {
+		long time = world.getTime();
+		if (world.getEnvironment() == Environment.NETHER || world.getEnvironment() == Environment.THE_END) {
+			return true;
+		}
+		if (time >= 23500 || time <= 12500) {
+			return true;
+		}
+		return false;
+	}
 
 	public static boolean isEarthbendable(Material material) {
 		return getConfig().getStringList("Properties.Earth.EarthbendableBlocks").contains(material.toString());
@@ -98,6 +109,14 @@ public abstract class ElementalAbility extends CoreAbility {
 			return true;
 		}
 		return false;
+	}
+	
+	public static boolean isIce(Block block) {
+		return isIce(block.getType());
+	}
+	
+	public static boolean isIce(Material material) {
+		return material == Material.ICE || material == Material.PACKED_ICE;
 	}
 
 	public static boolean isLava(Block block) {

@@ -8,7 +8,6 @@ import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.BloodAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.TempPotionEffect;
 
@@ -92,7 +91,7 @@ public class Bloodbending extends BloodAbility {
 				BendingPlayer targetBPlayer = BendingPlayer.getBendingPlayer(player);
 				if (targetBPlayer != null) {
 					if ((targetBPlayer.canBend(ability) && !canBloodbendOtherBloodbenders) || targetBPlayer.isAvatarState()) {
-						if (!FireMethods.isDay(target.getWorld()) || targetBPlayer.canBloodbendAtAnytime()) {
+						if (!isDay(target.getWorld()) || targetBPlayer.canBloodbendAtAnytime()) {
 							return;
 						}
 					}

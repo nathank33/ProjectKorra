@@ -7,9 +7,9 @@ import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiMethods;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -298,7 +298,7 @@ public class MultiAbilityManager {
 					case Water:
 						return WaterAbility.getChatColor();
 					case Fire:
-						return FireMethods.getFireColor();
+						return FireAbility.getChatColor();
 					case Earth:
 						return EarthAbility.getChatColor();
 					case Chi:

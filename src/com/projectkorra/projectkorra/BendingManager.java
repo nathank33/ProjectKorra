@@ -2,10 +2,10 @@ package com.projectkorra.projectkorra;
 
 import com.projectkorra.projectkorra.ability.AvatarState;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
 import com.projectkorra.projectkorra.configuration.ConfigLoadable;
-import com.projectkorra.projectkorra.firebending.FireMethods;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.RevertChecker;
@@ -69,13 +69,13 @@ public class BendingManager implements Runnable, ConfigLoadable {
 		}
 		for (World world : Bukkit.getServer().getWorlds()) {
 			if (!times.containsKey(world)) {
-				if (FireMethods.isDay(world)) {
+				if (FireAbility.isDay(world)) {
 					times.put(world, true);
 				} else {
 					times.put(world, false);
 				}
 			} else {
-				if (times.get(world) && !FireMethods.isDay(world)) {
+				if (times.get(world) && !FireAbility.isDay(world)) {
 					// The hashmap says it is day, but it is not.
 					times.put(world, false); // Sets time to night.
 					if (GeneralMethods.hasRPG()) {
@@ -118,12 +118,12 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						if (GeneralMethods.isBender(player.getName(), Element.Fire)) {
 							if (!player.hasPermission("bending.message.daymessage"))
 								return;
-							player.sendMessage(FireMethods.getFireColor() + sunsetMessage);
+							player.sendMessage(FireAbility.getChatColor() + sunsetMessage);
 						}
 					}
 				}
 
-				if (!times.get(world) && FireMethods.isDay(world)) {
+				if (!times.get(world) && FireAbility.isDay(world)) {
 					// The hashmap says it is night, but it is day.
 					times.put(world, true);
 					if (GeneralMethods.hasRPG()) {
@@ -144,14 +144,14 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						if (GeneralMethods.isBender(player.getName(), Element.Fire) && player.hasPermission("bending.message.daymessage")) {
 							if (GeneralMethods.hasRPG()) {
 								if (RPGMethods.isSozinsComet(world)) {
-									player.sendMessage(FireMethods.getFireColor() + sozinsCometMessage);
+									player.sendMessage(FireAbility.getChatColor() + sozinsCometMessage);
 								} else if (RPGMethods.isSolarEclipse(world) && !RPGMethods.isLunarEclipse(world)) {
-									player.sendMessage(FireMethods.getFireColor() + solarEclipseMessage);
+									player.sendMessage(FireAbility.getChatColor() + solarEclipseMessage);
 								} else {
-									player.sendMessage(FireMethods.getFireColor() + sunriseMessage);
+									player.sendMessage(FireAbility.getChatColor() + sunriseMessage);
 								}
 							} else {
-								player.sendMessage(FireMethods.getFireColor() + sunriseMessage);
+								player.sendMessage(FireAbility.getChatColor() + sunriseMessage);
 							}
 						}
 					}

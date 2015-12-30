@@ -1,8 +1,9 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.command.Commands;
+import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -10,11 +11,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.util.Flight;
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Tornado extends AirAbility {
 
@@ -80,14 +78,6 @@ public class Tornado extends AirAbility {
 		super.remove();
 		flight.remove();
 		player.setAllowFlight(false);
-	}
-
-	public static ArrayList<Player> getPlayers() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (Tornado tornado : CoreAbility.getAbilities(Tornado.class)) {
-			players.add(tornado.getPlayer());
-		}
-		return players;
 	}
 
 	private void rotateTornado() {

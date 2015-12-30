@@ -221,7 +221,7 @@ public class AirSwipe extends AirAbility {
 	@SuppressWarnings("deprecation")
 	private boolean isBlockBreakable(Block block) {
 		Integer id = block.getTypeId();
-		if (Arrays.asList(BREAKABLES).contains(id) && !Illumination.blocks.containsKey(block)) {
+		if (Arrays.asList(BREAKABLES).contains(id) && !Illumination.getBlocks().containsKey(block)) {
 			return true;
 		}
 		return false;
