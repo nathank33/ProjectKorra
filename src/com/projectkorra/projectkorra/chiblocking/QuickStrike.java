@@ -1,41 +1,36 @@
 package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.api.ChiAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-
 public class QuickStrike extends ChiAbility {
-	public static int damage = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.QuickStrike.Damage");
-	public static int blockChance = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.QuickStrike.ChiBlockChance");
 
-	private Entity target = null;
+	private int damage;
+	private int blockChance;
+	private Entity target;
 	
 	public QuickStrike() {}
 	
 	public QuickStrike(Player player) {
 		super(player);
-		target = GeneralMethods.getTargetedEntity(player, 2, new ArrayList<Entity>());
+		this.damage = getConfig().getInt("Abilities.Chi.QuickStrike.Damage");
+		this.blockChance = getConfig().getInt("Abilities.Chi.QuickStrike.ChiBlockChance");
+		target = GeneralMethods.getTargetedEntity(player, 2);
 		start();
 	}
 
-	@Override
-	public String getName() {
-		return "QuickStrike";
-	}
-
+	
 	@Override
 	public void progress() {
-		if (target == null)
+		if (target == null) {
 			return;
+		}
 
-		GeneralMethods.damageEntity(player, target, damage, "QuickStrike");
-
+		GeneralMethods.damageEntity(this, target, damage);
 		if (target instanceof Player && ChiPassive.willChiBlock(player, (Player) target)) {
 			ChiPassive.blockChi((Player) target);
 		}
@@ -43,12 +38,42 @@ public class QuickStrike extends ChiAbility {
 	}
 
 	@Override
+	public String getName() {
+		return "QuickStrike";
+	}
+	
+	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override
 	public long getCooldown() {
 		return 0;
 	}
+
+	public int getDamage() {
+		return damage;
+	}
+
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}
+
+	public int getBlockChance() {
+		return blockChance;
+	}
+
+	public void setBlockChance(int blockChance) {
+		this.blockChance = blockChance;
+	}
+
+	public Entity getTarget() {
+		return target;
+	}
+
+	public void setTarget(Entity target) {
+		this.target = target;
+	}
+	
 }

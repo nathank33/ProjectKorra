@@ -12,39 +12,31 @@ import org.bukkit.util.Vector;
 
 public class HighJump extends ChiAbility {
 
-	private int jumpheight = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.HighJump.Height");
-	private long cooldown = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.HighJump.Cooldown");
+	private int height;
+	private long cooldown;
 
 	public HighJump () {}
 	
 	public HighJump(Player player) {
 		super(player);
-		jumpheight = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.HighJump.Height");
-		cooldown = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.HighJump.Cooldown");
+		this.height = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.HighJump.Height");
+		this.cooldown = ProjectKorra.plugin.getConfig().getInt("Abilities.Chi.HighJump.Cooldown");
 		start();
 	}
 
 	private void jump(Player p) {
-		if (!GeneralMethods.isSolid(p.getLocation().getBlock().getRelative(BlockFace.DOWN)))
+		if (!GeneralMethods.isSolid(p.getLocation().getBlock().getRelative(BlockFace.DOWN))) {
 			return;
+		}
 		Vector vec = p.getVelocity();
-		vec.setY(jumpheight);
+		vec.setY(height);
 		p.setVelocity(vec);
 		return;
 	}
 
-	public String getDescription() {
-		return "To use this ability, simply click. You will jump quite high. This ability has a short cooldown.";
-	}
-
-	@Override
-	public String getName() {
-		return "HighJump";
-	}
-
 	@Override
 	public void progress() {
-		if (bPlayer.isOnCooldown("HighJump")) {
+		if (bPlayer.isOnCooldown(this)) {
 			remove();
 			return;
 		}
@@ -54,16 +46,34 @@ public class HighJump extends ChiAbility {
 		if (waw != null) {
 			waw.setGrabbed(false);
 		}
-		bPlayer.addCooldown("HighJump", cooldown);
+		bPlayer.addCooldown(this);
+	}
+	
+	@Override
+	public String getName() {
+		return "HighJump";
 	}
 
 	@Override
 	public Location getLocation() {
-		return player.getLocation();
+		return player != null ? player.getLocation() : null;
 	}
 
 	@Override
 	public long getCooldown() {
 		return cooldown;
 	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public void setCooldown(long cooldown) {
+		this.cooldown = cooldown;
+	}
+	
 }

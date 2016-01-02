@@ -7,7 +7,6 @@ import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.SubAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.chiblocking.Paralyze;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
@@ -132,12 +131,12 @@ public class BendingPlayer {
 	 *         AvatarState
 	 */
 	public boolean canBeBloodbent() {
-		if (AvatarState.isAvatarState(player)) {
-			if (ChiMethods.isChiBlocked(name)) {
+		if (isAvatarState()) {
+			if (isChiBlocked()) {
 				return true;
 			}
 		}
-		if (GeneralMethods.canBend(name, "Bloodbending") && !isToggled()) {
+		if (canBendIgnoreBindsCooldowns(CoreAbility.getAbility("Bloodbending")) && !isToggled()) {
 			return false;
 		}
 		return true;
@@ -153,9 +152,9 @@ public class BendingPlayer {
 		}
 		
 		List<String> disabledWorlds = getConfig().getStringList("Properties.DisabledWorlds");
-		Location location = ability.getLocation();
+		Location location = null;
 		
-		if (location == null && player != null) {
+		if (player != null) {
 			location = player.getLocation();
 		}
 

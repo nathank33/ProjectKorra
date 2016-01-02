@@ -3,11 +3,11 @@ package com.projectkorra.projectkorra.command;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -62,8 +62,8 @@ public class HelpCommand extends PKCommand {
 			sender.sendMessage(ChatColor.YELLOW + "Firebenders can chain their abilities into combos, type " + FireAbility.getChatColor() + "/b help FireCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/k4fkjhb");
 		} else if (Arrays.asList(Commands.chialiases).contains(args.get(0))) {
-			sender.sendMessage(ChiMethods.getChiColor() + "Chiblockers focus on bare handed combat, utilizing their agility and " + "speed to stop any bender right in their path. Although they lack the ability to bend any of the " + "other elements, they are great in combat, and a serious threat to any bender. Chiblocking was " + "first shown to be used by Ty Lee in Avatar: The Last Airbender, then later by members of the " + "Equalists in The Legend of Korra.");
-			sender.sendMessage(ChatColor.YELLOW + "Chiblockers can chain their abilities into combos, type " + ChiMethods.getChiColor() + "/b help ChiCombos" + ChatColor.YELLOW + " for more information.");
+			sender.sendMessage(ChiAbility.getChatColor() + "Chiblockers focus on bare handed combat, utilizing their agility and " + "speed to stop any bender right in their path. Although they lack the ability to bend any of the " + "other elements, they are great in combat, and a serious threat to any bender. Chiblocking was " + "first shown to be used by Ty Lee in Avatar: The Last Airbender, then later by members of the " + "Equalists in The Legend of Korra.");
+			sender.sendMessage(ChatColor.YELLOW + "Chiblockers can chain their abilities into combos, type " + ChiAbility.getChatColor() + "/b help ChiCombos" + ChatColor.YELLOW + " for more information.");
 			sender.sendMessage(ChatColor.YELLOW + "Learn More: " + ChatColor.DARK_AQUA + "http://tinyurl.com/mkp9n6y");
 		} else {
 			//combos - handled differently because they're stored in CamelCase in ComboManager

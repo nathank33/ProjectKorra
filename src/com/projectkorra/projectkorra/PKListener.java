@@ -22,7 +22,6 @@ import com.projectkorra.projectkorra.airbending.Suffocate;
 import com.projectkorra.projectkorra.airbending.Tornado;
 import com.projectkorra.projectkorra.chiblocking.AcrobatStance;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.chiblocking.ChiPassive;
 import com.projectkorra.projectkorra.chiblocking.HighJump;
 import com.projectkorra.projectkorra.chiblocking.Paralyze;
@@ -199,7 +198,7 @@ public class PKListener implements Listener {
 			color = FireAbility.getChatColor();
 		} else if (GeneralMethods.isBender(player.getName(), Element.Chi) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Chi");
-			color = ChiMethods.getChiColor();
+			color = ChiAbility.getChatColor();
 		}
 		
 		if (chatEnabled) {
@@ -383,7 +382,7 @@ public class PKListener implements Listener {
 			color = FireAbility.getChatColor();
 		} else if (e == Element.Chi && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Chi");
-			color = ChiMethods.getChiColor();
+			color = ChiAbility.getChatColor();
 		}
 		
 		if (chatEnabled) {
@@ -757,7 +756,7 @@ public class PKListener implements Listener {
 					event.setCancelled(true);
 				} else {
 					double initdamage = event.getDamage();
-					double newdamage = event.getDamage() * ChiPassive.FallReductionFactor;
+					double newdamage = event.getDamage() * ChiPassive.getFallReductionFactor();
 					double finaldamage = initdamage - newdamage;
 					event.setDamage(finaldamage);
 				}
@@ -814,34 +813,36 @@ public class PKListener implements Listener {
 		if (en instanceof Player) {
 			//			Player p = (Player) en; // This is the player getting hurt.
 			if (e.getDamager() instanceof Player) { // This is the player hitting someone.
-				Player sourceplayer = (Player) e.getDamager();
-				Player targetplayer = (Player) e.getEntity();
-				if (GeneralMethods.canBendPassive(sourceplayer.getName(), Element.Chi)) {
-					if (GeneralMethods.isBender(sourceplayer.getName(), Element.Chi) && e.getCause() == DamageCause.ENTITY_ATTACK && e.getDamage() == 1) {
-						if (ChiMethods.isChiAbility(GeneralMethods.getBoundAbility(sourceplayer))) {
-							if (GeneralMethods.isWeapon(sourceplayer.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
+				Player sourcePlayer = (Player) e.getDamager();
+				Player targetPlayer = (Player) e.getEntity();
+				BendingPlayer sourceBPlayer = BendingPlayer.getBendingPlayer(sourcePlayer);
+				
+				if (GeneralMethods.canBendPassive(sourcePlayer.getName(), Element.Chi)) {
+					if (GeneralMethods.isBender(sourcePlayer.getName(), Element.Chi) && e.getCause() == DamageCause.ENTITY_ATTACK && e.getDamage() == 1) {
+						if (sourceBPlayer.getBoundAbility() instanceof ChiAbility) {
+							if (GeneralMethods.isWeapon(sourcePlayer.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
 								return;
 							}
-							if (GeneralMethods.getBendingPlayer(sourceplayer.getName()).isElementToggled(Element.Chi) == true) {
-								if (GeneralMethods.getBoundAbility(sourceplayer) != null && GeneralMethods.getBoundAbility(sourceplayer).equalsIgnoreCase("Paralyze")) {
-									new Paralyze(sourceplayer, targetplayer);
+							if (GeneralMethods.getBendingPlayer(sourcePlayer.getName()).isElementToggled(Element.Chi) == true) {
+								if (GeneralMethods.getBoundAbility(sourcePlayer) != null && GeneralMethods.getBoundAbility(sourcePlayer).equalsIgnoreCase("Paralyze")) {
+									new Paralyze(sourcePlayer, targetPlayer);
 								} else {
-									if (ChiPassive.willChiBlock(sourceplayer, targetplayer)) {
-										ChiPassive.blockChi(targetplayer);
+									if (ChiPassive.willChiBlock(sourcePlayer, targetPlayer)) {
+										ChiPassive.blockChi(targetPlayer);
 									}
 								}
 							}
 						}
 					}
 				}
-				if (GeneralMethods.canBendPassive(sourceplayer.getName(), Element.Chi)) {
-					if (GeneralMethods.isWeapon(sourceplayer.getItemInHand().getType()) && !ProjectKorra.plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
+				if (GeneralMethods.canBendPassive(sourcePlayer.getName(), Element.Chi)) {
+					if (GeneralMethods.isWeapon(sourcePlayer.getItemInHand().getType()) && !ProjectKorra.plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
 						return;
 					}
-					if (e.getCause() == DamageCause.ENTITY_ATTACK && GeneralMethods.getBendingPlayer(sourceplayer.getName()).isElementToggled(Element.Chi) == true) {
-						if (GeneralMethods.getBoundAbility(sourceplayer) != null && GeneralMethods.getBoundAbility(sourceplayer).equalsIgnoreCase("Paralyze") && e.getDamage() == 1) {
-							if (sourceplayer.getWorld().equals(targetplayer.getWorld()) && Math.abs(sourceplayer.getLocation().distance(targetplayer.getLocation())) < 3) {
-								new Paralyze(sourceplayer, targetplayer);
+					if (e.getCause() == DamageCause.ENTITY_ATTACK && GeneralMethods.getBendingPlayer(sourcePlayer.getName()).isElementToggled(Element.Chi) == true) {
+						if (GeneralMethods.getBoundAbility(sourcePlayer) != null && GeneralMethods.getBoundAbility(sourcePlayer).equalsIgnoreCase("Paralyze") && e.getDamage() == 1) {
+							if (sourcePlayer.getWorld().equals(targetPlayer.getWorld()) && Math.abs(sourcePlayer.getLocation().distance(targetPlayer.getLocation())) < 3) {
+								new Paralyze(sourcePlayer, targetPlayer);
 							}
 						}
 					}
@@ -1151,7 +1152,7 @@ public class PKListener implements Listener {
 			return;
 		}
 
-		if (ChiMethods.isChiBlocked(player.getName())) {
+		if (bPlayer.isChiBlocked()) {
 			event.setCancelled(true);
 			return;
 		}
@@ -1326,7 +1327,7 @@ public class PKListener implements Listener {
 			return;
 		}
 
-		if (ChiMethods.isChiBlocked(player.getName())) {
+		if (bPlayer.isChiBlocked()) {
 			event.setCancelled(true);
 			return;
 		}
@@ -1563,13 +1564,14 @@ public class PKListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onProjectileHit(ProjectileHitEvent event) {
 		Integer id = event.getEntity().getEntityId();
-		if (Smokescreen.snowballs.contains(id)) {
+		Smokescreen smokescreen = Smokescreen.getSnowballs().get(id);
+		if (smokescreen != null) {
 			Location loc = event.getEntity().getLocation();
 			Smokescreen.playEffect(loc);
-			for (Entity en : GeneralMethods.getEntitiesAroundPoint(loc, Smokescreen.radius)) {
-				Smokescreen.applyBlindness(en);
+			for (Entity en : GeneralMethods.getEntitiesAroundPoint(loc, smokescreen.getRadius())) {
+				smokescreen.applyBlindness(en);
 			}
-			Smokescreen.snowballs.remove(id);
+			Smokescreen.getSnowballs().remove(id);
 		}
 	}
 

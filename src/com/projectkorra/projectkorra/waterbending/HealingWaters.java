@@ -18,8 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-
 public class HealingWaters extends HealingAbility {
 
 	private static long time = 0;
@@ -42,7 +40,7 @@ public class HealingWaters extends HealingAbility {
 	private static void heal(Player player) {
 		if (inWater(player)) {
 			if (player.isSneaking()) {
-				Entity entity = GeneralMethods.getTargetedEntity(player, getRadius(), new ArrayList<Entity>());
+				Entity entity = GeneralMethods.getTargetedEntity(player, getRadius());
 				if (entity instanceof LivingEntity && inWater(entity)) {
 					giveHPToEntity((LivingEntity) entity);
 				}
@@ -70,7 +68,7 @@ public class HealingWaters extends HealingAbility {
 		
 		for (PotionEffect effect : player.getActivePotionEffects()) {
 			if (isNegativeEffect(effect.getType())) {
-				if ((effect.getType() == PotionEffectType.BLINDNESS) && Smokescreen.blinded.containsKey(player.getName())) {
+				if ((effect.getType() == PotionEffectType.BLINDNESS) && Smokescreen.getBlindedTimes().containsKey(player.getName())) {
 					return;
 				}
 				player.removePotionEffect(effect.getType());

@@ -2,8 +2,10 @@ package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.api.AvatarAbility;
 import com.projectkorra.projectkorra.util.Flight;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -14,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AvatarState {
+public class AvatarState extends AvatarAbility {
 
 	public static ConcurrentHashMap<Player, AvatarState> instances = new ConcurrentHashMap<Player, AvatarState>();
 	//public static Map<String, Long> cooldowns = new HashMap<String, Long>();
@@ -37,6 +39,9 @@ public class AvatarState {
 	Player player;
 
 	// boolean canfly = false;
+	
+	public AvatarState() {
+	}
 
 	public AvatarState(Player player) {
 		this.player = player;
@@ -69,14 +74,14 @@ public class AvatarState {
 		}
 	}
 
-	public static boolean progress(Player player) {
-		return instances.get(player).progress();
+	public static void progress(Player player) {
+		instances.get(player).progress();
 	}
 
-	private boolean progress() {
+	public void progress() {
 		if (player.isDead() || !player.isOnline()) {
 			instances.remove(player);
-			return false;
+			return;
 		}
 		if (!GeneralMethods.canBend(player.getName(), StockAbility.AvatarState.name())) {
 			instances.remove(player);
@@ -84,7 +89,7 @@ public class AvatarState {
 				if (GeneralMethods.getBendingPlayer(player.getName()).isOnCooldown("AvatarState")) {
 					GeneralMethods.getBendingPlayer(player.getName()).removeCooldown("AvatarState");
 				}
-				return false;
+				return;
 			}
 		}
 
@@ -96,7 +101,6 @@ public class AvatarState {
 		}
 
 		addPotionEffects();
-		return true;
 	}
 
 	private void addPotionEffects() {
@@ -139,5 +143,20 @@ public class AvatarState {
 			players.add(player);
 		}
 		return players;
+	}
+
+	@Override
+	public String getName() {
+		return "AvatarState";
+	}
+
+	@Override
+	public Location getLocation() {
+		return player != null ? player.getLocation() : null;
+	}
+
+	@Override
+	public long getCooldown() {
+		return cooldown;
 	}
 }

@@ -31,6 +31,7 @@ import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.StockAbility;
 import com.projectkorra.projectkorra.ability.api.Ability;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.ability.api.FireAbility;
@@ -48,7 +49,6 @@ import com.projectkorra.projectkorra.airbending.AirShield;
 import com.projectkorra.projectkorra.airbending.AirSpout;
 import com.projectkorra.projectkorra.airbending.AirSuction;
 import com.projectkorra.projectkorra.airbending.AirSwipe;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.projectkorra.chiblocking.Paralyze;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
@@ -155,7 +155,6 @@ public class GeneralMethods {
 
 	public GeneralMethods(ProjectKorra plugin) {
 		GeneralMethods.plugin = plugin;
-		new ChiMethods(plugin);
 	}
 
 	/**
@@ -672,7 +671,7 @@ public class GeneralMethods {
 	 * Gets the Element color from the Ability name specified.
 	 * 
 	 * @param ability The ability name
-	 * @return {@link ChiMethods#getChiColor()} <br />
+	 * @return {@link ChiAbility#getChatColor()} <br />
 	 *         {@link AirMethods#getAirColor()} <br />
 	 *         {@link WaterAbility#getChatColor()} <br />
 	 *         {@link EarthMethods#getChatColor()} <br />
@@ -681,7 +680,7 @@ public class GeneralMethods {
 	 */
 	public static ChatColor getAbilityColor(String ability) {
 		if (AbilityModuleManager.chiabilities.contains(ability))
-			return ChiMethods.getChiColor();
+			return ChiAbility.getChatColor();
 		if (AbilityModuleManager.airbendingabilities.contains(ability)) {
 			if (AbilityModuleManager.subabilities.contains(ability))
 				return getSubBendingColor(Element.Air);
@@ -979,7 +978,7 @@ public class GeneralMethods {
 				else if (module.getElement().equalsIgnoreCase(Element.Air.toString()))
 					return AirAbility.getChatColor();
 				else if (module.getElement().equalsIgnoreCase(Element.Chi.toString()))
-					return ChiMethods.getChiColor();
+					return ChiAbility.getChatColor();
 				else
 					return getAvatarColor();
 			} else if (combo.equalsIgnoreCase("IceBullet") || combo.equalsIgnoreCase("IceWave")) {
@@ -1019,7 +1018,7 @@ public class GeneralMethods {
 				if (element == Element.Water)
 					return WaterAbility.getChatColor();
 				if (element == Element.Chi)
-					return ChiMethods.getChiColor();
+					return ChiAbility.getChatColor();
 				return getAvatarColor();
 			}
 		}
@@ -2052,7 +2051,7 @@ public class GeneralMethods {
 			case Water:
 				return WaterAbility.getChatColor();
 			case Chi:
-				return ChiMethods.getChiColor();
+				return ChiAbility.getChatColor();
 		}
 		return null;
 	}

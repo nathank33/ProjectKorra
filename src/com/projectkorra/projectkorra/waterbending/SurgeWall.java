@@ -44,6 +44,8 @@ public class SurgeWall extends WaterAbility {
 	private Location targetDestination;
 	private Vector firstDirection;
 	private Vector targetDirection;
+	
+	public SurgeWall() {}
 
 	@SuppressWarnings("deprecation")
 	public SurgeWall(Player player) {

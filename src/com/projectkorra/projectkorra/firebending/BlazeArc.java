@@ -33,6 +33,8 @@ public class BlazeArc extends FireAbility {
 	private Location location;
 	private Vector direction;
 
+	public BlazeArc() {}
+	
 	public BlazeArc(Location location, Vector direction, Player player, double range) {
 		this.range = getFirebendingDayAugment(range);
 		this.speed = 15;

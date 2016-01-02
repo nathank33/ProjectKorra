@@ -1,10 +1,10 @@
 package com.projectkorra.projectkorra;
 
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 
 import org.bukkit.ChatColor;
 
@@ -16,7 +16,7 @@ public enum Element {
 	Water (WaterAbility.getChatColor(), WaterAbility.getSubChatColor()), 
 	Earth (EarthAbility.getChatColor(), EarthAbility.getSubChatColor()), 
 	Fire (FireAbility.getChatColor(), FireAbility.getSubChatColor()), 
-	Chi (ChiMethods.getChiColor(), ChiMethods.getChiColor());
+	Chi (ChiAbility.getChatColor(), ChiAbility.getChatColor());
 	
 	private ChatColor color, subcolor;
 

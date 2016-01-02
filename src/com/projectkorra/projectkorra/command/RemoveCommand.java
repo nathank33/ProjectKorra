@@ -3,7 +3,7 @@ package com.projectkorra.projectkorra.command;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.event.PlayerChangeElementEvent;
 import com.projectkorra.projectkorra.event.PlayerChangeElementEvent.Result;
 
@@ -39,7 +39,7 @@ public class RemoveCommand extends PKCommand {
 					GeneralMethods.saveElements(GeneralMethods.getBendingPlayer(sender.getName()));
 					GeneralMethods.removeUnusableAbilities(sender.getName());
 					if (e == Element.Chi) {
-						sender.sendMessage(ChiMethods.getChiColor() + "You have removed your chiblocking.");
+						sender.sendMessage(ChiAbility.getChatColor() + "You have removed your chiblocking.");
 						return;
 					}
 					sender.sendMessage(GeneralMethods.getElementColor(e) + "You have removed your " + e.toString().toLowerCase() + "bending.");
@@ -69,8 +69,8 @@ public class RemoveCommand extends PKCommand {
 				GeneralMethods.saveElements(bPlayer);
 				GeneralMethods.removeUnusableAbilities(player.getName());
 				if (e == Element.Chi) {
-					sender.sendMessage(ChiMethods.getChiColor() + "You have removed the chiblocking of " + ChatColor.DARK_AQUA + player.getName());
-					player.sendMessage(ChiMethods.getChiColor() + "Your chiblocking has been removed by " + ChatColor.DARK_AQUA + sender.getName());
+					sender.sendMessage(ChiAbility.getChatColor() + "You have removed the chiblocking of " + ChatColor.DARK_AQUA + player.getName());
+					player.sendMessage(ChiAbility.getChatColor() + "Your chiblocking has been removed by " + ChatColor.DARK_AQUA + sender.getName());
 				} else {
 					sender.sendMessage(GeneralMethods.getElementColor(e) + "You have removed the " + getElement(args.get(1)).toLowerCase() + "bending of " + ChatColor.DARK_AQUA + player.getName());
 					player.sendMessage(GeneralMethods.getElementColor(e) + "Your " + getElement(args.get(1)).toLowerCase() + "bending has been removed by " + ChatColor.DARK_AQUA + sender.getName());

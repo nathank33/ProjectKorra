@@ -25,10 +25,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CoreAbility implements Ability {
 
+	private static final String INVALID_PLAYER = "Player is null, make sure the first line if your ability is super(player)";
 	private static final ConcurrentHashMap<Class<? extends CoreAbility>, ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>>> INSTANCES = new ConcurrentHashMap<>();
 	private static final ConcurrentHashMap<Class<? extends CoreAbility>, Set<CoreAbility>> INSTANCES_BY_CLASS = new ConcurrentHashMap<>();
 	private static final ConcurrentHashMap<String, CoreAbility> ABILITIES_BY_NAME = new ConcurrentHashMap<>();
-	private static final String INVALID_PLAYER = "Player is null, make sure the first line if your ability is super(player)";
+	
 	private static int idCounter;
 
 	protected long startTime;

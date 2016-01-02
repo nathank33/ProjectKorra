@@ -5,10 +5,10 @@ import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.ChiAbility;
 import com.projectkorra.projectkorra.ability.api.EarthAbility;
 import com.projectkorra.projectkorra.ability.api.FireAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
-import com.projectkorra.projectkorra.chiblocking.ChiMethods;
 import com.projectkorra.rpg.RPGMethods;
 
 import org.bukkit.Bukkit;
@@ -109,9 +109,9 @@ public class WhoCommand extends PKCommand {
 				}
 				if (bp.hasElement(Element.Chi)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Chi) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : ChiMethods.getChiColor() + "C");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Chi) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : ChiAbility.getChatColor() + "C");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Chi) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : ChiMethods.getChiColor() + "C");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Chi) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : ChiAbility.getChatColor() + "C");
 					}
 				}
 				if (staff.containsKey(player.getUniqueId().toString())) {
@@ -238,7 +238,7 @@ public class WhoCommand extends PKCommand {
 				}
 			}
 			if (GeneralMethods.isBender(playerName, Element.Chi)) {
-				sender.sendMessage(ChiMethods.getChiColor() + "- ChiBlocker");
+				sender.sendMessage(ChiAbility.getChatColor() + "- ChiBlocker");
 			}
 			
 			UUID uuid = player.getUniqueId();

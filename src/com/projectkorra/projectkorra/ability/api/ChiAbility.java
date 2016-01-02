@@ -35,5 +35,5 @@ public abstract class ChiAbility extends ElementalAbility {
 	public static ChatColor getSubChatColor() {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Chi"));
 	}
-
+	
 }
