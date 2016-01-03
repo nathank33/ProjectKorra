@@ -1,6 +1,5 @@
 package com.projectkorra.projectkorra.chiblocking;
 
-import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.api.ChiAbility;
 
 import org.bukkit.Location;
@@ -21,13 +20,13 @@ public class AcrobatStance extends ChiAbility {
 	public AcrobatStance(Player player) {
 		super(player);
 		
-		this.chiBlockBoost = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ChiBlockBoost");
-		this.paralyzeDodgeBoost = ProjectKorra.plugin.getConfig().getDouble("Abilities.Chi.AcrobatStance.ParalyzeChanceDecrease");
+		this.chiBlockBoost = getConfig().getDouble("Abilities.Chi.AcrobatStance.ChiBlockBoost");
+		this.paralyzeDodgeBoost = getConfig().getDouble("Abilities.Chi.AcrobatStance.ParalyzeChanceDecrease");
 		this.speed = ChiPassive.getSpeedPower() + 1;
 		this.jump = ChiPassive.getJumpPower() + 1;
 		
 		ChiAbility stance = bPlayer.getStance();
-		if (!(stance instanceof AcrobatStance)) {
+		if (stance != null && !(stance instanceof AcrobatStance)) {
 			stance.remove();
 			bPlayer.setStance(this);
 		}

@@ -866,7 +866,7 @@ public class GeneralMethods {
 			for (int y = yorg - r; y <= yorg + r; y++) {
 				for (int z = zorg - r; z <= zorg + r; z++) {
 					Block block = location.getWorld().getBlockAt(x, y, z);
-					if (block.getLocation().distance(location) <= radius) {
+					if (block.getLocation().distanceSquared(location) <= radius * radius) {
 						blocks.add(block);
 					}
 				}
@@ -1198,7 +1198,7 @@ public class GeneralMethods {
 		Collection<Player> players = new HashSet<Player>();
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.getLocation().getWorld().equals(location.getWorld())) {
-				if (player.getLocation().distance(location) <= distance) {
+				if (player.getLocation().distanceSquared(location) <= distance * distance) {
 					players.add(player);
 				}
 			}
@@ -1258,7 +1258,11 @@ public class GeneralMethods {
 		for (Entity entity : origin.getWorld().getEntities()) {
 			if (avoid.contains(entity))
 				continue;
-			if (entity.getLocation().distance(origin) < longestr && getDistanceFromLine(direction, origin, entity.getLocation()) < 2 && (entity instanceof LivingEntity) && entity.getEntityId() != player.getEntityId() && entity.getLocation().distance(origin.clone().add(direction)) < entity.getLocation().distance(origin.clone().add(direction.clone().multiply(-1)))) {
+			if (entity.getLocation().distanceSquared(origin) < longestr * longestr 
+					&& getDistanceFromLine(direction, origin, entity.getLocation()) < 2 
+					&& (entity instanceof LivingEntity) 
+					&& entity.getEntityId() != player.getEntityId() 
+					&& entity.getLocation().distance(origin.clone().add(direction)) < entity.getLocation().distance(origin.clone().add(direction.clone().multiply(-1)))) {
 				target = entity;
 				longestr = entity.getLocation().distance(origin);
 			}
@@ -1834,6 +1838,11 @@ public class GeneralMethods {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		writeToDebug("");
+		writeToDebug("CoreAbility Debugger");
+		writeToDebug("====================");
+		writeToDebug(CoreAbility.getDebugString());
 	}
 
 	public static void saveAbility(BendingPlayer bPlayer, int slot, String ability) {
@@ -1937,6 +1946,7 @@ public class GeneralMethods {
 				((ComboAbilityModule) c.getComboType()).stop();
 		}
 
+		CoreAbility.removeAll();
 		EarthAbility.stopBending();
 		WaterAbility.stopBending();
 		FireAbility.stopBending();

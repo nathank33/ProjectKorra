@@ -1,8 +1,14 @@
 package com.projectkorra.projectkorra.airbending;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.AvatarState;
+import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.command.Commands;
+import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
+import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -19,24 +25,17 @@ import org.bukkit.material.Lever;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.command.Commands;
-import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
-import com.projectkorra.projectkorra.util.Flight;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AirBlast extends AirAbility {
 
-	
-	private static final byte FULL_LIQUID_DATA = 0x0;
 	private static final int MAX_TICKS = 10000;
 	private static final int ORIGIN_PARTICLE_COUNT = 4;
 	private static final double ORIGIN_SELECT_RANGE = 10;
-	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<Player, Location>();
+	private static final ConcurrentHashMap<Player, Location> ORIGINS = new ConcurrentHashMap<>();
 
 	private boolean canFlickLevers;
 	private boolean canOpenDoors;
@@ -58,6 +57,7 @@ public class AirBlast extends AirAbility {
 	private Location origin;
 	private Vector direction;
 	private AirBurst source;
+	private Random random;
 	private ArrayList<Block> affectedLevers;
 	private ArrayList<Entity> affectedEntities;
 	
@@ -82,8 +82,7 @@ public class AirBlast extends AirAbility {
 			if (entity != null) {
 				this.direction = GeneralMethods.getDirection(origin, entity.getLocation()).normalize();
 			} else {
-				this.direction = GeneralMethods.getDirection(origin, GeneralMethods.getTargetedLocation(player, range))
-						.normalize();
+				this.direction = GeneralMethods.getDirection(origin, GeneralMethods.getTargetedLocation(player, range)) .normalize();
 			}
 		} else {
 			origin = player.getEyeLocation();
@@ -95,7 +94,7 @@ public class AirBlast extends AirAbility {
 		start();
 	}
 
-	public AirBlast(Location location, Vector direction, Player player, double modifiedPushFactor, AirBurst burst) {
+	public AirBlast(Player player, Location location, Vector direction, double modifiedPushFactor, AirBurst burst) {
 		super(player);
 		if (location.getBlock().isLiquid()) {
 			return;
@@ -128,6 +127,7 @@ public class AirBlast extends AirAbility {
 		this.cooldown = GeneralMethods.getGlobalCooldown();
 		this.isFromOtherOrigin = false;
 		this.showParticles = true;
+		this.random = new Random();
 		this.affectedLevers = new ArrayList<>();
 		this.affectedEntities = new ArrayList<>();
 	}
@@ -181,7 +181,7 @@ public class AirBlast extends AirAbility {
 		if (showParticles) {
 			playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
 		}
-		if (GeneralMethods.rand.nextInt(4) == 0) {
+		if (random.nextInt(4) == 0) {
 			playAirbendingSound(location);
 		}
 		location = location.add(direction.clone().multiply(speedFactor));
@@ -196,7 +196,7 @@ public class AirBlast extends AirAbility {
 			double max = speed / speedFactor;
 			double factor = pushFactor;
 
-			if (AvatarState.isAvatarState(player)) {
+			if (bPlayer.isAvatarState()) {
 				max = AvatarState.getValue(max);
 				factor = AvatarState.getValue(factor);
 			}
@@ -255,7 +255,7 @@ public class AirBlast extends AirAbility {
 			breakBreathbendingHold(entity);
 
 			if (damage > 0 && entity instanceof LivingEntity && !entity.equals(player) && !affectedEntities.contains(entity)) {
-				GeneralMethods.damageEntity(player, entity, damage, "AirBlast");
+				GeneralMethods.damageEntity(this, entity, damage);
 				affectedEntities.add(entity);
 			}
 		}
@@ -388,7 +388,7 @@ public class AirBlast extends AirAbility {
 		}
 		if ((GeneralMethods.isSolid(block) || block.isLiquid()) && !affectedLevers.contains(block) && canCoolLava) {
 			if (block.getType() == Material.LAVA || block.getType() == Material.STATIONARY_LAVA) {
-				if (block.getData() == FULL_LIQUID_DATA) {
+				if (block.getData() == 0x0) {
 					block.setType(Material.OBSIDIAN);
 				} else {
 					block.setType(Material.COBBLESTONE);

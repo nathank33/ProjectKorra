@@ -50,6 +50,17 @@ public abstract class WaterAbility extends BlockAbility {
 		return getIceSourceBlock(player, range);
 	}
 
+	public double getNightFactor() {
+		if (getLocation() != null) {
+			return getNightFactor(getLocation().getWorld());
+		}
+		return player != null ? getNightFactor(player.getLocation().getWorld()) : 1;
+	}
+	
+	public double getNightFactor(double value) {
+		return player != null ? getNightFactor(value, player.getWorld()) : value;
+	}
+	
 	public Block getPlantSourceBlock(double range) {
 		return getPlantSourceBlock(range, false);
 	}
@@ -57,13 +68,22 @@ public abstract class WaterAbility extends BlockAbility {
 	public Block getPlantSourceBlock(double range, boolean onlyLeaves) {
 		return getPlantSourceBlock(player, range, onlyLeaves);
 	}
-	
+
 	public boolean isWaterbendable(Block block) {
 		return isWaterbendable(block, player);
 	}
-	
+
 	public static boolean canBendPackedIce() {
 		return getConfig().getBoolean("Properties.Water.CanBendPackedIce");
+	}
+	
+	/**
+	 * Gets the WaterColor from the config.
+	 * 
+	 * @return Config specified ChatColor
+	 */
+	public static ChatColor getChatColor() {
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Water"));
 	}
 
 	public static Block getIceSourceBlock(Player player, double range) {
@@ -84,6 +104,32 @@ public abstract class WaterAbility extends BlockAbility {
 		return null;
 	}
 
+	public static double getNightFactor(double value, World world) {
+		if (isNight(world)) {
+			if (GeneralMethods.hasRPG()) {
+				if (BendingManager.events.get(world).equalsIgnoreCase(WorldEvents.LunarEclipse.toString())) {
+					return RPGMethods.getFactor(WorldEvents.LunarEclipse) * value;
+				} else if (BendingManager.events.get(world).equalsIgnoreCase("FullMoon")) {
+					return getConfig().getDouble("Properties.Water.FullMoonFactor") * value;
+				} else {
+					return value;
+				}
+			} else {
+				if (isFullMoon(world)) {
+					return getConfig().getDouble("Properties.Water.FullMoonFactor") * value;
+				} else {
+					return getConfig().getDouble("Properties.Water.NightFactor") * value;
+				}
+			}
+		} else {
+			return value;
+		}
+	}
+	
+	public static double getNightFactor(World world) {
+		return getNightFactor(1, world);
+	}
+
 	public static Block getPlantSourceBlock(Player player, double range, boolean onlyLeaves) {
 		Location location = player.getEyeLocation();
 		Vector vector = location.getDirection().clone().normalize();
@@ -102,48 +148,10 @@ public abstract class WaterAbility extends BlockAbility {
 		return null;
 	}
 	
-	public double getWaterbendingNightAugment() {
-		if (getLocation() != null) {
-			return getWaterbendingNightAugment(getLocation().getWorld());
-		}
-		return player != null ? getWaterbendingNightAugment(player.getLocation().getWorld()) : 1;
-	}
-
-	public static double getWaterbendingNightAugment(World world) {
-		if (GeneralMethods.hasRPG()) {
-			if (isNight(world)) {
-				if (BendingManager.events.get(world).equalsIgnoreCase(WorldEvents.LunarEclipse.toString())) {
-					return RPGMethods.getFactor(WorldEvents.LunarEclipse);
-				} else if (BendingManager.events.get(world).equalsIgnoreCase("FullMoon")) {
-					return getConfig().getDouble("Properties.Water.FullMoonFactor");
-				}
-				return getConfig().getDouble("Properties.Water.NightFactor");
-			} else {
-				return 1;
-			}
-		} else {
-			if (isNight(world) && BendingManager.events.get(world).equalsIgnoreCase("FullMoon")) {
-				return getConfig().getDouble("Properties.Water.FullMoonFactor");
-			} else if (isNight(world)) {
-				return getConfig().getDouble("Properties.Water.NightFactor");
-			}
-			return 1;
-		}
-	}
-
-	/**
-	 * Gets the WaterColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Water"));
-	}
-	
 	public static ChatColor getSubChatColor() {
 		return ChatColor.valueOf(getConfig().getString("Properties.Chat.Colors.WaterSub"));
 	}
-
+	
 	/**
 	 * Finds a valid Water source for a Player. To use dynamic source selection,
 	 * use BlockSource.getWaterSourceBlock() instead of this method. Dynamic
@@ -178,7 +186,7 @@ public abstract class WaterAbility extends BlockAbility {
 		}
 		return null;
 	}
-	
+
 	public static boolean isAdjacentToFrozenBlock(Block block) {
 		BlockFace[] faces = { BlockFace.DOWN, BlockFace.UP, BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH };
 		boolean adjacent = false;
@@ -189,6 +197,10 @@ public abstract class WaterAbility extends BlockAbility {
 		}
 		return adjacent;
 	}
+
+	public static boolean isIcebendable(Block block) {
+		return block != null ? isIcebendable(block.getType()) : false;
+	}
 	
 	public static boolean isIcebendable(Material material) {
 		if (material == Material.ICE) {
@@ -198,11 +210,7 @@ public abstract class WaterAbility extends BlockAbility {
 		}
 		return false;
 	}
-
-	public static boolean isIcebendable(Block block) {
-		return block != null ? isIcebendable(block.getType()) : false;
-	}
-
+	
 	public static boolean isPlantbendable(Block block) {
 		return isPlantbendable(block, false);
 	}
@@ -221,11 +229,11 @@ public abstract class WaterAbility extends BlockAbility {
 	public static boolean isSnow(Block block) {
 		return block != null ? isSnow(block.getType()) : false;
 	}
-	
+
 	public static boolean isSnow(Material material) {
 		return material == Material.SNOW || material == Material.SNOW_BLOCK;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static boolean isWaterbendable(Block block, Player player) {
 		byte full = 0x0;
@@ -287,37 +295,12 @@ public abstract class WaterAbility extends BlockAbility {
 	public static void removeWaterSpouts(Location loc, Player source) {
 		removeWaterSpouts(loc, 1.5, source);
 	}
-
+	
 	public static void stopBending() {
+		PhaseChangeFreeze.removeAllCleanup();
 		WaterSpout.removeAllCleanup();
 		SurgeWall.removeAllCleanup();
 		SurgeWave.removeAllCleanup();
 		WaterArms.removeAllCleanup();
-	}
-
-	public double waterbendingNightAugment(double value) {
-		return player != null ? waterbendingNightAugment(value, player.getWorld()) : value;
-	}
-	
-	public static double waterbendingNightAugment(double value, World world) {
-		if (isNight(world)) {
-			if (GeneralMethods.hasRPG()) {
-				if (BendingManager.events.get(world).equalsIgnoreCase(WorldEvents.LunarEclipse.toString())) {
-					return RPGMethods.getFactor(WorldEvents.LunarEclipse) * value;
-				} else if (BendingManager.events.get(world).equalsIgnoreCase("FullMoon")) {
-					return getConfig().getDouble("Properties.Water.FullMoonFactor") * value;
-				} else {
-					return value;
-				}
-			} else {
-				if (isFullMoon(world)) {
-					return getConfig().getDouble("Properties.Water.FullMoonFactor") * value;
-				} else {
-					return getConfig().getDouble("Properties.Water.NightFactor") * value;
-				}
-			}
-		} else {
-			return value;
-		}
 	}
 }

@@ -58,14 +58,14 @@ public class IceBlast extends IceAbility {
 		this.damage = getConfig().getInt("Abilities.Water.IceBlast.Damage");
 		this.cooldown = getConfig().getInt("Abilities.Water.IceBlast.Cooldown");
 		
-		this.damage = waterbendingNightAugment(damage, player.getWorld());
+		this.damage = getNightFactor(damage, player.getWorld());
 		
 		if (!bPlayer.canBend(this) || !bPlayer.canIcebend()) {
 			return;
 		}
 
 		block(player);
-		range = waterbendingNightAugment(range, player.getWorld());
+		range = getNightFactor(range, player.getWorld());
 		Block sourceblock = BlockSource.getWaterSourceBlock(player, range, ClickType.SHIFT_DOWN, false, true, false);
 
 		if (sourceblock == null) {

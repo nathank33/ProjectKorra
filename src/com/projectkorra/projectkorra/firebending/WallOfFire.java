@@ -65,10 +65,10 @@ public class WallOfFire extends FireAbility {
 		origin = GeneralMethods.getTargetedLocation(player, range);
 
 		if (isDay(player.getWorld())) {
-			width = (int) getFirebendingDayAugment(width);
-			height = (int) getFirebendingDayAugment(height);
-			duration = (long) getFirebendingDayAugment(duration);
-			damage = (int) getFirebendingDayAugment(damage);
+			width = (int) getDayFactor(width);
+			height = (int) getDayFactor(height);
+			duration = (long) getDayFactor(duration);
+			damage = (int) getDayFactor(damage);
 		}
 
 		time = System.currentTimeMillis();

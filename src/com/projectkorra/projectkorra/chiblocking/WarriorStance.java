@@ -20,7 +20,7 @@ public class WarriorStance extends ChiAbility {
 		this.resistance = getConfig().getInt("Abilities.Chi.WarriorStance.Resistance");
 		
 		ChiAbility stance = bPlayer.getStance();
-		if (!(stance instanceof WarriorStance)) {
+		if (stance != null && !(stance instanceof WarriorStance)) {
 			stance.remove();
 			bPlayer.setStance(this);
 		}

@@ -40,12 +40,12 @@ public class TorrentWave extends WaterAbility {
 	public TorrentWave(Player player, Location location, double radius) {
 		super(player);
 		
+		this.radius = radius;
 		this.interval = 30;
 		this.maxHeight = getConfig().getDouble("Abilities.Water.Torrent.Wave.Height");
-		this.radius = getConfig().getDouble("Abilities.Water.Torrent.Wave.Radius");
+		this.maxRadius = getConfig().getDouble("Abilities.Water.Torrent.Wave.Radius");
 		this.knockback = getConfig().getDouble("Abilities.Water.Torrent.Wave.Knockback");
 		this.cooldown = 0;
-		this.radius = radius;
 		this.growSpeed = 0.5;
 		this.origin = location.clone();
 		this.time = System.currentTimeMillis();
@@ -53,8 +53,8 @@ public class TorrentWave extends WaterAbility {
 		this.blocks = new ArrayList<TempBlock>();
 		this.affectedEntities = new ArrayList<Entity>();
 		
-		this.knockback = waterbendingNightAugment(knockback);
-		this.maxRadius = waterbendingNightAugment(maxRadius);
+		this.knockback = getNightFactor(knockback);
+		this.maxRadius = getNightFactor(maxRadius);
 		
 		initializeHeightsMap();
 		start();
@@ -77,7 +77,7 @@ public class TorrentWave extends WaterAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBendIgnoreCooldowns(this)) {
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			remove();
 			return;
 			
@@ -91,7 +91,6 @@ public class TorrentWave extends WaterAbility {
 				returnWater();
 				return;
 			}
-
 			formBurst();
 			time = System.currentTimeMillis();
 		}

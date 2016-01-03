@@ -84,7 +84,7 @@ public class WaterSpoutWave extends WaterAbility {
 		this.affectedEntities = new ArrayList<>();
 		this.tasks = new ArrayList<>();
 		
-		this.damage = waterbendingNightAugment(this.damage);
+		this.damage = getNightFactor(this.damage);
 		
 		if (!enabled || !bPlayer.canBend(this)) {
 			return;
@@ -93,10 +93,6 @@ public class WaterSpoutWave extends WaterAbility {
 		this.time = System.currentTimeMillis();
 		this.type = type;
 		start();
-
-		if (type == AbilityType.CLICK) {
-			progress();
-		}
 	}
 
 	@Override
@@ -119,7 +115,7 @@ public class WaterSpoutWave extends WaterAbility {
 
 		if (type == AbilityType.CLICK) {
 			if (origin == null) {
-				removeType(player, AbilityType.CLICK);
+				removeOldType(player, AbilityType.CLICK);
 				Block block = BlockSource.getWaterSourceBlock(player, range, ClickType.LEFT_CLICK, true, true, bPlayer.canBend(this));
 				
 				if (block == null) {
@@ -157,7 +153,7 @@ public class WaterSpoutWave extends WaterAbility {
 			}
 			if (!charging) {
 				if (!containsType(player, AbilityType.SHIFT)) {
-					removeType(player, AbilityType.CLICK);
+					removeOldType(player, AbilityType.CLICK);
 					remove();
 					return;
 				}
@@ -173,10 +169,9 @@ public class WaterSpoutWave extends WaterAbility {
 						new PlantRegrowth(player, origin.getBlock());
 					}
 				}
-
 			}
 
-			removeType(player, AbilityType.CLICK);
+			removeOldType(player, AbilityType.CLICK);
 			if (!player.isSneaking()) {
 				if (System.currentTimeMillis() - time > chargeTime) {
 					WaterSpoutWave wave = new WaterSpoutWave(player, AbilityType.RELEASE);
@@ -243,10 +238,10 @@ public class WaterSpoutWave extends WaterAbility {
 				
 				player.setFallDistance(0f);
 				double currentSpeed = speed - (speed * (System.currentTimeMillis() - time) / flightTime);
-				double nightSpeed = waterbendingNightAugment(currentSpeed * 0.9);
+				double nightSpeed = getNightFactor(currentSpeed * 0.9);
 				currentSpeed = nightSpeed > currentSpeed ? nightSpeed : currentSpeed;
 				if (bPlayer.isAvatarState()) {
-					currentSpeed = waterbendingNightAugment(speed);
+					currentSpeed = getNightFactor(speed);
 				}
 
 				player.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(currentSpeed));
@@ -265,7 +260,7 @@ public class WaterSpoutWave extends WaterAbility {
 					for (Entity entity : GeneralMethods.getEntitiesAroundPoint(player.getLocation().add(0, -1, 0), waveRadius * 1.5)) {
 						if (entity != this.player && entity instanceof LivingEntity && !affectedEntities.contains(entity)) {
 							affectedEntities.add(entity);
-							final double augment = getWaterbendingNightAugment(player.getWorld());
+							final double augment = getNightFactor(player.getWorld());
 							GeneralMethods.damageEntity(player, entity, damage, Element.Water, "WaterWave");
 							final Player fplayer = this.player;
 							final Entity fent = entity;
@@ -385,9 +380,9 @@ public class WaterSpoutWave extends WaterAbility {
 		return false;
 	}
 
-	public static void removeType(Player player, AbilityType type) {
+	public void removeOldType(Player player, AbilityType type) {
 		for (WaterSpoutWave wave : CoreAbility.getAbilities(player, WaterSpoutWave.class)) {
-			if (wave.type.equals(type)) {
+			if (wave.type.equals(type) && !wave.equals(this)) {
 				wave.remove();
 			}
 		}
@@ -438,7 +433,7 @@ public class WaterSpoutWave extends WaterAbility {
 
 	@Override
 	public String getName() {
-		return "WaterSpoutWave";
+		return "WaterSpout";
 	}
 
 	@Override

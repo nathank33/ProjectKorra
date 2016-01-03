@@ -65,7 +65,7 @@ import com.projectkorra.projectkorra.firebending.FireBurst;
 import com.projectkorra.projectkorra.firebending.FireDamageTimer;
 import com.projectkorra.projectkorra.firebending.FireJet;
 import com.projectkorra.projectkorra.firebending.FireShield;
-import com.projectkorra.projectkorra.firebending.HeatControl;
+import com.projectkorra.projectkorra.firebending.HeatControlSolidify;
 import com.projectkorra.projectkorra.firebending.HeatControlExtinguish;
 import com.projectkorra.projectkorra.firebending.Illumination;
 import com.projectkorra.projectkorra.firebending.Lightning;
@@ -866,7 +866,9 @@ public class PKListener implements Listener {
 			List<ItemStack> newDrops = new ArrayList<ItemStack>();
 			for (int i = 0; i < drops.size(); i++) {
 				Material type = drops.get(i).getType();
-				if (!(type == Material.LEATHER_BOOTS || type == Material.LEATHER_CHESTPLATE || type == Material.LEATHER_HELMET || type == Material.LEATHER_LEGGINGS || type == Material.AIR)) {
+				if (!(type == Material.LEATHER_BOOTS || type == Material.LEATHER_CHESTPLATE 
+						|| type == Material.LEATHER_HELMET || type == Material.LEATHER_LEGGINGS 
+						|| type == Material.AIR)) {
 					newDrops.add(drops.get(i));
 				}
 			}
@@ -884,21 +886,27 @@ public class PKListener implements Listener {
 		
 		if (plantArmor != null) {
 			List<ItemStack> drops = event.getDrops();
-			List<ItemStack> newdrops = new ArrayList<ItemStack>();
+			List<ItemStack> newDrops = new ArrayList<>();
 			
 			for (int i = 0; i < drops.size(); i++) {
-				if (!(drops.get(i).getType() == Material.LEATHER_BOOTS || drops.get(i).getType() == Material.LEATHER_CHESTPLATE || drops.get(i).getType() == Material.LEAVES || drops.get(i).getType() == Material.LEAVES_2 || drops.get(i).getType() == Material.LEATHER_LEGGINGS || drops.get(i).getType() == Material.AIR))
-					newdrops.add((drops.get(i)));
+				Material type = drops.get(i).getType();
+				if (!(type == Material.LEATHER_BOOTS || type == Material.LEATHER_CHESTPLATE 
+						|| type == Material.LEAVES || type == Material.LEAVES_2 
+						|| type == Material.LEATHER_LEGGINGS || type == Material.AIR)) {
+					newDrops.add(drops.get(i));
+					Bukkit.broadcastMessage("Adding " + drops.get(i));
+				}
 			}
 			if (plantArmor.getOldArmor() != null) {
 				for (ItemStack is : plantArmor.getOldArmor()) {
-					if (!(is.getType() == Material.AIR))
-						newdrops.add(is);
+					if (!(is.getType() == Material.AIR)) {
+						newDrops.add(is);
+					}
 				}
 			}
 			
 			event.getDrops().clear();
-			event.getDrops().addAll(newdrops);
+			event.getDrops().addAll(newDrops);
 			plantArmor.remove();
 		}
 		
@@ -1286,7 +1294,7 @@ public class PKListener implements Listener {
 					new FireBlastCharged(player);
 				}
 				if (abil.equalsIgnoreCase("HeatControl")) {
-					new HeatControl(player);
+					new HeatControlSolidify(player);
 				}
 				if (abil.equalsIgnoreCase("FireBurst")) {
 					new FireBurst(player);

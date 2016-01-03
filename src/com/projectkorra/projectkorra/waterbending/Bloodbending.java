@@ -66,7 +66,7 @@ public class Bloodbending extends BloodAbility {
 			return;
 		}
 
-		range = (int) waterbendingNightAugment(range, player.getWorld());
+		range = (int) getNightFactor(range, player.getWorld());
 		if (bPlayer.isAvatarState()) {
 			range += AvatarState.getValue(1.5);
 			for (Entity entity : GeneralMethods.getEntitiesAroundPoint(player.getLocation(), range)) {

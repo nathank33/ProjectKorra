@@ -74,7 +74,7 @@ public class FireBlast extends FireAbility {
 		this.origin = location.clone();
 		this.direction = direction.clone().normalize();
 		
-		this.range = getFirebendingDayAugment(range);
+		this.range = getDayFactor(range);
 		this.damage *= 1.5;
 
 		start();
@@ -102,7 +102,7 @@ public class FireBlast extends FireAbility {
 		this.random = new Random();
 		this.safeBlocks = new ArrayList<>();
 		
-		this.range = getFirebendingDayAugment(this.range);
+		this.range = getDayFactor(this.range);
 		
 		this.location = player.getEyeLocation();
 		this.origin = player.getEyeLocation();
@@ -133,7 +133,7 @@ public class FireBlast extends FireAbility {
 			}
 			if (entity instanceof LivingEntity) {
 				entity.setFireTicks((int) (fireTicks * 20));
-				GeneralMethods.damageEntity(this, entity, (int) getFirebendingDayAugment(damage));
+				GeneralMethods.damageEntity(this, entity, (int) getDayFactor(damage));
 				AirAbility.breakBreathbendingHold(entity);
 				new FireDamageTimer(entity, player);
 				remove();

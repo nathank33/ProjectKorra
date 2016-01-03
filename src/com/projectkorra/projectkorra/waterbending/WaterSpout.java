@@ -198,7 +198,7 @@ public class WaterSpout extends WaterAbility {
 	private double spoutableWaterHeight(Location location) {
 		double newHeight = height;
 		if (isNight(player.getWorld())) {
-			newHeight = waterbendingNightAugment(newHeight);
+			newHeight = getNightFactor(newHeight);
 		}
 		
 		double maxHeight = (height * ProjectKorra.plugin.getConfig().getDouble("Properties.Water.NightFactor")) + 5;

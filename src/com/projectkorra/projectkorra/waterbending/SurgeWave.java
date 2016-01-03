@@ -75,7 +75,7 @@ public class SurgeWave extends WaterAbility {
 		if (AvatarState.isAvatarState(player)) {
 			maxRadius = AvatarState.getValue(maxRadius);
 		}
-		maxRadius = waterbendingNightAugment(maxRadius);
+		maxRadius = getNightFactor(maxRadius);
 				
 		if (prepare()) {
 			wave = CoreAbility.getAbility(player, SurgeWave.class);
@@ -187,7 +187,7 @@ public class SurgeWave extends WaterAbility {
 				return;
 			}
 			
-			range = waterbendingNightAugment(range);
+			range = getNightFactor(range);
 			if (bPlayer.isAvatarState()) {
 				pushFactor = AvatarState.getValue(pushFactor);
 			}
@@ -318,7 +318,7 @@ public class SurgeWave extends WaterAbility {
 					if (knockback) {
 						Vector dir = direction.clone();
 						dir.setY(dir.getY() * verticalFactor);
-						GeneralMethods.setVelocity(entity, entity.getVelocity().clone().add(dir.clone().multiply(waterbendingNightAugment(pushFactor))));
+						GeneralMethods.setVelocity(entity, entity.getVelocity().clone().add(dir.clone().multiply(getNightFactor(pushFactor))));
 						
 						entity.setFallDistance(0);
 						if (entity.getFireTicks() > 0) {

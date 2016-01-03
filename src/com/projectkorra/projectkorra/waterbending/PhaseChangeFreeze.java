@@ -17,8 +17,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PhaseChangeFreeze extends IceAbility {
 
-	private static final ConcurrentHashMap<Block, Byte> FROZEN_BLOCKS = new ConcurrentHashMap<Block, Byte>();
+	private static final ConcurrentHashMap<Block, Byte> FROZEN_BLOCKS = new ConcurrentHashMap<>();
 	private static final double REMOVE_RANGE = 50; // TODO: Make the remove range non static
+	
 	private static boolean overloading = false;
 	private static int overloadingLimit = 0;
 	private static int overloadCounter = 200;
@@ -38,8 +39,8 @@ public class PhaseChangeFreeze extends IceAbility {
 		this.radius = getConfig().getDouble("Abilities.Water.PhaseChange.Radius");
 		this.cooldown = 0;
 		
-		this.range = waterbendingNightAugment(range);
-		this.radius = waterbendingNightAugment(radius);
+		this.range = getNightFactor(range);
+		this.radius = getNightFactor(radius);
 		
 		if (!bPlayer.canBend(this) || !bPlayer.canIcebend()) {
 			return;
@@ -50,15 +51,16 @@ public class PhaseChangeFreeze extends IceAbility {
 		}
 
 		location = GeneralMethods.getTargetedLocation(player, range);
+		start();
+		
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, radius)) {
 			if (isFreezable(player, block)) {
-				start();
 				freeze(player, block);
-				bPlayer.addCooldown(this);
-				remove();
 			}
 		}
 
+		bPlayer.addCooldown(this);
+		remove();
 	}
 
 	private static boolean isFreezable(Player player, Block block) {
@@ -148,7 +150,7 @@ public class PhaseChangeFreeze extends IceAbility {
 				}
 				
 				if (GeneralMethods.canBend(player.getName(), "PhaseChange")) {
-					double range = waterbendingNightAugment(REMOVE_RANGE, player.getWorld());
+					double range = getNightFactor(REMOVE_RANGE, player.getWorld());
 					if (AvatarState.isAvatarState(player)) {
 						range = AvatarState.getValue(range);
 					}
@@ -166,7 +168,7 @@ public class PhaseChangeFreeze extends IceAbility {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void thawAll() {
+	public static void removeAllCleanup() {
 		for (Block block : FROZEN_BLOCKS.keySet()) {
 			if (block.getType() == Material.ICE) {
 				byte data = FROZEN_BLOCKS.get(block);

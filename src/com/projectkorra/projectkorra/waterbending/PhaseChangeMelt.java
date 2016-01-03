@@ -34,8 +34,8 @@ public class PhaseChangeMelt extends IceAbility {
 		this.radius = getConfig().getDouble("Abilities.Water.PhaseChange.Radius");
 		this.evaporateRadius = 3;
 		
-		this.range = waterbendingNightAugment(range);
-		this.radius = waterbendingNightAugment(radius);
+		this.range = getNightFactor(range);
+		this.radius = getNightFactor(radius);
 		
 		if (!bPlayer.canIcebend() || !bPlayer.canIcebend()) {
 			return;
@@ -50,7 +50,7 @@ public class PhaseChangeMelt extends IceAbility {
 		location = GeneralMethods.getTargetedLocation(player, range);
 		if (isWater(player.getTargetBlock((HashSet<Material>) null, (int) range)) && !(player.getEyeLocation().getBlockY() <= 62)) {
 			evaporate = true;
-			radius = (int) waterbendingNightAugment(evaporateRadius);
+			radius = (int) getNightFactor(evaporateRadius);
 		}
 		
 		start();

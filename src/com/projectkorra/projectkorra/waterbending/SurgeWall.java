@@ -242,7 +242,7 @@ public class SurgeWall extends WaterAbility {
 				Vector vector;
 				Block block;
 				
-				for (double i = 0; i <= waterbendingNightAugment(radius); i += 0.5) {
+				for (double i = 0; i <= getNightFactor(radius); i += 0.5) {
 					for (double angle = 0; angle < 360; angle += 10) {
 						vector = GeneralMethods.getOrthogonalVector(eyeDir.clone(), angle, i);
 						block = targetLoc.clone().add(vector).getBlock();

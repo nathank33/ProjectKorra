@@ -33,8 +33,8 @@ public class HeatControlExtinguish extends FireAbility {
 		this.radius = getConfig().getDouble("Abilities.Fire.HeatControl.Extinguish.Radius");
 		this.cooldown = GeneralMethods.getGlobalCooldown();
 		
-		this.range = getFirebendingDayAugment(this.range);
-		this.radius = getFirebendingDayAugment(this.radius);
+		this.range = getDayFactor(this.range);
+		this.radius = getDayFactor(this.radius);
 		if (isMeltable(player.getTargetBlock((HashSet<Material>) null, (int) range))) {
 			new HeatControlMelt(player);
 			return;

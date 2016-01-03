@@ -56,7 +56,7 @@ public class IceSpikeBlast extends IceAbility {
 		this.deflectRange = 3;
 		this.range = getConfig().getDouble("Abilities.Water.IceSpike.Projectile.Range");
 		this.damage = getConfig().getDouble("Abilities.Water.IceSpike.Projectile.Damage");
-		this.cooldown = 0;
+		this.cooldown = GeneralMethods.getGlobalCooldown();
 		this.slowPower = 2;
 		this.slowDuration = 70;
 		
@@ -65,9 +65,9 @@ public class IceSpikeBlast extends IceAbility {
 		}
 
 		block(player);	
-		this.range = waterbendingNightAugment(range);
-		this.damage = waterbendingNightAugment(damage);
-		this.slowPower = (int) waterbendingNightAugment(slowPower);
+		this.range = getNightFactor(range);
+		this.damage = getNightFactor(damage);
+		this.slowPower = (int) getNightFactor(slowPower);
 		sourceBlock = BlockSource.getWaterSourceBlock(player, range, ClickType.SHIFT_DOWN, true, true, bPlayer.canPlantbend());
 
 		if (sourceBlock == null) {
@@ -210,6 +210,7 @@ public class IceSpikeBlast extends IceAbility {
 			}
 			progressing = false;
 		}
+		bPlayer.addCooldown(this);
 	}
 
 	private void returnWater() {

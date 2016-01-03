@@ -66,14 +66,14 @@ public class FireBlastCharged extends FireAbility {
 		this.innerRadius = damageRadius / 2;
 		
 		if (isDay(player.getWorld())) {
-			this.chargeTime = (long) (chargeTime / getFirebendingDayAugment());
+			this.chargeTime = (long) (chargeTime / getDayFactor());
 		}
 		if (bPlayer.isAvatarState()) {
 			this.chargeTime = 0;
 			this.maxDamage = AvatarState.getValue(maxDamage);
 		}
 		
-		this.range = getFirebendingDayAugment(range);
+		this.range = getDayFactor(range);
 		if (!player.getEyeLocation().getBlock().isLiquid()) {
 			start();
 		}
@@ -159,14 +159,14 @@ public class FireBlastCharged extends FireAbility {
 				double yield = explosionRadius;
 				
 				if (!bPlayer.isAvatarState()) {
-					yield = getFirebendingDayAugment(yield, player.getWorld());
+					yield = getDayFactor(yield, player.getWorld());
 				} else {
 					yield = AvatarState.getValue(yield);
 				}
 				
 				if (!bPlayer.isAvatarState()) {
 					if (isDay(player.getWorld())) {
-						yield = (float) getFirebendingDayAugment(yield);
+						yield = (float) getDayFactor(yield);
 					}
 				} else {
 					yield *= AvatarState.factor;

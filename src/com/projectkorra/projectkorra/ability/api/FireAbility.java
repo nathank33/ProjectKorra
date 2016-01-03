@@ -4,16 +4,6 @@ import com.projectkorra.projectkorra.BendingManager;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.firebending.BlazeArc;
-import com.projectkorra.projectkorra.firebending.FireBlast;
-import com.projectkorra.projectkorra.firebending.FireBlastCharged;
-import com.projectkorra.projectkorra.firebending.FireBurst;
-import com.projectkorra.projectkorra.firebending.FireCombo;
-import com.projectkorra.projectkorra.firebending.FireJet;
-import com.projectkorra.projectkorra.firebending.FireShield;
-import com.projectkorra.projectkorra.firebending.HeatControlCook;
-import com.projectkorra.projectkorra.firebending.Illumination;
-import com.projectkorra.projectkorra.firebending.Lightning;
-import com.projectkorra.projectkorra.firebending.WallOfFire;
 import com.projectkorra.projectkorra.util.Information;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.rpg.RPGMethods;
@@ -62,8 +52,8 @@ public abstract class FireAbility extends ElementalAbility {
 		return "Fire";
 	}
 		
-	public double getFirebendingDayAugment(double value) {
-		return player != null ? getFirebendingDayAugment(value, player.getWorld()) : 1;
+	public double getDayFactor(double value) {
+		return player != null ? getDayFactor(value, player.getWorld()) : 1;
 	}
 		
 	/**
@@ -107,7 +97,7 @@ public abstract class FireAbility extends ElementalAbility {
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Fire"));
 	}
 
-	public static double getFirebendingDayAugment() {
+	public static double getDayFactor() {
 		return getConfig().getDouble("Properties.Fire.DayFactor");
 	}
 	
@@ -120,7 +110,7 @@ public abstract class FireAbility extends ElementalAbility {
 	 *         else <br />
 	 *         value The specified value in the parameters
 	 */
-	public static double getFirebendingDayAugment(double value, World world) {
+	public static double getDayFactor(double value, World world) {
 		if (isDay(world)) {
 			if (GeneralMethods.hasRPG()) {
 				if (BendingManager.events.get(world).equalsIgnoreCase(WorldEvents.SozinsComet.toString())) {
@@ -240,16 +230,6 @@ public abstract class FireAbility extends ElementalAbility {
 
 	public static void stopBending() {
 		BlazeArc.removeAllCleanup();
-		FireBlastCharged.removeAll();
-		WallOfFire.removeAll();
-		Lightning.removeAll();
-		FireShield.removeAll();
-		FireBlast.removeAll();
-		FireBurst.removeAll();
-		FireJet.removeAll();
-		HeatControlCook.removeAll();
-		Illumination.removeAll();
-		FireCombo.removeAll();
 		for (Location loc : TEMP_FIRE.keySet()) {
 			revertTempFire(loc);
 		}

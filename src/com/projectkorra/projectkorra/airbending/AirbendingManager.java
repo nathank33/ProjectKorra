@@ -2,8 +2,6 @@ package com.projectkorra.projectkorra.airbending;
 
 import com.projectkorra.projectkorra.ProjectKorra;
 
-import org.bukkit.Bukkit;
-
 public class AirbendingManager implements Runnable {
 
 	public ProjectKorra plugin;
@@ -15,8 +13,8 @@ public class AirbendingManager implements Runnable {
 	@Override
 	public void run() {
 		AirBlast.progressOrigins();
-		AirPassive.handlePassive(Bukkit.getServer());
-		AirBubble.handleBubbles(Bukkit.getServer());
+		AirPassive.handlePassive();
+		AirBubble.handleBubbles();
 		AirSuction.progressOrigins();
 	}
 

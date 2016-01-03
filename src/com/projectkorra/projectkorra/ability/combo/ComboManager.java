@@ -159,8 +159,9 @@ public class ComboManager {
 
 	public static void addComboAbility(Player player, ClickType type) {
 		String abilityName = GeneralMethods.getBoundAbility(player);
-		if (abilityName == null)
+		if (abilityName == null) {
 			return;
+		}
 		AbilityInformation info = new AbilityInformation(abilityName, type, System.currentTimeMillis());
 		addRecentAbility(player, info);
 
@@ -171,15 +172,15 @@ public class ComboManager {
 			return;
 		}
 
-		if (comboAbil.getComboType().equals(FireCombo.class))
+		if (comboAbil.getComboType().equals(FireCombo.class)) {
 			new FireCombo(player, comboAbil.getName());
-		else if (comboAbil.getComboType().equals(AirCombo.class))
+		} else if (comboAbil.getComboType().equals(AirCombo.class)) {
 			new AirCombo(player, comboAbil.getName());
-		else if (comboAbil.getComboType().equals(WaterCombo.class))
+		} else if (comboAbil.getComboType().equals(WaterCombo.class)) {
 			new WaterCombo(player, comboAbil.getName());
-		else if (comboAbil.getComboType().equals(ChiCombo.class))
+		} else if (comboAbil.getComboType().equals(ChiCombo.class)) {
 			new ChiCombo(player, comboAbil.getName());
-		else {
+		} else {
 			if (comboAbil.getComboType() instanceof ComboAbilityModule) {
 				((ComboAbilityModule) comboAbil.getComboType()).createNewComboInstance(player);
 				return;
@@ -197,10 +198,11 @@ public class ComboManager {
 	public static void addRecentAbility(Player player, AbilityInformation info) {
 		ArrayList<AbilityInformation> list;
 		String name = player.getName();
-		if (recentlyUsedAbilities.containsKey(name))
+		if (recentlyUsedAbilities.containsKey(name)) {
 			list = recentlyUsedAbilities.get(name);
-		else
+		} else {
 			list = new ArrayList<AbilityInformation>();
+		}
 		list.add(info);
 		recentlyUsedAbilities.put(name, list);
 		//Bukkit.broadcastMessage("recentlyUsedAbilities: " + recentlyUsedAbilities.get(name).size());
@@ -223,8 +225,9 @@ public class ComboManager {
 			ArrayList<AbilityInformation> abilityCombo = customAbility.getAbilities();
 			int size = abilityCombo.size();
 
-			if (playerCombo.size() < size)
+			if (playerCombo.size() < size) {
 				continue;
+			}
 
 			boolean isValid = true;
 			for (int i = 1; i <= size; i++) {
@@ -233,8 +236,9 @@ public class ComboManager {
 					break;
 				}
 			}
-			if (isValid)
+			if (isValid) {
 				return customAbility;
+			}
 		}
 		return null;
 	}
@@ -254,16 +258,19 @@ public class ComboManager {
 	 */
 	public static ArrayList<AbilityInformation> getRecentlyUsedAbilities(Player player, int amount) {
 		String name = player.getName();
-		if (!recentlyUsedAbilities.containsKey(name))
+		if (!recentlyUsedAbilities.containsKey(name)) {
 			return new ArrayList<AbilityInformation>();
+		}
 
 		ArrayList<AbilityInformation> list = recentlyUsedAbilities.get(name);
-		if (list.size() < amount)
+		if (list.size() < amount) {
 			return new ArrayList<AbilityInformation>(list);
+		}
 
 		ArrayList<AbilityInformation> tempList = new ArrayList<AbilityInformation>();
-		for (int i = 0; i < amount; i++)
+		for (int i = 0; i < amount; i++) {
 			tempList.add(0, list.get(list.size() - 1 - i));
+		}
 		return tempList;
 	}
 
@@ -276,8 +283,9 @@ public class ComboManager {
 	public static ArrayList<String> getCombosForElement(Element element) {
 		ArrayList<String> list = new ArrayList<String>();
 		for (String comboab : descriptions.keySet()) {
-			if (GeneralMethods.getAbilityElement(comboAbilityList.get(comboab).getAbilities().get(0).getAbilityName()) == element)
+			if (GeneralMethods.getAbilityElement(comboAbilityList.get(comboab).getAbilities().get(0).getAbilityName()) == element) {
 				list.add(comboab);
+			}
 		}
 		Collections.sort(list);
 		return list;
@@ -285,6 +293,7 @@ public class ComboManager {
 
 	public static void startCleanupTask() {
 		new BukkitRunnable() {
+			@Override
 			public void run() {
 				cleanupOldCombos();
 			}
@@ -357,6 +366,7 @@ public class ComboManager {
 			this.time = time;
 		}
 
+		@Override
 		public String toString() {
 			return abilityName + " " + clickType + " " + time;
 		}
@@ -397,6 +407,7 @@ public class ComboManager {
 			this.name = name;
 		}
 
+		@Override
 		public String toString() {
 			return name;
 		}

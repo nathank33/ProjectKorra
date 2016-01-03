@@ -84,15 +84,15 @@ public class Lightning extends LightningAbility {
 		this.chargeTime = getConfig().getLong("Abilities.Fire.Lightning.ChargeTime");
 		this.cooldown = getConfig().getLong("Abilities.Fire.Lightning.Cooldown");
 		
-		this.range = getFirebendingDayAugment(this.range);
-		this.subArcChance = getFirebendingDayAugment(this.subArcChance);
-		this.damage = getFirebendingDayAugment(this.damage);
-		this.maxChainArcs = getFirebendingDayAugment(this.maxChainArcs);
-		this.chainArcChance = getFirebendingDayAugment(this.chainArcChance);
-		this.chainRange = getFirebendingDayAugment(this.chainRange);
-		this.waterArcRange = getFirebendingDayAugment(this.waterArcRange);
-		this.stunChance = getFirebendingDayAugment(this.stunChance);
-		this.stunDuration = getFirebendingDayAugment(this.stunDuration);
+		this.range = getDayFactor(this.range);
+		this.subArcChance = getDayFactor(this.subArcChance);
+		this.damage = getDayFactor(this.damage);
+		this.maxChainArcs = getDayFactor(this.maxChainArcs);
+		this.chainArcChance = getDayFactor(this.chainArcChance);
+		this.chainRange = getDayFactor(this.chainRange);
+		this.waterArcRange = getDayFactor(this.waterArcRange);
+		this.stunChance = getDayFactor(this.stunChance);
+		this.stunDuration = getDayFactor(this.stunDuration);
 
 		if (bPlayer.isAvatarState()) {
 			this.chargeTime = 0;

@@ -41,7 +41,7 @@ public class FireJet extends FireAbility {
 		this.cooldown = getConfig().getLong("Abilities.Fire.FireJet.Cooldown");
 		this.random = new Random();
 
-		this.speed = getFirebendingDayAugment(speed);
+		this.speed = getDayFactor(speed);
 		Block block = player.getLocation().getBlock();
 		
 		if (BlazeArc.isIgnitable(player, block) || block.getType() == Material.AIR || bPlayer.isAvatarState()) {

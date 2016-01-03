@@ -35,8 +35,9 @@ public class BlazeArc extends FireAbility {
 
 	public BlazeArc() {}
 	
-	public BlazeArc(Location location, Vector direction, Player player, double range) {
-		this.range = getFirebendingDayAugment(range);
+	public BlazeArc(Player player, Location location, Vector direction, double range) {
+		super(player);
+		this.range = getDayFactor(range);
 		this.speed = 15;
 		this.interval = (long) (1000. / speed);
 		this.origin = location.clone();
@@ -52,7 +53,7 @@ public class BlazeArc extends FireAbility {
 	}
 
 	private void ignite(Block block) {
-		if (block.getType() != Material.AIR) {
+		if (block.getType() != Material.FIRE && block.getType() != Material.AIR) {
 			if (canFireGrief()) {
 				if (isPlant(block)) {
 					new PlantRegrowth(player, block);
@@ -122,7 +123,9 @@ public class BlazeArc extends FireAbility {
 	}
 
 	public static boolean isIgnitable(Player player, Block block) {
-		if (Arrays.asList(OVERWRITABLE_MATERIALS).contains(block.getType())) {
+		if (block.getType() == Material.FIRE) {
+			return true;
+		} else if (Arrays.asList(OVERWRITABLE_MATERIALS).contains(block.getType())) {
 			return true;
 		} else if (block.getType() != Material.AIR) {
 			return false;

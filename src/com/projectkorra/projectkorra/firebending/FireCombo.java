@@ -12,6 +12,7 @@ import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -69,10 +70,12 @@ public class FireCombo extends FireAbility {
 	
 	public FireCombo(Player player, String ability) {
 		super(player);
+		Bukkit.broadcastMessage("Here 0");
+		
 		this.ability = ability;
 		this.enabled = getConfig().getBoolean("Abilities.Fire.FireCombo.Enabled");
 		
-		if (!this.enabled || !bPlayer.canBend(this)) {
+		if (!this.enabled || !bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			return;
 		}
 		
@@ -110,7 +113,7 @@ public class FireCombo extends FireAbility {
 			this.fireTicks = getConfig().getDouble("Abilities.Fire.FireCombo.JetBlaze.FireTicks");
 		}
 		
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			this.cooldown = 0;
 			this.damage = AvatarState.getValue(damage);
 			this.range = AvatarState.getValue(range);
@@ -143,7 +146,7 @@ public class FireCombo extends FireAbility {
 			if (ability.equalsIgnoreCase("FireKick") && combo.ability.equalsIgnoreCase("FireKick")) {
 				for (FireComboStream fs : combo.tasks) {
 					if (fs.getLocation() != null && fs.getLocation().getWorld() == loc.getWorld()
-							&& Math.abs(fs.getLocation().distance(loc)) <= radius) {
+							&& Math.abs(fs.getLocation().distanceSquared(loc)) <= radius * radius) {
 						fs.remove();
 						removed = true;
 					}
@@ -151,7 +154,7 @@ public class FireCombo extends FireAbility {
 			} else if (ability.equalsIgnoreCase("FireSpin") && combo.ability.equalsIgnoreCase("FireSpin")) {
 				for (FireComboStream fs : combo.tasks) {
 					if (fs.getLocation() != null && fs.getLocation().getWorld().equals(loc.getWorld())) {
-						if (Math.abs(fs.getLocation().distance(loc)) <= radius) {
+						if (Math.abs(fs.getLocation().distanceSquared(loc)) <= radius * radius) {
 							fs.remove();
 							removed = true;
 						}
@@ -160,7 +163,7 @@ public class FireCombo extends FireAbility {
 			}
 
 			else if (ability.equalsIgnoreCase("FireWheel") && combo.ability.equalsIgnoreCase("FireWheel")) {
-				if (combo.location != null && Math.abs(combo.location.distance(loc)) <= radius) {
+				if (combo.location != null && Math.abs(combo.location.distanceSquared(loc)) <= radius * radius) {
 					combo.remove();
 					removed = true;
 				}
@@ -184,7 +187,8 @@ public class FireCombo extends FireAbility {
 					return;
 				}
 			}
-			double newKnockback = AvatarState.isAvatarState(player) ? knockback + 0.5 : knockback;
+			
+			double newKnockback = bPlayer.isAvatarState() ? knockback + 0.5 : knockback;
 			GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireSpin");
 			entity.setVelocity(direction.normalize().multiply(newKnockback));
 			fstream.remove();
@@ -206,6 +210,7 @@ public class FireCombo extends FireAbility {
 
 	@Override
 	public void progress() {
+		Bukkit.broadcastMessage("Progressing");
 		progressCounter++;
 		for (int i = 0; i < tasks.size(); i++) {
 			BukkitRunnable br = tasks.get(i);
@@ -275,8 +280,7 @@ public class FireCombo extends FireAbility {
 					vec = GeneralMethods.rotateXZ(vec, i - 180);
 					vec.setY(0);
 
-					FireComboStream fs = new FireComboStream(this, vec,
-							player.getLocation().clone().add(0, 1, 0), range, speed, "FireSpin");
+					FireComboStream fs = new FireComboStream(this, vec, player.getLocation().clone().add(0, 1, 0), range, speed, "FireSpin");
 					fs.setSpread(0.0F);
 					fs.setDensity(1);
 					fs.setUseNewParticles(true);
@@ -311,6 +315,7 @@ public class FireCombo extends FireAbility {
 						remove();
 						return;
 					}
+					
 					bPlayer.addCooldown("JetBlast", cooldown);
 					firstTime = false;
 					float spread = 0F;

@@ -42,8 +42,8 @@ public class PlantArmor extends PlantAbility {
 		this.duration = getConfig().getLong("Abilities.Water.PlantArmor.Duration");
 		this.cooldown = getConfig().getLong("Abilities.Water.PlantArmor.Cooldown");
 		
-		this.range = waterbendingNightAugment(range);
-		this.duration = (long) waterbendingNightAugment(duration);  
+		this.range = getNightFactor(range);
+		this.duration = (long) getNightFactor(duration);  
 		
 		if (CoreAbility.hasAbility(player, PlantArmor.class)) {
 			return;
@@ -140,7 +140,7 @@ public class PlantArmor extends PlantAbility {
 		}
 		
 		playEffect();
-		if (inPosition()) {
+		if (inPosition() && !formed) {
 			formArmor();
 		}
 	}

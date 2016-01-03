@@ -89,7 +89,7 @@ public class WaterManipulation extends WaterAbility {
 
 	private void cancelPrevious() {
 		WaterManipulation old = CoreAbility.getAbility(player, WaterManipulation.class);
-		if (!old.progressing) {
+		if (old != null && !old.progressing) {
 			old.remove();
 		}
 	}
@@ -283,7 +283,7 @@ public class WaterManipulation extends WaterAbility {
 							if (bPlayer.isAvatarState()) {
 								damage = AvatarState.getValue(damage);
 							}
-							damage = waterbendingNightAugment(damage);
+							damage = getNightFactor(damage);
 							GeneralMethods.damageEntity(this, entity, damage);
 							AirAbility.breakBreathbendingHold(entity);
 							progressing = false;
@@ -462,6 +462,7 @@ public class WaterManipulation extends WaterAbility {
 		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
 
 		if (bPlayer.isOnCooldown("WaterManipulation")) {
+			redirectTargettedBlasts(player);
 			return;
 		}
 

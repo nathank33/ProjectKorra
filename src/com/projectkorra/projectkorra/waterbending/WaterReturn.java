@@ -36,7 +36,7 @@ public class WaterReturn extends WaterAbility {
 		this.range = 30;
 		this.interval = 50;
 		
-		this.range = waterbendingNightAugment(range);
+		this.range = getNightFactor(range);
 		
 		if (bPlayer.canBend(this)) {
 			if (isTransparentToEarthbending(player, block) && !block.isLiquid() && hasEmptyWaterBottle()) {

@@ -24,8 +24,8 @@ public class HeatControlMelt extends FireAbility {
 		this.range = getConfig().getDouble("Abilities.Fire.HeatControl.Melt.Range");
 		this.radius = getConfig().getDouble("Abilities.Fire.HeatControl.Melt.Radius");
 		
-		this.range = getFirebendingDayAugment(range);
-		this.radius = getFirebendingDayAugment(radius);
+		this.range = getDayFactor(range);
+		this.radius = getDayFactor(radius);
 		
 		location = GeneralMethods.getTargetedLocation(player, range);
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, radius)) {

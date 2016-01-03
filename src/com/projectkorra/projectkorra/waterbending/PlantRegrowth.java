@@ -45,6 +45,7 @@ public class PlantRegrowth extends PlantAbility {
 		}
 	}
 
+	@Override
 	public void progress() {
 		if (time < System.currentTimeMillis()) {
 			remove();

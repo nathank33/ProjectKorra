@@ -284,10 +284,10 @@ public class WaterArms extends WaterAbility {
 
 			if (j >= 1 && selectedSlot == freezeSlot && bPlayer.canIcebend()) {
 				new TempBlock(l3.getBlock(), Material.ICE, (byte) 0);
-				BLOCK_REVERT_TIMES.put(l3.getBlock(), 0L);
+				BLOCK_REVERT_TIMES.put(l3.getBlock(), System.currentTimeMillis());
 			} else {
 				new TempBlock(l3.getBlock(), Material.STATIONARY_WATER, (byte) 8);
-				BLOCK_REVERT_TIMES.put(l3.getBlock(), 0L);
+				BLOCK_REVERT_TIMES.put(l3.getBlock(), System.currentTimeMillis());
 			}
 		}
 
@@ -394,6 +394,10 @@ public class WaterArms extends WaterAbility {
 
 	public static void progressAllCleanup() {
 		progressRevert(false);
+		for (WaterArms waterArms : getAbilities(WaterArms.class)) {
+			waterArms.displayLeftArm();
+			waterArms.displayRightArm();
+		}
 		WaterArmsWhip.progressAllCleanup();
 	}
 

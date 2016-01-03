@@ -3,10 +3,10 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
 import com.projectkorra.projectkorra.ability.api.CoreAbility;
 import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.earthbending.EarthArmor;
 import com.projectkorra.projectkorra.util.TempBlock;
 
@@ -34,7 +34,7 @@ public class WaterPassive {
 	}
 
 	public static void handlePassive() {
-		double swimSpeed = ProjectKorra.plugin.getConfig().getDouble("Abilities.Water.Passive.SwimSpeedFactor");
+		double swimSpeed = ConfigManager.getConfig().getDouble("Abilities.Water.Passive.SwimSpeedFactor");
 		
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);

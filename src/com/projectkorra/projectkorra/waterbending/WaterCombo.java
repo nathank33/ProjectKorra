@@ -33,7 +33,7 @@ public class WaterCombo extends WaterAbility {
 		ICE_PILLAR_RISING, ICE_BULLET_FORMING
 	}
 
-	private static final ConcurrentHashMap<Block, TempBlock> FROZEN_BLOCKS = new ConcurrentHashMap<Block, TempBlock>();
+	private static final ConcurrentHashMap<Block, TempBlock> FROZEN_BLOCKS = new ConcurrentHashMap<>();
 
 	private boolean enabled;
 	private int leftClicks;
@@ -70,7 +70,7 @@ public class WaterCombo extends WaterAbility {
 		this.tasks = new ArrayList<>();
 		this.affectedBlocks = new ConcurrentHashMap<>();
 
-		if (!enabled || !bPlayer.canBendIgnoreCooldowns(this)) {
+		if (!enabled || !bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			return;
 		}
 
@@ -87,7 +87,7 @@ public class WaterCombo extends WaterAbility {
 			this.speed = 1;
 		}
 		
-		double aug = getWaterbendingNightAugment(player.getWorld());
+		double aug = getNightFactor(player.getWorld());
 		if (aug > 1) {
 			aug = 1 + (aug - 1) / 3;
 		}
@@ -121,7 +121,9 @@ public class WaterCombo extends WaterAbility {
 					bullet.rightClicks += 1;
 				}
 			}
+			return;
 		}
+		
 		start();
 	}
 
@@ -288,6 +290,7 @@ public class WaterCombo extends WaterAbility {
 						manageShots();
 					} else {
 						remove();
+						return;
 					}
 				}
 			} else {

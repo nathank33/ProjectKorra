@@ -36,7 +36,7 @@ public class Illumination extends FireAbility {
 		this.range = getConfig().getDouble("Abilities.Fire.Illumination.Range");
 		this.cooldown = GeneralMethods.getGlobalCooldown();
 		
-		this.range = getFirebendingDayAugment(this.range);
+		this.range = getDayFactor(this.range);
 		
 		if (bPlayer.isOnCooldown(this)) {
 			return;

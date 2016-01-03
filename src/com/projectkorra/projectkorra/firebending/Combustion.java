@@ -60,8 +60,8 @@ public class Combustion extends CombustionAbility {
 			range = AvatarState.getValue(range);
 			damage = AvatarState.getValue(damage);
 		} else if (isDay(player.getWorld())) {
-			range = getFirebendingDayAugment(range);
-			damage = getFirebendingDayAugment(damage);
+			range = getDayFactor(range);
+			damage = getDayFactor(damage);
 		}
 
 		if (GeneralMethods.isRegionProtectedFromBuild(this, GeneralMethods.getTargetedLocation(player, range))) {

@@ -46,7 +46,7 @@ public class BlazeRing extends FireAbility {
 			direction.setX(vx);
 			direction.setZ(vz);
 			
-			new BlazeArc(location, direction, player, range);
+			new BlazeArc(player, location, direction, range);
 		}
 		
 		start();

@@ -48,7 +48,7 @@ public class FireBurst extends FireAbility {
 		}
 
 		if (isDay(player.getWorld())) {
-			chargeTime /= getFirebendingDayAugment();
+			chargeTime /= getDayFactor();
 		}
 		if (AvatarState.isAvatarState(player) || isSozinsComet(player.getWorld())) {
 			chargeTime = 0;

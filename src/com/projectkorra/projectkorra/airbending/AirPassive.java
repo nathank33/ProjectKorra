@@ -4,7 +4,7 @@ import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -33,8 +33,8 @@ public class AirPassive {
 		}
 	}
 
-	public static void handlePassive(Server server) {
-		for (World world : server.getWorlds()) {
+	public static void handlePassive() {
+		for (World world : Bukkit.getServer().getWorlds()) {
 			for (Player player : world.getPlayers()) {
 				if (!player.isOnline()) {
 					return;

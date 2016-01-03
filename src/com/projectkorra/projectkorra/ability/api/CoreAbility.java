@@ -18,6 +18,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -36,9 +37,9 @@ public abstract class CoreAbility implements Ability {
 	protected Player player;
 	protected BendingPlayer bPlayer;
 	
-	private int id;
 	private boolean hasStarted;
 	private boolean hasBeenRemoved;
+	private int id;
 
 	static {
 		idCounter = Integer.MIN_VALUE;
@@ -57,10 +58,10 @@ public abstract class CoreAbility implements Ability {
 		this.hasStarted = false;
 		this.id = CoreAbility.idCounter;
 		
-		if (CoreAbility.idCounter == Integer.MAX_VALUE) {
-			CoreAbility.idCounter = Integer.MIN_VALUE;
+		if (idCounter == Integer.MAX_VALUE) {
+			idCounter = Integer.MIN_VALUE;
 		} else {
-			CoreAbility.idCounter++;
+			idCounter++;
 		}
 	}
 
@@ -74,18 +75,18 @@ public abstract class CoreAbility implements Ability {
 		Class<? extends CoreAbility> clazz = getClass();
 		UUID uuid = player.getUniqueId();
 
-		if (!CoreAbility.INSTANCES.containsKey(clazz)) {
-			CoreAbility.INSTANCES.put(clazz, new ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>>());
+		if (!INSTANCES.containsKey(clazz)) {
+			INSTANCES.put(clazz, new ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>>());
 		}
-		if (!CoreAbility.INSTANCES.get(clazz).containsKey(uuid)) {
-			CoreAbility.INSTANCES.get(clazz).put(uuid, new ConcurrentHashMap<Integer, CoreAbility>());
+		if (!INSTANCES.get(clazz).containsKey(uuid)) {
+			INSTANCES.get(clazz).put(uuid, new ConcurrentHashMap<Integer, CoreAbility>());
 		}
-		if (!CoreAbility.INSTANCES_BY_CLASS.containsKey(clazz)) {
-			CoreAbility.INSTANCES_BY_CLASS.put(clazz, Collections.newSetFromMap(new ConcurrentHashMap<CoreAbility, Boolean>()));
+		if (!INSTANCES_BY_CLASS.containsKey(clazz)) {
+			INSTANCES_BY_CLASS.put(clazz, Collections.newSetFromMap(new ConcurrentHashMap<CoreAbility, Boolean>()));
 		}
 
-		CoreAbility.INSTANCES.get(clazz).get(uuid).put(this.id, this);
-		CoreAbility.INSTANCES_BY_CLASS.get(clazz).add(this);
+		INSTANCES.get(clazz).get(uuid).put(this.id, this);
+		INSTANCES_BY_CLASS.get(clazz).add(this);
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public abstract class CoreAbility implements Ability {
 		
 		hasBeenRemoved = true;
 		
-		ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>> classMap = CoreAbility.INSTANCES.get(getClass());
+		ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>> classMap = INSTANCES.get(getClass());
 		if (classMap != null) {
 			ConcurrentHashMap<Integer, CoreAbility> playerMap = classMap.get(player.getUniqueId());
 			if (playerMap != null) {
@@ -105,10 +106,14 @@ public abstract class CoreAbility implements Ability {
 					classMap.remove(player.getUniqueId());
 				}
 			}
+			
+			if (classMap.size() == 0) {
+				INSTANCES.remove(getClass());
+			}
 		}
 
-		if (CoreAbility.INSTANCES_BY_CLASS.containsKey(getClass())) {
-			CoreAbility.INSTANCES_BY_CLASS.get(getClass()).remove(this);
+		if (INSTANCES_BY_CLASS.containsKey(getClass())) {
+			INSTANCES_BY_CLASS.get(getClass()).remove(this);
 		}
 	}
 
@@ -272,4 +277,42 @@ public abstract class CoreAbility implements Ability {
 		return ConfigManager.getConfig();
 	}
 	
+	public static String getDebugString() {
+		StringBuilder sb = new StringBuilder();
+		int playerCounter = 0;
+		HashMap<String, Integer> classCounter = new HashMap<>();
+		
+		for (ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>> map1 : INSTANCES.values()) {
+			playerCounter++;
+			for (ConcurrentHashMap<Integer, CoreAbility> map2 : map1.values()) {
+				for (CoreAbility coreAbil : map2.values()) {
+					String simpleName = coreAbil.getClass().getSimpleName();
+					
+					if (classCounter.containsKey(simpleName)) {
+						classCounter.put(simpleName, classCounter.get(simpleName) + 1);
+					} else {
+						classCounter.put(simpleName, 1);
+					}
+				}
+			}
+		}
+		
+		for (Set<CoreAbility> set : INSTANCES_BY_CLASS.values()) {
+			for (CoreAbility coreAbil : set) {
+				String simpleName = coreAbil.getClass().getSimpleName();
+				if (classCounter.containsKey(simpleName)) {
+					classCounter.put(simpleName, classCounter.get(simpleName) + 1);
+				} else {
+					classCounter.put(simpleName, 1);
+				}
+			}
+		}
+		
+		sb.append("Class->UUID's in memory: " + playerCounter + "\n");
+		sb.append("Abilities in memory\n");
+		for (String className : classCounter.keySet()) {
+			sb.append(className + ": " + classCounter.get(className));
+		}
+		return sb.toString();
+	}
 }

@@ -367,7 +367,8 @@ public class BendingPlayer {
 	 */
 	public String getBoundAbilityName() {
 		int slot = player.getInventory().getHeldItemSlot() + 1;
-		return getAbilities().get(slot);
+		String name = getAbilities().get(slot);
+		return name != null ? name : "";
 	}
 
 	/**

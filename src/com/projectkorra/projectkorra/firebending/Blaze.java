@@ -31,9 +31,9 @@ public class Blaze extends FireAbility {
 			return;
 		}
 		
-		this.range = getFirebendingDayAugment(range);
+		this.range = getDayFactor(range);
 		this.range = AvatarState.getValue(range, player);
-		this.arc = (int) getFirebendingDayAugment(arc);
+		this.arc = (int) getDayFactor(arc);
 		Location location = player.getLocation();
 
 		for (int i = -arc; i <= arc; i += speed) {
@@ -50,7 +50,7 @@ public class Blaze extends FireAbility {
 			direction.setX(vx);
 			direction.setZ(vz);
 
-			new BlazeArc(location, direction, player, range);
+			new BlazeArc(player, location, direction, range);
 		}
 
 		start();

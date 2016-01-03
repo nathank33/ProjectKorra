@@ -106,7 +106,7 @@ public class AirBurst extends AirAbility {
 				y = r * Math.sin(rphi) * Math.sin(rtheta);
 				z = r * Math.cos(rtheta);
 				Vector direction = new Vector(x, z, y);
-				AirBlast blast = new AirBlast(location, direction.normalize(), player, pushFactor, this);
+				AirBlast blast = new AirBlast(player, location, direction.normalize(), pushFactor, this);
 				blast.setDamage(damage);
 			}
 		}
@@ -137,7 +137,7 @@ public class AirBurst extends AirAbility {
 					z = r * Math.cos(rtheta);
 					Vector direction = new Vector(x, z, y);
 					if (direction.angle(vector) <= angle) {
-						AirBlast blast = new AirBlast(location, direction.normalize(), player, pushFactor, this);
+						AirBlast blast = new AirBlast(player, location, direction.normalize(), pushFactor, this);
 						blast.setDamage(damage);
 					}
 				}
@@ -177,7 +177,7 @@ public class AirBurst extends AirAbility {
 					y = r * Math.sin(rphi) * Math.sin(rtheta);
 					z = r * Math.cos(rtheta);
 					Vector direction = new Vector(x, z, y);
-					AirBlast blast = new AirBlast(location, direction.normalize(), player, pushFactor, this);
+					AirBlast blast = new AirBlast(player, location, direction.normalize(), pushFactor, this);
 					blast.setDamage(damage);
 					blast.setShowParticles(false);
 					blasts.add(blast);

@@ -57,13 +57,14 @@ public class AirCombo extends AirAbility {
 
 	public AirCombo(Player player, String ability) {
 		super(player);
+		
 		this.abilityName = ability;
 		this.isEnabled = getConfig().getBoolean("Abilities.Air.AirCombo.Enabled");
 		this.affectedEntities = new ArrayList<>();
 		this.tasks = new ArrayList<>();
 		this.flights = new ArrayList<>();
 
-		if (!this.isEnabled || !bPlayer.canBend(this)) {
+		if (!this.isEnabled || !bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			return;
 		}
 

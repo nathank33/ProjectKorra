@@ -35,7 +35,7 @@ public class Torrent extends WaterAbility {
 	private boolean launch;
 	private boolean launching;
 	private boolean freeze;
-	private int layer = 0;
+	private int layer;
 	private int maxLayer;
 	private long time;
 	private long interval;
@@ -67,7 +67,7 @@ public class Torrent extends WaterAbility {
 		this.factor = 1;
 		this.startAngle = 0;
 		this.angle = 20;
-		this.radius = 1;
+		this.radius = 3;
 		this.yLimit = 0.2;
 		this.interval = 30;
 		this.damage = getConfig().getDouble("Abilities.Water.Torrent.Damage");
@@ -99,7 +99,7 @@ public class Torrent extends WaterAbility {
 	private void freeze() {
 		if (layer == 0) {
 			return;
-		} else if (!GeneralMethods.canBend(player.getName(), "PhaseChange")) {
+		} else if (!bPlayer.canBendIgnoreBindsCooldowns(getAbility("PhaseChange"))) {
 			return;
 		}
 		
@@ -513,7 +513,7 @@ public class Torrent extends WaterAbility {
 		GeneralMethods.setVelocity(entity, velocity);
 		entity.setFallDistance(0);
 		if (entity instanceof LivingEntity) {
-			double damageDealt = waterbendingNightAugment(deflectDamage);
+			double damageDealt = getNightFactor(deflectDamage);
 			GeneralMethods.damageEntity(this, entity, damageDealt);
 			AirAbility.breakBreathbendingHold(entity);
 		}
@@ -530,7 +530,7 @@ public class Torrent extends WaterAbility {
 			entity.setVelocity(direction.multiply(factor));
 		}
 		if (entity instanceof LivingEntity && !hurtEntities.contains(entity)) {
-			double damageDealt = waterbendingNightAugment(damage);
+			double damageDealt = getNightFactor(damage);
 			GeneralMethods.damageEntity(this, entity, damageDealt);
 			AirAbility.breakBreathbendingHold(entity);
 			hurtEntities.add(entity);

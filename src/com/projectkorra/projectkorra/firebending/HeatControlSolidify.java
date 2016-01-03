@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class HeatControl extends FireAbility {
+public class HeatControlSolidify extends FireAbility {
 	
 	private int radius;
 	private long delay;
@@ -29,10 +29,10 @@ public class HeatControl extends FireAbility {
 	private Random random;
 	private ArrayList<TempBlock> tempBlocks;
 
-	public HeatControl() {
+	public HeatControlSolidify() {
 	}
 	
-	public HeatControl(Player player) {
+	public HeatControlSolidify(Player player) {
 		super(player);
 		
 		this.radius = 1;
@@ -126,7 +126,7 @@ public class HeatControl extends FireAbility {
 			@Override
 			public void run() {
 				revertAll();
-				HeatControl.super.remove();
+				HeatControlSolidify.super.remove();
 			}
 		}, revertTime);
 	}
