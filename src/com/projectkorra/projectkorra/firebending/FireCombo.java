@@ -576,6 +576,10 @@ public class FireCombo extends FireAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	public boolean isHiddenAbility() {
+		return true;
+	}
 
 	public boolean isFirstTime() {
 		return firstTime;

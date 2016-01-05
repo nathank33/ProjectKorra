@@ -54,12 +54,17 @@ public class PlantRegrowth extends PlantAbility {
 
 	@Override
 	public String getName() {
-		return null;
+		return "PlantRegrowth";
 	}
 
 	@Override
 	public Location getLocation() {
 		return block != null ? block.getLocation() : null;
+	}
+	
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
 	}
 
 	@Override

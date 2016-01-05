@@ -117,6 +117,11 @@ public class ChiCombo extends ChiAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
+	}
+	
 	public boolean isEnabled() {
 		return enabled;
 	}

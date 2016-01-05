@@ -106,6 +106,7 @@ public class AirCombo extends AirAbility {
 		start();
 	}
 
+	@Override
 	public void progress() {
 		progressCounter++;
 		if (player.isDead() || !player.isOnline()) {
@@ -277,11 +278,12 @@ public class AirCombo extends AirAbility {
 				}
 			}
 			manageAirVectors();
-			for (Entity entity : affectedEntities)
+			for (Entity entity : affectedEntities) {
 				if (entity instanceof LivingEntity) {
 					remove();
 					return;
 				}
+			}
 		} else if (abilityName.equalsIgnoreCase("AirSweep")) {
 			if (origin == null) {
 				direction = player.getEyeLocation().getDirection().normalize();
@@ -427,6 +429,11 @@ public class AirCombo extends AirAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
+	}
+	
 	public String getAbilityName() {
 		return abilityName;
 	}

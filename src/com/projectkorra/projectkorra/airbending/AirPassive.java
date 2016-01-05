@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AirPassive {
 
-	private static final ConcurrentHashMap<Player, Float> FOOD = new ConcurrentHashMap<Player, Float>();
+	private static final ConcurrentHashMap<Player, Float> FOOD = new ConcurrentHashMap<>();
 
 	public static float getExhaustion(Player player, float level) {
 		if (!FOOD.keySet().contains(player)) {

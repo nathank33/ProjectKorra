@@ -188,6 +188,7 @@ public class WaterReturn extends WaterAbility {
 		this.range = range;
 	}
 
+	@Override
 	public Location getLocation() {
 		return location;
 	}
@@ -212,6 +213,11 @@ public class WaterReturn extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
 	}
 	
 }

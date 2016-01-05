@@ -8,7 +8,6 @@ import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -234,16 +233,10 @@ public abstract class CoreAbility implements Ability {
 		}
 	}
 
-	public final ChatColor getElementColor() {
+	public ChatColor getElementColor() {
 		String element = (this instanceof SubAbility) ? getElementName() + "Sub" : getElementName();
 		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors." + element));
 	}
-
-	public abstract String getElementName();
-
-	public abstract Location getLocation();
-
-	public abstract long getCooldown();
 	
 	public long getStartTime() {
 		return startTime;
@@ -255,6 +248,10 @@ public abstract class CoreAbility implements Ability {
 	
 	public boolean hasBeenRemoved() {
 		return hasBeenRemoved;
+	}
+	
+	public boolean isHiddenAbility() {
+		return false;
 	}
 
 	public Player getPlayer() {

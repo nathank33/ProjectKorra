@@ -89,7 +89,7 @@ public class Smokescreen extends ChiAbility {
 
 	@Override
 	public String getName() {
-		return "ChiAbility";
+		return "Smokescreen";
 	}
 
 	@Override

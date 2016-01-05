@@ -34,7 +34,7 @@ public class AirBurst extends AirAbility {
 
 	public AirBurst(Player player, boolean isFallBurst) {
 		super(player);
-		if (bPlayer.isOnCooldown("AirBurst")) {
+		if (bPlayer.isOnCooldown(this)) {
 			remove();
 			return;
 		}
@@ -48,10 +48,10 @@ public class AirBurst extends AirAbility {
 		this.fallThreshold = getConfig().getDouble("Abilities.Air.AirBurst.FallThreshold");
 		this.pushFactor = getConfig().getDouble("Abilities.Air.AirBurst.PushFactor");
 		this.damage = getConfig().getDouble("Abilities.Air.AirBurst.Damage");
-		this.blasts = new ArrayList<AirBlast>();
-		this.affectedEntities = new ArrayList<Entity>();
+		this.blasts = new ArrayList<>();
+		this.affectedEntities = new ArrayList<>();
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			this.chargeTime = 0;
 			this.damage = AvatarState.getValue(this.damage);
 		}
@@ -60,7 +60,7 @@ public class AirBurst extends AirAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBend(this)) {
+		if (!bPlayer.canBendIgnoreCooldowns(this)) {
 			remove();
 			return;
 		}

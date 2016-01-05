@@ -13,8 +13,8 @@ import com.projectkorra.projectkorra.util.Flight;
 
 public class AirFlight extends FlightAbility {
 	
-	private static final ConcurrentHashMap<String, Integer> HITS = new ConcurrentHashMap<String, Integer>();
-	private static final ConcurrentHashMap<String, Boolean> HOVERING = new ConcurrentHashMap<String, Boolean>();
+	private static final ConcurrentHashMap<String, Integer> HITS = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, Boolean> HOVERING = new ConcurrentHashMap<>();
 	
 	private boolean firstProgressIteration;
 	private int maxHitsBeforeRemoval;

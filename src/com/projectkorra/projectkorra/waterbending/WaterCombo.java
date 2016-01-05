@@ -358,6 +358,11 @@ public class WaterCombo extends WaterAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
+	}
 
 	public boolean isEnabled() {
 		return enabled;
