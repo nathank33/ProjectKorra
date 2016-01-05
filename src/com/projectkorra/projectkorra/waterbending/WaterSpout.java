@@ -2,8 +2,8 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -34,9 +34,6 @@ public class WaterSpout extends WaterAbility {
 	private Block base;
 	private TempBlock baseBlock;
 	
-	public WaterSpout() {
-	}
-
 	public WaterSpout(Player player) {
 		super(player);
 	
@@ -53,7 +50,7 @@ public class WaterSpout extends WaterAbility {
 		this.interval = 50;
 		
 		WaterSpoutWave spoutWave = new WaterSpoutWave(player, WaterSpoutWave.AbilityType.CLICK);
-		if (spoutWave.hasStarted()) {
+		if (spoutWave.isStarted()) {
 			return;
 		}
 

@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.airbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.util.Flight;
 
@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Tornado extends AirAbility {
@@ -28,9 +29,8 @@ public class Tornado extends AirAbility {
 	private double currentRadius;
 	private Flight flight;
 	private Location origin;
+	private Random random;
 	private ConcurrentHashMap<Integer, Integer> angles;
-	
-	public Tornado() {}
 
 	public Tornado(Player player) {
 		super(player);
@@ -46,6 +46,7 @@ public class Tornado extends AirAbility {
 		this.numberOfStreams = (int) (.3 * (double) maxHeight);
 		this.currentHeight = 2;
 		this.currentRadius = currentHeight / maxHeight * radius;
+		this.random = new Random();
 		this.angles = new ConcurrentHashMap<>();
 
 		int angle = 0;
@@ -170,7 +171,7 @@ public class Tornado extends AirAbility {
 				Location effect = new Location(origin.getWorld(), x, y, z);
 				if (!GeneralMethods.isRegionProtectedFromBuild(this, effect)) {
 					playAirbendingParticles(effect, particleCount);
-					if (GeneralMethods.rand.nextInt(20) == 0) {
+					if (random.nextInt(20) == 0) {
 						playAirbendingSound(effect);
 					}
 				}

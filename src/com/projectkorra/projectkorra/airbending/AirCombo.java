@@ -1,12 +1,11 @@
 package com.projectkorra.projectkorra.airbending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.firebending.FireCombo;
 import com.projectkorra.projectkorra.firebending.FireCombo.FireComboStream;
@@ -52,8 +51,6 @@ public class AirCombo extends AirAbility {
 	private ArrayList<Entity> affectedEntities;
 	private ArrayList<BukkitRunnable> tasks;
 	private ArrayList<Flight> flights;
-	
-	public AirCombo() {}
 
 	public AirCombo(Player player, String ability) {
 		super(player);
@@ -106,6 +103,7 @@ public class AirCombo extends AirAbility {
 		start();
 	}
 
+	@Override
 	public void progress() {
 		progressCounter++;
 		if (player.isDead() || !player.isOnline()) {
@@ -277,11 +275,12 @@ public class AirCombo extends AirAbility {
 				}
 			}
 			manageAirVectors();
-			for (Entity entity : affectedEntities)
+			for (Entity entity : affectedEntities) {
 				if (entity instanceof LivingEntity) {
 					remove();
 					return;
 				}
+			}
 		} else if (abilityName.equalsIgnoreCase("AirSweep")) {
 			if (origin == null) {
 				direction = player.getEyeLocation().getDirection().normalize();
@@ -348,9 +347,9 @@ public class AirCombo extends AirAbility {
 						if (damage != 0) {
 							if (entity instanceof LivingEntity) {
 								if (fstream.getAbility().equalsIgnoreCase("AirSweep")) {
-									GeneralMethods.damageEntity(player, entity, damage, Element.Air, "AirSweep");
+									GeneralMethods.damageEntity(this, entity, damage);
 								} else {
-									GeneralMethods.damageEntity(player, entity, damage, Element.Air, "AirCombo");
+									GeneralMethods.damageEntity(this, entity, damage);
 								}
 							}
 						}
@@ -427,6 +426,11 @@ public class AirCombo extends AirAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
+	}
+	
 	public String getAbilityName() {
 		return abilityName;
 	}

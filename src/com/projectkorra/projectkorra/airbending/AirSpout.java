@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.airbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
@@ -20,8 +20,6 @@ public class AirSpout extends AirAbility {
 	private long updateInterval;
 	private long cooldown;
 	private double height;
-	
-	public AirSpout() {}
 
 	public AirSpout(Player player) {
 		super(player);

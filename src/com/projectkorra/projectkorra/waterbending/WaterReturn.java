@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Location;
@@ -23,9 +23,6 @@ public class WaterReturn extends WaterAbility {
 	private Location location;
 	private TempBlock block;
 	
-	public WaterReturn() {
-	}
-
 	public WaterReturn(Player player, Block block) {
 		super(player);
 		if (CoreAbility.hasAbility(player, WaterReturn.class)) {
@@ -188,6 +185,7 @@ public class WaterReturn extends WaterAbility {
 		this.range = range;
 	}
 
+	@Override
 	public Location getLocation() {
 		return location;
 	}
@@ -212,6 +210,11 @@ public class WaterReturn extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
 	}
 	
 }

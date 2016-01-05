@@ -2,10 +2,10 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.firebending.Combustion;
 import com.projectkorra.projectkorra.firebending.FireBlast;
@@ -55,9 +55,6 @@ public class WaterManipulation extends WaterAbility {
 	private Vector firstDirection;
 	private Vector targetDirection;
 	private HashSet<Byte> waterTypes;
-
-	public WaterManipulation() {
-	}
 	
 	public WaterManipulation(Player player) {
 		super(player);
@@ -459,9 +456,10 @@ public class WaterManipulation extends WaterAbility {
 
 	@SuppressWarnings("deprecation")
 	public static void moveWater(Player player) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-
-		if (bPlayer.isOnCooldown("WaterManipulation")) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null) {
+			return;
+		} if (bPlayer.isOnCooldown("WaterManipulation")) {
 			redirectTargettedBlasts(player);
 			return;
 		}

@@ -2,9 +2,9 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.IceAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.IceAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -43,8 +43,6 @@ public class IceSpikeBlast extends IceAbility {
 	private Location firstDestination;
 	private Location destination;
 	private TempBlock source;
-
-	public IceSpikeBlast() {}
 
 	public IceSpikeBlast(Player player) {
 		super(player);
@@ -276,7 +274,7 @@ public class IceSpikeBlast extends IceAbility {
 
 		if (!activate) {
 			IceSpikePillar spike = new IceSpikePillar(player);
-			if (!spike.hasStarted()) {
+			if (!spike.isStarted()) {
 				waterBottle(player);
 			}
 		}

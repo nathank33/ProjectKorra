@@ -1,11 +1,11 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -62,8 +62,6 @@ public class EarthSmash extends EarthAbility {
 	private ArrayList<BlockRepresenter> currentBlocks;
 	private ArrayList<TempBlock> affectedBlocks;
 
-	public EarthSmash() {}
-	
 	public EarthSmash(Player player, ClickType type) {
 		super(player);
 		
@@ -520,7 +518,7 @@ public class EarthSmash extends EarthAbility {
 			return null;
 		}
 		
-		List<Block> blocks = GeneralMethods.getBlocksAroundPoint(GeneralMethods.getTargetedLocation(player, grabRange, GeneralMethods.nonOpaque), 1);
+		List<Block> blocks = GeneralMethods.getBlocksAroundPoint(GeneralMethods.getTargetedLocation(player, grabRange, GeneralMethods.NON_OPAQUE), 1);
 		for (EarthSmash smash : CoreAbility.getAbilities(EarthSmash.class)) {
 			if (reqState == null || smash.state == reqState) {
 				for (Block block : blocks) {

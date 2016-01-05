@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.waterbending;
 
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,9 +9,7 @@ import org.bukkit.entity.Player;
  *  WaterBubble is currently implemented in AirBubble
  */
 public class WaterBubble extends WaterAbility {
-	
-	public WaterBubble() {}
-	
+		
 	public WaterBubble(Player player) {
 		super(player);
 	}

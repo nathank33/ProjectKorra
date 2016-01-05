@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,9 +15,6 @@ public class Blaze extends FireAbility {
 	private long cooldown;
 	private double range;
 	private double speed;
-
-	public Blaze() {
-	}
 	
 	public Blaze(Player player) {
 		super(player);

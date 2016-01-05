@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.command;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.object.Preset;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -11,11 +11,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.object.Preset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Completes tabbing for the bending command/subcommands.
@@ -37,10 +36,9 @@ public class BendingTabComplete implements TabCompleter {
 				
 				List<String> abilities = new ArrayList<String>();
 				if (args.length == 2) {
-					for (String abil : AbilityModuleManager.abilities) {
-						CoreAbility coreAbil = CoreAbility.getAbility(abil);
+					for (CoreAbility coreAbil : CoreAbility.getAbilities()) {
 						if (bPlayer != null && bPlayer.canBind(coreAbil)) {
-							abilities.add(abil);
+							abilities.add(coreAbil.getName());
 						}
 					}
 				} else {
@@ -109,13 +107,13 @@ public class BendingTabComplete implements TabCompleter {
 				if (args.length > 2 || !sender.hasPermission("bending.command.help"))
 					return new ArrayList<String>();
 				List<String> list = new ArrayList<String>();
-				for (Element e : Element.values()) {
+				for (Element e : Element.getElements()) {
 					list.add(e.toString());
 				}
 				List<String> abils = new ArrayList<String>();
-				for (String abil : AbilityModuleManager.abilities) {
-					if (bPlayer.canBind(CoreAbility.getAbility(abil))) {
-						abils.add(abil);
+				for (CoreAbility coreAbil : CoreAbility.getAbilities()) {
+					if (bPlayer.canBind(coreAbil)) {
+						abils.add(coreAbil.getName());
 					}
 				}
 				

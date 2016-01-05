@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.chiblocking;
 
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,9 +13,6 @@ public class AcrobatStance extends ChiAbility {
 	private int jump;
 	private double chiBlockBoost;
 	private double paralyzeDodgeBoost;
-
-	public AcrobatStance () {
-	}
 	
 	public AcrobatStance(Player player) {
 		super(player);

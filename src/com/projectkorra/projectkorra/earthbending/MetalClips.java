@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.MetalAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.MetalAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -52,8 +52,6 @@ public class MetalClips extends MetalAbility {
 	private LivingEntity targetEntity;
 	private ItemStack[] oldArmor;
 	private List<Item> trackedIngots;
-
-	public MetalClips() {}
 	
 	public MetalClips(Player player, int abilityType) {
 		super(player);

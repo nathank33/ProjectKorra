@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,8 +26,6 @@ public class EarthTunnel extends EarthAbility {
 	private Location origin;
 	private Location location;
 	private Vector direction;
-	
-	public EarthTunnel() {}
 
 	public EarthTunnel(Player player) {
 		super(player);

@@ -2,10 +2,10 @@ package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.waterbending.PlantRegrowth;
@@ -46,9 +46,6 @@ public class FireBlast extends FireAbility {
 	private Location origin;
 	private Vector direction;
 	private List<Block> safeBlocks;
-
-	public FireBlast() {
-	}
 	
 	public FireBlast(Location location, Vector direction, Player player, int damage, List<Block> safeBlocks) {
 		super(player);

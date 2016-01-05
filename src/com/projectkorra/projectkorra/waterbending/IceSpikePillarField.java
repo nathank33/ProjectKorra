@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.IceAbility;
+import com.projectkorra.projectkorra.ability.IceAbility;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,9 +23,6 @@ public class IceSpikePillarField extends IceAbility {
 	private int numberOfSpikes;
 	private long cooldown;
 	private Vector thrownForce;
-
-	public IceSpikePillarField() {
-	}
 	
 	public IceSpikePillarField(Player player) {
 		super(player);

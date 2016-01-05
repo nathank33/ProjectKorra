@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.chiblocking;
 
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.command.Commands;
 
 import org.bukkit.Effect;
@@ -22,8 +22,6 @@ public class Smokescreen extends ChiAbility {
 	private int duration;
 	private long cooldown;
 	private double radius;
-
-	public Smokescreen() {}
 	
 	public Smokescreen(Player player) {
 		super(player);
@@ -89,7 +87,7 @@ public class Smokescreen extends ChiAbility {
 
 	@Override
 	public String getName() {
-		return "ChiAbility";
+		return "Smokescreen";
 	}
 
 	@Override

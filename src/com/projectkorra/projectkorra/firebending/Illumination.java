@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,9 +21,6 @@ public class Illumination extends FireAbility {
 	private Material normalType;
 	private Block block;
 	
-	public Illumination() {
-	}
-
 	public Illumination(Player player) {
 		super(player);
 		

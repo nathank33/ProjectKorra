@@ -1,10 +1,8 @@
 package com.projectkorra.projectkorra;
 
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityModuleManager;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.util.ComboManager;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirbendingManager;
 import com.projectkorra.projectkorra.chiblocking.ChiblockingManager;
 import com.projectkorra.projectkorra.command.Commands;
@@ -33,7 +31,7 @@ public class ProjectKorra extends JavaPlugin {
 	public static PKLogHandler handler;
 	public static long time_step = 1;
 	public Updater updater;
-	public AbilityModuleManager abManager;
+	
 	@Override
 	public void onEnable() {
 		plugin = this;
@@ -49,14 +47,13 @@ public class ProjectKorra extends JavaPlugin {
 		catch (SecurityException | IOException e) {
 			e.printStackTrace();
 		}
+		
+		CoreAbility.registerAbilities();
 		new ConfigManager();
 		new GeneralMethods(this);
-		updater = new Updater(this, "http://projectkorra.com/forum/forums/dev-builds.16/index.rss");
+		updater = new Updater(this, "http://projectkorra.com/forums/dev-builds.16/index.rss");
 		new Commands(this);
-		abManager = new AbilityModuleManager(this);
-		new MultiAbilityModuleManager();
 		new MultiAbilityManager();
-		new ComboModuleManager();
 		new ComboManager();
 
 		DBConnection.host = getConfig().getString("Storage.MySQL.host");
@@ -91,8 +88,9 @@ public class ProjectKorra extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+		double cacheTime = ConfigManager.getConfig().getDouble("Properties.RegionProtection.CacheBlockTime");
 		GeneralMethods.deserializeFile();
-		GeneralMethods.startCacheCleaner(GeneralMethods.CACHE_TIME);
+		GeneralMethods.startCacheCleaner(cacheTime);
 		updater.checkUpdate();
 	}
 

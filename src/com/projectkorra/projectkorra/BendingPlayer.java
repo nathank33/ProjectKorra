@@ -1,12 +1,12 @@
 package com.projectkorra.projectkorra;
 
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.Ability;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.SubAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.Ability;
+import com.projectkorra.projectkorra.ability.ChiAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.SubAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.chiblocking.Paralyze;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
@@ -75,11 +75,11 @@ public class BendingPlayer {
 		this.chiBlocked = false;
 		cooldowns = new ConcurrentHashMap<String, Long>();
 		toggledElements = new ConcurrentHashMap<Element, Boolean>();
-		toggledElements.put(Element.Air, true);
-		toggledElements.put(Element.Earth, true);
-		toggledElements.put(Element.Fire, true);
-		toggledElements.put(Element.Water, true);
-		toggledElements.put(Element.Chi, true);
+		toggledElements.put(Element.AIR, true);
+		toggledElements.put(Element.EARTH, true);
+		toggledElements.put(Element.FIRE, true);
+		toggledElements.put(Element.WATER, true);
+		toggledElements.put(Element.CHI, true);
 
 		PLAYERS.put(uuid, this);
 		PKListener.login(this);
@@ -112,8 +112,8 @@ public class BendingPlayer {
 	 * 
 	 * @param e The element to add
 	 */
-	public void addElement(Element e) {
-		this.elements.add(e);
+	public void addElement(Element element) {
+		this.elements.add(element);
 	}
 
 	/**
@@ -143,10 +143,10 @@ public class BendingPlayer {
 	}
 
 	public boolean canBend(CoreAbility ability) {
-		return canBend(ability, false, false);
+		return canBend(ability, false, false, false);
 	}
 
-	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns) {
+	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns, boolean ignoreRegions) {
 		if (ability == null) {
 			return false;
 		}
@@ -168,7 +168,7 @@ public class BendingPlayer {
 			return false;
 		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
 			return false;
-		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getName())) {
+		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getElement())) {
 			return false;
 		} else if (player.getGameMode() == GameMode.SPECTATOR) {
 			return false;
@@ -180,35 +180,43 @@ public class BendingPlayer {
 			cooldowns.remove(name);
 		}
 
-		if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
-			return false;
-		} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
-			return false;
-		} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
-				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
-			return false;
-		} else if (ability instanceof WaterAbility && BendingManager.events.get(player.getWorld()) != null
-				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("LunarEclipse")) {
-			return false;
-		} else if (!ignoreBinds && !canBind(ability)) {
+		if (!ignoreRegions) {
+			if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
+				return false;
+			} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
+				return false;
+			} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
+					&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
+				return false;
+			} else if (ability instanceof WaterAbility && BendingManager.events.get(player.getWorld()) != null
+					&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("LunarEclipse")) {
+				return false;
+			} 
+		}
+		
+		if (!ignoreBinds && !canBind(ability)) {
 			return false;
 		}
 		return true;
 	}
 
 	public boolean canBendIgnoreBinds(CoreAbility ability) {
-		return canBend(ability, true, false);
+		return canBend(ability, true, false, false);
 	}
 
 	public boolean canBendIgnoreBindsCooldowns(CoreAbility ability) {
-		return canBend(ability, true, true);
+		return canBend(ability, true, true, false);
 	}
 
 	public boolean canBendIgnoreCooldowns(CoreAbility ability) {
-		return canBend(ability, false, true);
+		return canBend(ability, false, true, false);
+	}
+	
+	public boolean canBendIgnoreBindsCooldownsRegions(CoreAbility ability) {
+		return canBend(ability, true, true, true);
 	}
 
-	public boolean canBendPassive(String element) {
+	public boolean canBendPassive(Element element) {
 		if (element == null || player == null) {
 			return false;
 		} else if (!player.hasPermission("bending." + element + ".passive")) {
@@ -243,11 +251,11 @@ public class BendingPlayer {
 			return false;
 		} else if (!player.hasPermission("bending.ability." + ability.getName())) {
 			return false;
-		} else if (!hasElement(ability.getElementName())) {
+		} else if (!hasElement(ability.getElement())) {
 			return false;
 		} else if (ability instanceof SubAbility) {
 			SubAbility subAbil = (SubAbility) ability;
-			if (!hasElement(subAbil.getSubElementName())) {
+			if (!hasElement(subAbil.getParentElement())) {
 				return false;
 			}
 		}
@@ -440,20 +448,15 @@ public class BendingPlayer {
 	public String getUUIDString() {
 		return this.uuid.toString();
 	}
-
+	
 	/**
 	 * Checks to see if the {@link BendingPlayer} knows a specific element.
 	 * 
-	 * @param e The element to check
+	 * @param element The element to check
 	 * @return true If the player knows the element
 	 */
-	public boolean hasElement(Element e) {
-		return this.elements.contains(e);
-	}
-
-	public boolean hasElement(String elementName) {
-		// TODO: Finish this
-		return true;
+	public boolean hasElement(Element element) {
+		return this.elements.contains(element);
 	}
 
 	public boolean isAvatarState() {
@@ -477,15 +480,10 @@ public class BendingPlayer {
 		return MetalClips.isControlled(player);
 	}
 
-	public boolean isElementToggled(Element e) {
-		if (e != null) {
-			return this.toggledElements.get(e);
+	public boolean isElementToggled(Element element) {
+		if (element != null) {
+			return this.toggledElements.get(element);
 		}
-		return true;
-	}
-
-	public boolean isElementToggled(String elementName) {
-		// TODO: Finish this
 		return true;
 	}
 
@@ -537,6 +535,12 @@ public class BendingPlayer {
 		return this.tremorSense;
 	}
 
+	public void removeCooldown(CoreAbility ability) {
+		if (ability != null) {
+			removeCooldown(ability.getName());
+		}
+	}
+	
 	/**
 	 * Removes the cooldown of an ability.
 	 * 
@@ -569,9 +573,9 @@ public class BendingPlayer {
 	 * 
 	 * @param e The element to set
 	 */
-	public void setElement(Element e) {
+	public void setElement(Element element) {
 		this.elements.clear();
-		this.elements.add(e);
+		this.elements.add(element);
 	}
 
 	/**
@@ -608,8 +612,8 @@ public class BendingPlayer {
 		toggled = !toggled;
 	}
 
-	public void toggleElement(Element e) {
-		toggledElements.put(e, !toggledElements.get(e));
+	public void toggleElement(Element element) {
+		toggledElements.put(element, !toggledElements.get(element));
 	}
 	
 	/**

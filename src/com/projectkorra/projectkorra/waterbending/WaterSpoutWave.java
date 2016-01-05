@@ -1,10 +1,9 @@
 package com.projectkorra.projectkorra.waterbending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -60,10 +59,7 @@ public class WaterSpoutWave extends WaterAbility {
 	private ArrayList<Entity> affectedEntities;
 	private ArrayList<BukkitRunnable> tasks;
 	private ConcurrentHashMap<Block, TempBlock> affectedBlocks;
-	
-	public WaterSpoutWave() {
-	}
-	
+		
 	public WaterSpoutWave(Player player, AbilityType type) {
 		super(player);
 		
@@ -261,7 +257,7 @@ public class WaterSpoutWave extends WaterAbility {
 						if (entity != this.player && entity instanceof LivingEntity && !affectedEntities.contains(entity)) {
 							affectedEntities.add(entity);
 							final double augment = getNightFactor(player.getWorld());
-							GeneralMethods.damageEntity(player, entity, damage, Element.Water, "WaterWave");
+							GeneralMethods.damageEntity(this, entity, damage);
 							final Player fplayer = this.player;
 							final Entity fent = entity;
 							

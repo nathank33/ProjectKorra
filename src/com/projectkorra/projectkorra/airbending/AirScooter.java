@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.airbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
@@ -14,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class AirScooter extends AirAbility {
 
@@ -26,9 +27,8 @@ public class AirScooter extends AirAbility {
 	private double radius;
 	private double maxHeightFromGround;
 	private Block floorblock;
+	private Random random;
 	private ArrayList<Double> angles;
-	
-	public AirScooter() {}
 
 	public AirScooter(Player player) {
 		super(player);
@@ -45,6 +45,7 @@ public class AirScooter extends AirAbility {
 		this.spinInterval = SPIN_INTERVAL;
 		this.radius = SCOOTER_RADIUS;
 		this.maxHeightFromGround = MAX_HEIGHT_FROM_GROUND;
+		this.random = new Random();
 		this.angles = new ArrayList<>();
 
 		new Flight(player);
@@ -124,7 +125,7 @@ public class AirScooter extends AirAbility {
 		player.setSprinting(false);
 		player.removePotionEffect(PotionEffectType.SPEED);
 		player.setVelocity(velocity);
-		if (GeneralMethods.rand.nextInt(4) == 0) {
+		if (random.nextInt(4) == 0) {
 			playAirbendingSound(player.getLocation());
 		}
 	}

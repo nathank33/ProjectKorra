@@ -2,7 +2,7 @@ package com.projectkorra.projectkorra.command;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -30,32 +30,39 @@ public class BindCommand extends PKCommand {
 			return;
 		}
 		
-		String ability = GeneralMethods.getAbility(args.get(0));
+		CoreAbility coreAbil = CoreAbility.getAbility(args.get(0));
 		// bending bind [Ability]
 		if (args.size() == 1) {
-			bind(sender, ability, ((Player) sender).getInventory().getHeldItemSlot()+1);
+			bind(sender, coreAbil.getName(), ((Player) sender).getInventory().getHeldItemSlot()+1);
 		}
 
 		// bending bind [ability] [#]
 		if (args.size() == 2) {
-			bind(sender, ability, Integer.parseInt(args.get(1)));
+			bind(sender, coreAbil.getName(), Integer.parseInt(args.get(1)));
 		}
 	}
 
 	private void bind(CommandSender sender, String ability, int slot) {
-		if (slot < 1 || slot > 9) {
+		if (!(sender instanceof Player)) {
+			return;
+		} else if (slot < 1 || slot > 9) {
 			sender.sendMessage(ChatColor.RED + "Slot must be an integer between 1 and 9.");
 			return;
 		}
 
-		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
-		if (!bPlayer.canBind(CoreAbility.getAbility(ability))) {
-			sender.sendMessage(ChatColor.RED + "You don't have permission to bend this element.");
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer((Player) sender);
+		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		if (bPlayer == null) {
+			sender.sendMessage(ChatColor.RED + "Please wait one moment while we load your bending information.");
 			return;
-		} else if (!GeneralMethods.getBendingPlayer(sender.getName()).isElementToggled(GeneralMethods.getAbilityElement(ability))) {
+		} else if (coreAbil == null || !bPlayer.canBind(coreAbil)) {
+			sender.sendMessage(ChatColor.RED + "You don't have permission to bend this ability.");
+			return;
+		} else if (!bPlayer.isElementToggled(coreAbil.getElement())) {
 			sender.sendMessage(ChatColor.RED + "You have that ability's element toggled off currently.");
 		}
 		
-		GeneralMethods.bindAbility((Player) sender, GeneralMethods.getAbility(ability), slot);
+		String name = coreAbil != null ? coreAbil.getName() : null;
+		GeneralMethods.bindAbility((Player) sender, name, slot);
 	}
 }

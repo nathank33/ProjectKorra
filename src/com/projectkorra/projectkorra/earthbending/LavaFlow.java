@@ -2,9 +2,9 @@ package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.LavaAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.LavaAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -62,8 +62,6 @@ public class LavaFlow extends LavaAbility {
 	private Location origin;
 	private ArrayList<TempBlock> affectedBlocks;
 	private ArrayList<BukkitRunnable> tasks;
-
-	public LavaFlow() {}
 	
 	/**
 	 * Creates a new LavaFlow ability and initializes all of the variables and

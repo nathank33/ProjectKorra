@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.util;
 
 import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.Location;

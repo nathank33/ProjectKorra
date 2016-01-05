@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 
@@ -27,9 +27,6 @@ public class Collapse extends EarthAbility {
 	private Block block;
 	private ConcurrentHashMap<Block, Block> affectedBlocks;
 	
-	public Collapse() {
-	}
-
 	public Collapse(Player player) {
 		super(player);
 		setFields();

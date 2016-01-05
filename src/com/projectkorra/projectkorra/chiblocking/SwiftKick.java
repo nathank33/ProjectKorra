@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -13,8 +13,6 @@ public class SwiftKick extends ChiAbility {
 	private int blockChance;
 	private long cooldown;
 	private Entity target;
-
-	public SwiftKick () {}
 	
 	public SwiftKick(Player player) {
 		super(player);

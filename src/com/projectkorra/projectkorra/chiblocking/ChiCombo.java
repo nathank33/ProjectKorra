@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -22,9 +22,6 @@ public class ChiCombo extends ChiAbility {
 	private Entity target;
 	private String name;
 	
-	public ChiCombo() {
-	}
-	
 	public ChiCombo(Player player, String ability) {
 		super(player);
 		
@@ -37,7 +34,7 @@ public class ChiCombo extends ChiAbility {
 		if (ability.equalsIgnoreCase("Immobilize")) {
 			this.cooldown = getConfig().getLong("Abilities.Chi.ChiCombo.Immobilize.Cooldown");
 			this.duration = getConfig().getLong("Abilities.Chi.ChiCombo.Immobilize.ParalyzeDuration");
-			if (!GeneralMethods.canBend(player.getName(), name) || bPlayer.isOnCooldown(this)) {
+			if (!bPlayer.canBendIgnoreBinds(this)) {
 				return;
 			} else {
 				target = GeneralMethods.getTargetedEntity(player, 5);
@@ -117,6 +114,11 @@ public class ChiCombo extends ChiAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
+	}
+	
 	public boolean isEnabled() {
 		return enabled;
 	}

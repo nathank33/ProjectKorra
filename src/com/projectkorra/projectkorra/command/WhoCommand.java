@@ -4,11 +4,7 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.rpg.RPGMethods;
 
 import org.bukkit.Bukkit;
@@ -77,41 +73,41 @@ public class WhoCommand extends PKCommand {
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				String playerName = player.getName();
 				String result = "";
-				BendingPlayer bp = GeneralMethods.getBendingPlayer(playerName);
+				BendingPlayer bp = BendingPlayer.getBendingPlayer(playerName);
 				
 				if (bp == null) {
 					GeneralMethods.createBendingPlayer(player.getUniqueId(), player.getName());
-					bp = GeneralMethods.getBendingPlayer(player.getName());
+					bp = BendingPlayer.getBendingPlayer(player.getName());
 				}
-				if (bp.hasElement(Element.Air)) {
-					result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Air) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&7&mA") : AirAbility.getChatColor() + "A");
+				if (bp.hasElement(Element.AIR)) {
+					result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.AIR) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&7&mA") : Element.AIR.getColor() + "A");
 				}
-				if (bp.hasElement(Element.Earth)) {
+				if (bp.hasElement(Element.EARTH)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getChatColor() + "E");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.EARTH) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : Element.EARTH.getColor() + "E");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Earth) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : EarthAbility.getChatColor() + "E");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.EARTH) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&a&mE") : Element.EARTH.getColor() + "E");
 					}
 				}
-				if (bp.hasElement(Element.Fire)) {
+				if (bp.hasElement(Element.FIRE)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Fire) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : FireAbility.getChatColor() + "F");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.FIRE) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : Element.FIRE.getColor() + "F");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Fire) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : FireAbility.getChatColor() + "F");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.FIRE) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&c&mF") : Element.FIRE.getColor() + "F");
 					}
 				}
-				if (bp.hasElement(Element.Water)) {
+				if (bp.hasElement(Element.WATER)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Water) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : WaterAbility.getChatColor() + "W");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.WATER) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : Element.WATER.getColor() + "W");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Water) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : WaterAbility.getChatColor() + "W");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.WATER) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&b&mW") : Element.WATER.getColor() + "W");
 					}
 				}
-				if (bp.hasElement(Element.Chi)) {
+				if (bp.hasElement(Element.CHI)) {
 					if (result == "") {
-						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.Chi) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : ChiAbility.getChatColor() + "C");
+						result = ChatColor.WHITE + playerName + " - " + ((!bp.isElementToggled(Element.CHI) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : Element.CHI.getColor() + "C");
 					} else {
-						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.Chi) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : ChiAbility.getChatColor() + "C");
+						result = result + ChatColor.WHITE + " | " + ((!bp.isElementToggled(Element.CHI) || !bp.isToggled()) ? ChatColor.translateAlternateColorCodes('&', "&6&mC") : Element.CHI.getColor() + "C");
 					}
 				}
 				if (staff.containsKey(player.getUniqueId().toString())) {
@@ -188,57 +184,57 @@ public class WhoCommand extends PKCommand {
 		bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer != null) {
 			sender.sendMessage(player.getName() + (!player.isOnline() ? ChatColor.RESET + " (Offline)" : "") + " - ");
-			if (GeneralMethods.isBender(playerName, Element.Air)) {
-				sender.sendMessage(AirAbility.getChatColor() + "- Airbender");
+			if (bPlayer.hasElement(Element.AIR)) {
+				sender.sendMessage(Element.AIR + "- Airbender");
 				if (player_ != null && bPlayer.canUseFlight()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Air) + "    Can Fly");
+					sender.sendMessage(Element.FLIGHT.getColor() + "    Can Fly");
 				}
 				if (player_ != null && bPlayer.canUseSpiritualProjection()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Air) + "    Can use Spiritual Projection");
+					sender.sendMessage(Element.SPIRITUAL.getColor() + "    Can use Spiritual Projection");
 				}
 			}
-			if (GeneralMethods.isBender(playerName, Element.Water)) {
-				sender.sendMessage(WaterAbility.getChatColor() + "- Waterbender");
+			if (bPlayer.hasElement(Element.WATER)) {
+				sender.sendMessage(Element.WATER.getColor() + "- Waterbender");
 				if (player_ != null && bPlayer.canPlantbend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Plantbend");
+					sender.sendMessage(Element.PLANT.getColor() + "    Can Plantbend");
 				}
 				if (player_ != null && bPlayer.canBloodbend()) {
 					if (bPlayer.canBloodbendAtAnytime()) {
-						sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Bloodbend anytime, on any day");
+						sender.sendMessage(Element.BLOOD.getColor() + "    Can Bloodbend anytime, on any day");
 					} else {
-						sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Bloodbend");
+						sender.sendMessage(Element.BLOOD.getColor() + "    Can Bloodbend");
 					}
 				}
 				if (player_ != null && bPlayer.canIcebend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Icebend");
+					sender.sendMessage(Element.ICE.getColor() + "    Can Icebend");
 				}
 				if (player_ != null && bPlayer.canWaterHeal()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Water) + "    Can Heal");
+					sender.sendMessage(Element.HEALING.getColor() + "    Can Heal");
 				}
 			}
-			if (GeneralMethods.isBender(playerName, Element.Earth)) {
-				sender.sendMessage(EarthAbility.getChatColor() + "- Earthbender");
+			if (bPlayer.hasElement(Element.EARTH)) {
+				sender.sendMessage(Element.EARTH.getColor() + "- Earthbender");
 				if (player_ != null && bPlayer.canMetalbend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Metalbend");
+					sender.sendMessage(Element.METAL.getColor() + "    Can Metalbend");
 				}
 				if (player_ != null && bPlayer.canLavabend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Lavabend");
+					sender.sendMessage(Element.LAVA.getColor() + "    Can Lavabend");
 				}
 				if (player_ != null && bPlayer.canSandbend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Earth) + "    Can Sandbend");
+					sender.sendMessage(Element.SAND.getColor() + "    Can Sandbend");
 				}
 			}
-			if (GeneralMethods.isBender(playerName, Element.Fire)) {
-				sender.sendMessage(FireAbility.getChatColor() + "- Firebender");
+			if (bPlayer.hasElement(Element.FIRE)) {
+				sender.sendMessage(Element.FIRE.getColor() + "- Firebender");
 				if (player_ != null && bPlayer.canCombustionbend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Fire) + "    Can Combustionbend");
+					sender.sendMessage(Element.COMBUSTION.getColor() + "    Can Combustionbend");
 				}
 				if (player_ != null && bPlayer.canLightningbend()) {
-					sender.sendMessage(GeneralMethods.getSubBendingColor(Element.Fire) + "    Can Lightningbend");
+					sender.sendMessage(Element.LIGHTNING.getColor() + "    Can Lightningbend");
 				}
 			}
-			if (GeneralMethods.isBender(playerName, Element.Chi)) {
-				sender.sendMessage(ChiAbility.getChatColor() + "- ChiBlocker");
+			if (bPlayer.hasElement(Element.CHI)) {
+				sender.sendMessage(Element.CHI.getColor() + "- ChiBlocker");
 			}
 			
 			UUID uuid = player.getUniqueId();
@@ -246,19 +242,20 @@ public class WhoCommand extends PKCommand {
 				sender.sendMessage("Abilities: ");
 				for (int i = 1; i <= 9; i++) {
 					String ability = bPlayer.getAbilities().get(i);
-					if (ability == null || ability.equalsIgnoreCase("null")) {
+					CoreAbility coreAbil = CoreAbility.getAbility(ability);
+					if (coreAbil == null) {
 						continue;
 					} else {
-						sender.sendMessage(i + " - " + GeneralMethods.getAbilityColor(ability) + ability);
+						sender.sendMessage(i + " - " + coreAbil.getElement().getColor() + ability);
 					}
 				}
 			}
 
 			if (GeneralMethods.hasRPG()) {
 				if (RPGMethods.isCurrentAvatar(player.getUniqueId())) {
-					sender.sendMessage(GeneralMethods.getAvatarColor() + "Current Avatar");
+					sender.sendMessage(Element.AVATAR.getColor() + "Current Avatar");
 				} else if (RPGMethods.hasBeenAvatar(player.getUniqueId())) {
-					sender.sendMessage(GeneralMethods.getAvatarColor() + "Former Avatar");
+					sender.sendMessage(Element.AVATAR.getColor() + "Former Avatar");
 				}
 			}
 

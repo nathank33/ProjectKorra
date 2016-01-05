@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 
 public class FirebendingManager implements Runnable {
 

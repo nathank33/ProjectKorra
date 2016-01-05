@@ -2,10 +2,10 @@ package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.firebending.Combustion;
 import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.util.BlockSource;
@@ -43,9 +43,6 @@ public class EarthBlast extends EarthAbility {
 	private Location destination;
 	private Location firstDestination;
 	private Block sourceBlock;
-		
-	public EarthBlast() {
-	}
 
 	public EarthBlast(Player player) {
 		super(player);

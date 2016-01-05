@@ -1,11 +1,10 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.BendingManager;
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.util.TempBlock;
 import com.projectkorra.projectkorra.waterbending.WaterArms.Arm;
@@ -62,9 +61,6 @@ public class WaterArmsWhip extends WaterAbility {
 	private Location end;	
 	private WaterArms waterArms;
 	
-	public WaterArmsWhip() {
-	}
-
 	public WaterArmsWhip(Player player, Whip ability) {
 		super(player);
 		
@@ -311,7 +307,7 @@ public class WaterArmsWhip extends WaterAbility {
 					if (entity instanceof LivingEntity) {
 						if (entity.getEntityId() != player.getEntityId()) {
 							hasDamaged = true;
-							GeneralMethods.damageEntity(player, entity, punchDamage, Element.Water, "WaterArms Punch");
+							GeneralMethods.damageEntity(this, entity, punchDamage);
 						}
 					}
 				}
@@ -381,7 +377,7 @@ public class WaterArmsWhip extends WaterAbility {
 	public static void checkValidEntities() {
 		for (LivingEntity livingEnt : GRABBED_ENTITIES.keySet()) {
 			WaterArmsWhip whip = GRABBED_ENTITIES.get(livingEnt);
-			if (!whip.hasBeenRemoved()) {
+			if (!whip.isRemoved()) {
 				if (whip.grabbedEntity == null) {
 					GRABBED_ENTITIES.remove(livingEnt);
 				}

@@ -1,92 +1,83 @@
 package com.projectkorra.projectkorra;
 
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
-
 import org.bukkit.ChatColor;
 
-import java.util.Arrays;
+import java.util.HashMap;
 
-public enum Element {
+public class Element {
 	
-	Air (AirAbility.getChatColor(), AirAbility.getSubChatColor()), 
-	Water (WaterAbility.getChatColor(), WaterAbility.getSubChatColor()), 
-	Earth (EarthAbility.getChatColor(), EarthAbility.getSubChatColor()), 
-	Fire (FireAbility.getChatColor(), FireAbility.getSubChatColor()), 
-	Chi (ChiAbility.getChatColor(), ChiAbility.getChatColor());
+	public static final Element AIR = new Element("Air");
+	public static final Element WATER = new Element("Water");
+	public static final Element EARTH = new Element("Earth");
+	public static final Element FIRE = new Element("Fire");
+	public static final Element CHI = new Element("Chi");
+	public static final Element AVATAR = new Element("Avatar");
+	public static final SubElement FLIGHT = new SubElement("Flight", AIR);
+	public static final SubElement SPIRITUAL = new SubElement("Spiritual", AIR);
+	public static final SubElement BLOOD = new SubElement("Blood", WATER);
+	public static final SubElement HEALING = new SubElement("Healing", WATER);
+	public static final SubElement ICE = new SubElement("Ice", WATER);
+	public static final SubElement PLANT = new SubElement("Plant", WATER);
+	public static final SubElement LAVA = new SubElement("Lava", EARTH);
+	public static final SubElement METAL = new SubElement("Metal", EARTH);
+	public static final SubElement SAND = new SubElement("Sand", EARTH);
+	public static final SubElement LIGHTNING = new SubElement("Lightning", FIRE);
+	public static final SubElement COMBUSTION = new SubElement("Combustion", FIRE);
 	
-	private ChatColor color, subcolor;
+	private static final Element[] ELEMENTS = {AIR, WATER, EARTH, FIRE, CHI, FLIGHT, SPIRITUAL, BLOOD, HEALING, ICE, PLANT, LAVA, METAL, SAND, LIGHTNING, COMBUSTION};
+	private static final Element[] MAIN_ELEMENTS = {AIR, WATER, EARTH, FIRE, CHI};
+	private static final SubElement[] SUB_ELEMENTS = {FLIGHT, SPIRITUAL, BLOOD, HEALING, ICE, PLANT, LAVA, METAL, SAND, LIGHTNING, COMBUSTION};
+	private static final HashMap<String, Element> ALL_ELEMENTS = new HashMap<>();
+	
+	private final String name;
 
-	Element(ChatColor mainColor, ChatColor subColor) {
-		this.color = mainColor;
-		this.subcolor = subColor;
+	private Element(String name) {
+		this.name = name;
+		ALL_ELEMENTS.put(name.toLowerCase(), this);
 	}
 	
-	/**
-	 * Returns the chatcolor to be used associated with this element
-	 * @return The Element ChatColor
-	 * */
-	public ChatColor getChatColor() {
-		return color;
+	public ChatColor getColor() {
+		return ChatColor.valueOf(ProjectKorra.plugin.getConfig().getString("Properties.Chat.Colors." + name));
 	}
 	
-	/**
-	 * Returns the chatcolor that's associated the sub-elements of this element
-	 * @return The SubElement ChatColor
-	 * */
-	public ChatColor getSubColor() {
-		return subcolor;
+	public String getName() {
+		return name;
 	}
 	
-	/**
-	 * Returns all the subelements that should be associated with this element
-	 * @return The Element's SubElements
-	 * */
-	public SubElement[] getSubElements() {
-		if (this == Air) {
-			return new SubElement[] {SubElement.Flight, SubElement.SpiritualProjection};
-		}
-		if (this == Water) {
-			return new SubElement[] {SubElement.Bloodbending, SubElement.Icebending, SubElement.Plantbending, SubElement.Healing};
-		}
-		if (this == Fire) {
-			return new SubElement[] {SubElement.Combustion, SubElement.Lightning};
-		}
-		if (this == Earth) {
-			return new SubElement[] {SubElement.Sandbending, SubElement.Metalbending, SubElement.Lavabending};
-		}
-		return new SubElement[] {};
-	}
-	
-	public static Element getType(String string) {
-		for (Element element : Element.values()) {
-			if (element.toString().equalsIgnoreCase(string)) {
-				return element;
-			}
-		}
-		return null;
-	}
-
-	public static Element getType(int index) {
-		if (index == -1)
+	public static Element getElement(String name) {
+		if (name == null) {
 			return null;
-		return Arrays.asList(values()).get(index);
+		}
+		return ALL_ELEMENTS.get(name.toLowerCase());
 	}
 	
-	/**
-	 * Returns an element based on ChatColor.
-	 * @param color
-	 * @return
-	 */
-	public static Element getFromChatColor(ChatColor color) {
-		for (Element element : Element.values())  {
-			if (element.getChatColor().equals(color) || element.getSubColor().equals(color)) {
-				return element;
-			}
+	public static Element[] getElements() {
+		return ELEMENTS;
+	}
+	
+	public static Element[] getMainElements() {
+		return MAIN_ELEMENTS;
+	}
+	
+	public static SubElement[] getSubElements() {
+		return SUB_ELEMENTS;
+	}
+	
+	public static class SubElement extends Element {
+		
+		private Element parentElement;
+		
+		private SubElement(String name, Element parentElement) {
+			super(name);
+			this.parentElement = parentElement;
 		}
-		return null;
+		
+		public ChatColor getColor() {
+			return ChatColor.valueOf(ProjectKorra.plugin.getConfig().getString("Properties.Chat.Colors." + parentElement.name + "Sub"));
+		}
+		
+		public Element getParentElement() {
+			return this.parentElement;
+		}
 	}
 }

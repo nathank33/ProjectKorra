@@ -13,9 +13,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 
 /**
  * Suffocate
@@ -54,8 +54,6 @@ public class Suffocate extends AirAbility {
 	private ArrayList<BukkitRunnable> tasks;
 	private ArrayList<LivingEntity> targets;
 	
-	public Suffocate() {}
-
 	public Suffocate(Player player) {
 		super(player);
 		if (bPlayer.isOnCooldown(this)) {

@@ -7,20 +7,18 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.FlightAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.FlightAbility;
 import com.projectkorra.projectkorra.util.Flight;
 
 public class AirFlight extends FlightAbility {
 	
-	private static final ConcurrentHashMap<String, Integer> HITS = new ConcurrentHashMap<String, Integer>();
-	private static final ConcurrentHashMap<String, Boolean> HOVERING = new ConcurrentHashMap<String, Boolean>();
+	private static final ConcurrentHashMap<String, Integer> HITS = new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, Boolean> HOVERING = new ConcurrentHashMap<>();
 	
 	private boolean firstProgressIteration;
 	private int maxHitsBeforeRemoval;
 	private Flight flight;
-		
-	public AirFlight() {}
 
 	public AirFlight(Player player) {
 		super(player);		

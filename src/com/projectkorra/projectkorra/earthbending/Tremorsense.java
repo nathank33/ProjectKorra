@@ -2,8 +2,8 @@ package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -24,8 +24,6 @@ public class Tremorsense extends EarthAbility {
 	private int radius;
 	private long cooldown;
 	private Block block;
-
-	public Tremorsense() {}
 	
 	public Tremorsense(Player player) {
 		super(player);

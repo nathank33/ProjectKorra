@@ -1,9 +1,8 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.SubElement;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.IceAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.IceAbility;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
 import com.projectkorra.projectkorra.util.TempPotionEffect;
@@ -32,10 +31,7 @@ public class WaterArmsFreeze extends IceAbility {
 	private Location location;
 	private Vector direction;
 	private WaterArms waterArms;
-	
-	public WaterArmsFreeze() {
-	}
-	
+		
 	public WaterArmsFreeze(Player player) {
 		super(player);
 		
@@ -131,7 +127,7 @@ public class WaterArmsFreeze extends IceAbility {
 
 		for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, 2.5)) {
 			if (entity instanceof LivingEntity && entity.getEntityId() != player.getEntityId() && !(entity instanceof ArmorStand)) {
-				GeneralMethods.damageEntity(player, entity, iceDamage, SubElement.Icebending, "WaterArms Freeze");
+				GeneralMethods.damageEntity(this, entity, iceDamage);
 				PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, 40, 2);
 				new TempPotionEffect((LivingEntity) entity, effect);
 				remove();

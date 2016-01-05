@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.util;
 
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.airbending.AirScooter;
 import com.projectkorra.projectkorra.airbending.AirSpout;
 import com.projectkorra.projectkorra.airbending.Tornado;

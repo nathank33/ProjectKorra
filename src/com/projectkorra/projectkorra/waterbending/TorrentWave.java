@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Location;
@@ -29,9 +29,6 @@ public class TorrentWave extends WaterAbility {
 	private ArrayList<TempBlock> blocks;
 	private ArrayList<Entity> affectedEntities;
 	private ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>> heights;
-
-	public TorrentWave() {
-	}
 
 	public TorrentWave(Player player, double radius) {
 		this(player, player.getEyeLocation(), radius);

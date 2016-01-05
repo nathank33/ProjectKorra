@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.waterbending.PhaseChangeMelt;
 
 import org.bukkit.Location;
@@ -14,9 +14,6 @@ public class HeatControlMelt extends FireAbility {
 	private double range = getConfig().getDouble("Abilities.Fire.HeatControl.Melt.Range");
 	private double radius = getConfig().getDouble("Abilities.Fire.HeatControl.Melt.Radius");
 	private Location location;
-
-	public HeatControlMelt() {
-	}
 	
 	public HeatControlMelt(Player player) {
 		super(player);

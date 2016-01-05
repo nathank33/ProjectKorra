@@ -1,11 +1,11 @@
 package com.projectkorra.projectkorra;
 
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
-import com.projectkorra.projectkorra.configuration.ConfigLoadable;
+import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.RevertChecker;
@@ -15,27 +15,16 @@ import com.projectkorra.rpg.WorldEvents;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.UUID;
 
-public class BendingManager implements Runnable, ConfigLoadable {
+public class BendingManager implements Runnable {
 
 	private static BendingManager instance;
-
 	public static HashMap<World, String> events = new HashMap<World, String>(); // holds any current event.
-
-	private static String sozinsCometMessage = config.get().getString("Properties.Fire.CometMessage");
-	private static String solarEclipseMessage = config.get().getString("Properties.Fire.SolarEclipseMessage");
-
-	private static String sunriseMessage = config.get().getString("Properties.Fire.DayMessage");
-	private static String sunsetMessage = config.get().getString("Properties.Fire.NightMessage");
-
-	private static String moonriseMessage = config.get().getString("Properties.Water.NightMessage");
-	private static String fullMoonriseMessage = config.get().getString("Properties.Water.FullMoonMessage");
-	private static String lunarEclipseMessage = config.get().getString("Properties.Water.LunarEclipseMessage");
-	private static String moonsetMessage = config.get().getString("Properties.Water.DayMessage");
 
 	long time;
 	long interval;
@@ -94,31 +83,34 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						}
 					}
 					for (Player player : world.getPlayers()) {
+						BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+						if (!player.hasPermission("bending.message.nightmessage")) {
+							continue;
+						} else if (bPlayer == null) {
+							continue;
+						}
 
-						if (!player.hasPermission("bending.message.nightmessage"))
-							return;
-
-						if (GeneralMethods.isBender(player.getName(), Element.Water)) {
+						if (bPlayer.hasElement(Element.WATER)) {
 							if (GeneralMethods.hasRPG()) {
 								if (RPGMethods.isLunarEclipse(world)) {
-									player.sendMessage(WaterAbility.getChatColor() + lunarEclipseMessage);
+									player.sendMessage(Element.WATER.getColor() + getLunarEclipseMessage());
 								} else if (WaterAbility.isFullMoon(world)) {
-									player.sendMessage(WaterAbility.getChatColor() + fullMoonriseMessage);
+									player.sendMessage(Element.WATER.getColor() + getFullMoonriseMessage());
 								} else {
-									player.sendMessage(WaterAbility.getChatColor() + moonriseMessage);
+									player.sendMessage(Element.WATER.getColor() + getMoonriseMessage());
 								}
 							} else {
 								if (WaterAbility.isFullMoon(world)) {
-									player.sendMessage(WaterAbility.getChatColor() + fullMoonriseMessage);
+									player.sendMessage(Element.WATER.getColor() + getFullMoonriseMessage());
 								} else {
-									player.sendMessage(WaterAbility.getChatColor() + moonriseMessage);
+									player.sendMessage(Element.WATER.getColor() + getMoonriseMessage());
 								}
 							}
 						}
-						if (GeneralMethods.isBender(player.getName(), Element.Fire)) {
+						if (bPlayer.hasElement(Element.FIRE)) {
 							if (!player.hasPermission("bending.message.daymessage"))
 								return;
-							player.sendMessage(FireAbility.getChatColor() + sunsetMessage);
+							player.sendMessage(Element.FIRE.getColor() + getSunsetMessage());
 						}
 					}
 				}
@@ -138,20 +130,25 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						events.put(world, "");
 					}
 					for (Player player : world.getPlayers()) {
-						if (GeneralMethods.isBender(player.getName(), Element.Water) && player.hasPermission("bending.message.nightmessage")) {
-							player.sendMessage(WaterAbility.getChatColor() + moonsetMessage);
+						BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+						if (bPlayer == null) {
+							continue;
 						}
-						if (GeneralMethods.isBender(player.getName(), Element.Fire) && player.hasPermission("bending.message.daymessage")) {
+						
+						if (bPlayer.hasElement(Element.WATER) && player.hasPermission("bending.message.nightmessage")) {
+							player.sendMessage(Element.WATER.getColor() + getMoonsetMessage());
+						}
+						if (bPlayer.hasElement(Element.FIRE) && player.hasPermission("bending.message.daymessage")) {
 							if (GeneralMethods.hasRPG()) {
 								if (RPGMethods.isSozinsComet(world)) {
-									player.sendMessage(FireAbility.getChatColor() + sozinsCometMessage);
+									player.sendMessage(Element.FIRE.getColor() + getSozinsCometMessage());
 								} else if (RPGMethods.isSolarEclipse(world) && !RPGMethods.isLunarEclipse(world)) {
-									player.sendMessage(FireAbility.getChatColor() + solarEclipseMessage);
+									player.sendMessage(Element.FIRE.getColor() + getSolarEclipseMessage());
 								} else {
-									player.sendMessage(FireAbility.getChatColor() + sunriseMessage);
+									player.sendMessage(Element.FIRE.getColor() + getSunriseMessage());
 								}
 							} else {
-								player.sendMessage(FireAbility.getChatColor() + sunriseMessage);
+								player.sendMessage(Element.FIRE.getColor() + getSunriseMessage());
 							}
 						}
 					}
@@ -175,25 +172,46 @@ public class BendingManager implements Runnable, ConfigLoadable {
 			ChiCombo.handleParalysis();
 			HorizontalVelocityTracker.updateAll();
 			handleCooldowns();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			GeneralMethods.stopBending();
 			e.printStackTrace();
 		}
 	}
 
-	@Override
-	public void reloadVariables() {
-		sozinsCometMessage = config.get().getString("Properties.Fire.CometMessage");
-		solarEclipseMessage = config.get().getString("Properties.Fire.SolarEclipseMessage");
-
-		sunriseMessage = config.get().getString("Properties.Fire.DayMessage");
-		sunsetMessage = config.get().getString("Properties.Fire.NightMessage");
-
-		moonriseMessage = config.get().getString("Properties.Water.NightMessage");
-		fullMoonriseMessage = config.get().getString("Properties.Water.FullMoonMessage");
-		lunarEclipseMessage = config.get().getString("Properties.Water.LunarEclipsetMessage");
-		moonsetMessage = config.get().getString("Properties.Water.DayMessage");
+	public static String getSozinsCometMessage() {
+		return getConfig().getString("Properties.Fire.CometMessage");
 	}
 
+	public static String getSolarEclipseMessage() {
+		return getConfig().getString("Properties.Fire.SolarEclipseMessage");
+	}
+
+	public static String getSunriseMessage() {
+		return getConfig().getString("Properties.Fire.DayMessage");
+	}
+
+	public static String getSunsetMessage() {
+		return getConfig().getString("Properties.Fire.NightMessage");
+	}
+
+	public static String getMoonriseMessage() {
+		return getConfig().getString("Properties.Water.NightMessage");
+	}
+
+	public static String getFullMoonriseMessage() {
+		return getConfig().getString("Properties.Water.FullMoonMessage");
+	}
+	
+	public static String getLunarEclipseMessage() {
+		return getConfig().getString("Properties.Water.LunarEclipseMessage");
+	}
+
+	public static String getMoonsetMessage() {
+		return getConfig().getString("Properties.Water.DayMessage");
+	}
+
+	private static FileConfiguration getConfig() {
+		return ConfigManager.getConfig();
+	}
+	
 }

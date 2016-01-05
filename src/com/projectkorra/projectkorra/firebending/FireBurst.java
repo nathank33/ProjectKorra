@@ -2,8 +2,8 @@ package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -27,9 +27,6 @@ public class FireBurst extends FireAbility {
 	private double particlesPercentage;
 	private ArrayList<FireBlast> blasts;
 	
-	public FireBurst() {
-	}
-
 	public FireBurst(Player player) {
 		super(player);
 		

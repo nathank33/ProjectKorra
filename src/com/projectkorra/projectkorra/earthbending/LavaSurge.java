@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.LavaAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.LavaAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -53,8 +53,6 @@ public class LavaSurge extends LavaAbility {
 	private ArrayList<TempBlock> movingLava;
 	private ConcurrentHashMap<FallingBlock, TempBlock> lavaBlocks;
 	private ListIterator<Block> listIterator;
-	
-	public LavaSurge() {}
 	
 	public LavaSurge(Player player) {
 		super(player);

@@ -3,11 +3,10 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.SubElement;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.BloodAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.BloodAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
 import com.projectkorra.projectkorra.util.TempPotionEffect;
 
@@ -37,9 +36,6 @@ public class Bloodbending extends BloodAbility {
 	private long cooldown;
 	private double throwFactor;
 
-	public Bloodbending() {
-	}
-	
 	public Bloodbending(Player player) {
 		super(player);
 		
@@ -72,9 +68,13 @@ public class Bloodbending extends BloodAbility {
 			for (Entity entity : GeneralMethods.getEntitiesAroundPoint(player.getLocation(), range)) {
 				if (entity instanceof LivingEntity) {
 					if (entity instanceof Player) {
-						if (GeneralMethods.isRegionProtectedFromBuild(this, entity.getLocation()) 
-								|| (AvatarState.isAvatarState((Player) entity) 
-										|| entity.getEntityId() == player.getEntityId() || GeneralMethods.canBend(((Player) entity).getName(), "Bloodbending"))) {
+						Player enemyPlayer = (Player) entity;
+						BendingPlayer enemyBPlayer = BendingPlayer.getBendingPlayer(enemyPlayer);
+						if (enemyBPlayer == null
+								|| GeneralMethods.isRegionProtectedFromBuild(this, entity.getLocation()) 
+								|| (enemyBPlayer.isAvatarState()
+								|| entity.getEntityId() == player.getEntityId() 
+								|| enemyBPlayer.canBend(this))) {
 							continue;
 						}
 					}
@@ -128,7 +128,7 @@ public class Bloodbending extends BloodAbility {
 			Vector vector = GeneralMethods.getDirection(location, GeneralMethods.getTargetedLocation(player, location.distance(target)));
 			vector.normalize();
 			entity.setVelocity(vector.multiply(throwFactor));
-			new HorizontalVelocityTracker(entity, player, 200, "Bloodbending", Element.Air, SubElement.Bloodbending);
+			new HorizontalVelocityTracker(entity, player, 200, "Bloodbending", Element.AIR);
 		}
 		remove();
 	}

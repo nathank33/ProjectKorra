@@ -1,13 +1,12 @@
 package com.projectkorra.projectkorra.firebending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.ElementalAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.ElementalAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -64,9 +63,6 @@ public class FireCombo extends FireAbility {
 	private Vector direction;
 	private ArrayList<LivingEntity> affectedEntities;
 	private ArrayList<FireComboStream> tasks;
-	
-	public FireCombo() {
-	}
 	
 	public FireCombo(Player player, String ability) {
 		super(player);
@@ -179,7 +175,7 @@ public class FireCombo extends FireAbility {
 		entity.getLocation().getWorld().playSound(entity.getLocation(), Sound.VILLAGER_HIT, 0.3f, 0.3f);
 
 		if (ability.equalsIgnoreCase("FireKick")) {
-			GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireKick");
+			GeneralMethods.damageEntity(this, entity, damage);
 			fstream.remove();
 		} else if (ability.equalsIgnoreCase("FireSpin")) {
 			if (entity instanceof Player) {
@@ -189,19 +185,19 @@ public class FireCombo extends FireAbility {
 			}
 			
 			double newKnockback = bPlayer.isAvatarState() ? knockback + 0.5 : knockback;
-			GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireSpin");
+			GeneralMethods.damageEntity(this, entity, damage);
 			entity.setVelocity(direction.normalize().multiply(newKnockback));
 			fstream.remove();
 		} else if (ability.equalsIgnoreCase("JetBlaze")) {
 			if (!affectedEntities.contains(entity)) {
 				affectedEntities.add(entity);
-				GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "JetBlaze");
+				GeneralMethods.damageEntity(this, entity, damage);
 				entity.setFireTicks((int) (fireTicks * 20));
 			}
 		} else if (ability.equalsIgnoreCase("FireWheel")) {
 			if (!affectedEntities.contains(entity)) {
 				affectedEntities.add(entity);
-				GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireWheel");
+				GeneralMethods.damageEntity(this, entity, damage);
 				entity.setFireTicks((int) (fireTicks * 20));
 				this.remove();
 			}
@@ -575,6 +571,10 @@ public class FireCombo extends FireAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	public boolean isHiddenAbility() {
+		return true;
 	}
 
 	public boolean isFirstTime() {

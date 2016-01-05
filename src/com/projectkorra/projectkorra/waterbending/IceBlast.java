@@ -2,9 +2,9 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.IceAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.IceAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -44,9 +44,6 @@ public class IceBlast extends IceAbility {
 	private Location destination;
 	public TempBlock source;
 	
-	public IceBlast() {
-	}
-
 	public IceBlast(Player player) {
 		super(player);
 		
@@ -116,7 +113,7 @@ public class IceBlast extends IceAbility {
 	}
 
 	public static void activate(Player player) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer != null && bPlayer.isOnCooldown("IceBlast")) {
 			return;
 		}

@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.Effect;
@@ -44,9 +44,6 @@ public class FireBlastCharged extends FireAbility {
 	private Location location;
 	private Vector direction;
 	
-	public FireBlastCharged() {
-	}
-
 	public FireBlastCharged(Player player) {
 		super(player);
 		

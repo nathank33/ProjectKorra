@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.Location;
@@ -36,9 +36,6 @@ public class WallOfFire extends FireAbility {
 	private Location origin;
 	private List<Block> blocks;
 	
-	public WallOfFire() {
-	}
-
 	public WallOfFire(Player player) {
 		super(player);
 		

@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
@@ -32,9 +32,6 @@ public class FireShield extends FireAbility {
 	private double fireTicks;
 	private Random random;
 
-	public FireShield() {
-	}
-	
 	public FireShield(Player player) {
 		this(player, false);
 	}

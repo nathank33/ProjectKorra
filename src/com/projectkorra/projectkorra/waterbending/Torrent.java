@@ -1,10 +1,11 @@
 package com.projectkorra.projectkorra.waterbending;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 import com.projectkorra.projectkorra.util.ParticleEffect;
@@ -55,9 +56,6 @@ public class Torrent extends WaterAbility {
 	private ArrayList<TempBlock> blocks;
 	private ArrayList<TempBlock> launchedBlocks;
 	private ArrayList<Entity> hurtEntities;
-
-	public Torrent() {
-	}
 	
 	public Torrent(Player player) {
 		super(player);
@@ -541,7 +539,10 @@ public class Torrent extends WaterAbility {
 	public static void progressAllCleanup() {
 		for (TempBlock block : FROZEN_BLOCKS.keySet()) {
 			Player player = FROZEN_BLOCKS.get(block);
-			if (block.getBlock().getType() != Material.ICE) {
+			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+			if (bPlayer == null) {
+				return;
+			} else if (block.getBlock().getType() != Material.ICE) {
 				FROZEN_BLOCKS.remove(block);
 				continue;
 			} else if (!player.isOnline()) {
@@ -551,7 +552,7 @@ public class Torrent extends WaterAbility {
 				thaw(block);
 				continue;
 			} else if (block.getLocation().distanceSquared(player.getLocation()) > CLEANUP_RANGE * CLEANUP_RANGE 
-					|| !GeneralMethods.canBend(player.getName(), "Torrent")) {
+					|| !bPlayer.canBendIgnoreBindsCooldowns(getAbility("Torrent"))) {
 				thaw(block);
 			}
 		}

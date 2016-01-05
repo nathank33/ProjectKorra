@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.PlantAbility;
+import com.projectkorra.projectkorra.ability.PlantAbility;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,9 +16,6 @@ public class PlantRegrowth extends PlantAbility {
 	private Material type;
 	private Block block;
 	
-	public PlantRegrowth() {
-	}
-
 	@SuppressWarnings("deprecation")
 	public PlantRegrowth(Player player, Block block) {
 		super(player);
@@ -54,12 +51,17 @@ public class PlantRegrowth extends PlantAbility {
 
 	@Override
 	public String getName() {
-		return null;
+		return "PlantRegrowth";
 	}
 
 	@Override
 	public Location getLocation() {
 		return block != null ? block.getLocation() : null;
+	}
+	
+	@Override
+	public boolean isHiddenAbility() {
+		return true;
 	}
 
 	@Override

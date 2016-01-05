@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -12,8 +12,6 @@ public class QuickStrike extends ChiAbility {
 	private int damage;
 	private int blockChance;
 	private Entity target;
-	
-	public QuickStrike() {}
 	
 	public QuickStrike(Player player) {
 		super(player);

@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.chiblocking;
 
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,8 +11,6 @@ public class WarriorStance extends ChiAbility {
 
 	private int strength;
 	private int resistance;
-
-	public WarriorStance() {}
 	
 	public WarriorStance(Player player) {
 		super(player);

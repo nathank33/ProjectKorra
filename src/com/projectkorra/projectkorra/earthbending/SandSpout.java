@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.SandAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.SandAbility;
 import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
@@ -28,9 +28,6 @@ public class SandSpout extends SandAbility {
 	private double height;
 	private double currentHeight;
 	private Flight flight;
-
-	public SandSpout() {
-	}
 	
 	public SandSpout(Player player) {
 		super(player);

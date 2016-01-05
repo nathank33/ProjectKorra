@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.firebending;
 
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
 import org.bukkit.Location;
@@ -19,10 +19,7 @@ public class HeatControlCook extends FireAbility {
 	private long time;
 	private long cookTime;
 	private ItemStack item;
-	
-	public HeatControlCook() {
-	}
-	
+		
 	public HeatControlCook(Player player) {
 		super(player);
 		

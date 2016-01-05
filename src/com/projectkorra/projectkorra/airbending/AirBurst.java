@@ -9,9 +9,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 
 public class AirBurst extends AirAbility {
 
@@ -30,11 +30,9 @@ public class AirBurst extends AirAbility {
 	private ArrayList<AirBlast> blasts;
 	private ArrayList<Entity> affectedEntities;
 	
-	public AirBurst() {}
-
 	public AirBurst(Player player, boolean isFallBurst) {
 		super(player);
-		if (bPlayer.isOnCooldown("AirBurst")) {
+		if (bPlayer.isOnCooldown(this)) {
 			remove();
 			return;
 		}
@@ -48,10 +46,10 @@ public class AirBurst extends AirAbility {
 		this.fallThreshold = getConfig().getDouble("Abilities.Air.AirBurst.FallThreshold");
 		this.pushFactor = getConfig().getDouble("Abilities.Air.AirBurst.PushFactor");
 		this.damage = getConfig().getDouble("Abilities.Air.AirBurst.Damage");
-		this.blasts = new ArrayList<AirBlast>();
-		this.affectedEntities = new ArrayList<Entity>();
+		this.blasts = new ArrayList<>();
+		this.affectedEntities = new ArrayList<>();
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			this.chargeTime = 0;
 			this.damage = AvatarState.getValue(this.damage);
 		}
@@ -60,7 +58,7 @@ public class AirBurst extends AirAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBend(this)) {
+		if (!bPlayer.canBendIgnoreCooldowns(this)) {
 			remove();
 			return;
 		}

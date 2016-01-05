@@ -1,9 +1,9 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
@@ -32,8 +32,6 @@ public class RaiseEarth extends EarthAbility {
 	private Location origin;
 	private Location location;
 	private ConcurrentHashMap<Block, Block> affectedBlocks;
-
-	public RaiseEarth() {}
 	
 	public RaiseEarth(Player player) {
 		super(player);

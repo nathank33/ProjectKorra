@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.airbending.Suffocate;
 
 import org.bukkit.Location;
@@ -17,9 +17,6 @@ public class RapidPunch extends ChiAbility {
 	private long cooldown;
 	private int numPunches;
 	private Entity target;
-
-	public RapidPunch() {
-	}
 	
 	public RapidPunch(Player player) {
 		super(player);

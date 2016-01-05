@@ -2,8 +2,8 @@ package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
 
@@ -28,9 +28,6 @@ public class HeatControlSolidify extends FireAbility {
 	private Location location;
 	private Random random;
 	private ArrayList<TempBlock> tempBlocks;
-
-	public HeatControlSolidify() {
-	}
 	
 	public HeatControlSolidify(Player player) {
 		super(player);

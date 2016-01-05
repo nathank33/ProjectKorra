@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.firebending;
 
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
@@ -20,9 +20,6 @@ public class FireJet extends FireAbility {
 	private long cooldown;
 	private double speed;
 	private Random random;
-
-	public FireJet() {
-	}
 	
 	public FireJet(Player player) {
 		super(player);

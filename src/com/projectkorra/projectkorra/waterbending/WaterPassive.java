@@ -3,9 +3,8 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.earthbending.EarthArmor;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -41,7 +40,7 @@ public class WaterPassive {
 			if (bPlayer == null) {
 				continue;
 			}
-			
+			/*
 			String ability = bPlayer.getBoundAbilityName();
 			if (GeneralMethods.canBendPassive(player.getName(), Element.Water)) {
 				if (CoreAbility.hasAbility(player, WaterSpout.class) || CoreAbility.hasAbility(player, EarthArmor.class)) {
@@ -51,7 +50,7 @@ public class WaterPassive {
 						player.setVelocity(player.getEyeLocation().getDirection().clone().normalize().multiply(swimSpeed));
 					}
 				}
-			}
+			}*/
 		}
 	}
 }
