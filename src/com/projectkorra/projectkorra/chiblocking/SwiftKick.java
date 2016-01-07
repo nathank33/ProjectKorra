@@ -13,8 +13,6 @@ public class SwiftKick extends ChiAbility {
 	private int blockChance;
 	private long cooldown;
 	private Entity target;
-
-	public SwiftKick () {}
 	
 	public SwiftKick(Player player) {
 		super(player);

@@ -14,9 +14,6 @@ public class HeatControlMelt extends FireAbility {
 	private double range = getConfig().getDouble("Abilities.Fire.HeatControl.Melt.Range");
 	private double radius = getConfig().getDouble("Abilities.Fire.HeatControl.Melt.Radius");
 	private Location location;
-
-	public HeatControlMelt() {
-	}
 	
 	public HeatControlMelt(Player player) {
 		super(player);

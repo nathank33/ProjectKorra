@@ -46,9 +46,6 @@ public class SurgeWave extends WaterAbility {
 	private ConcurrentHashMap<Block, Block> waveBlocks;
 	private ConcurrentHashMap<Block, Block> frozenBlocks;
 	
-	public SurgeWave() {
-	}
-	
 	public SurgeWave(Player player) {
 		super(player);
 

@@ -50,9 +50,6 @@ public class OctopusForm extends WaterAbility {
 	private ArrayList<TempBlock> blocks;
 	private ArrayList<TempBlock> newBlocks;
 	
-	public OctopusForm() {
-	}
-	
 	public OctopusForm(Player player) {
 		super(player);
 		

@@ -32,8 +32,6 @@ public class RaiseEarth extends EarthAbility {
 	private Location origin;
 	private Location location;
 	private ConcurrentHashMap<Block, Block> affectedBlocks;
-
-	public RaiseEarth() {}
 	
 	public RaiseEarth(Player player) {
 		super(player);

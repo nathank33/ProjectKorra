@@ -58,9 +58,6 @@ public class WaterCombo extends WaterAbility {
 	private ArrayList<BukkitRunnable> tasks;
 	private ConcurrentHashMap<Block, TempBlock> affectedBlocks;
 
-	public WaterCombo() {
-	}
-
 	public WaterCombo(Player player, String name) {
 		super(player);
 

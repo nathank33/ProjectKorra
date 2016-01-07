@@ -46,9 +46,6 @@ public class FireBlast extends FireAbility {
 	private Location origin;
 	private Vector direction;
 	private List<Block> safeBlocks;
-
-	public FireBlast() {
-	}
 	
 	public FireBlast(Location location, Vector direction, Player player, int damage, List<Block> safeBlocks) {
 		super(player);

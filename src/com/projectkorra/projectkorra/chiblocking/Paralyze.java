@@ -21,9 +21,6 @@ public class Paralyze extends ChiAbility {
 	private long cooldown;
 	private Entity target;
 
-	public Paralyze () {
-	}
-	
 	public Paralyze(Player sourceplayer, Entity targetentity) {
 		super(sourceplayer);
 		this.target = targetentity;

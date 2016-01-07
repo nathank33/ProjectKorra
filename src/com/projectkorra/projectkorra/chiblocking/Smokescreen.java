@@ -22,8 +22,6 @@ public class Smokescreen extends ChiAbility {
 	private int duration;
 	private long cooldown;
 	private double radius;
-
-	public Smokescreen() {}
 	
 	public Smokescreen(Player player) {
 		super(player);

@@ -40,10 +40,8 @@ public class AvatarState extends AvatarAbility {
 
 	// boolean canfly = false;
 	
-	public AvatarState() {
-	}
-
 	public AvatarState(Player player) {
+		super(player);
 		this.player = player;
 		if (instances.containsKey(player)) {
 			instances.remove(player);

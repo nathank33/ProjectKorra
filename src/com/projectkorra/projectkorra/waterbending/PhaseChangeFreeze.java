@@ -29,9 +29,6 @@ public class PhaseChangeFreeze extends IceAbility {
 	private long cooldown;
 	private Location location;
 	
-	public PhaseChangeFreeze() {
-	}
-
 	public PhaseChangeFreeze(Player player) {
 		super(player);
 		

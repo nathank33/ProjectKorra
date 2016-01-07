@@ -26,8 +26,6 @@ public class EarthTunnel extends EarthAbility {
 	private Location origin;
 	private Location location;
 	private Vector direction;
-	
-	public EarthTunnel() {}
 
 	public EarthTunnel(Player player) {
 		super(player);

@@ -14,8 +14,6 @@ public class HighJump extends ChiAbility {
 
 	private int height;
 	private long cooldown;
-
-	public HighJump () {}
 	
 	public HighJump(Player player) {
 		super(player);

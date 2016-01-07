@@ -62,9 +62,6 @@ public class WaterArmsWhip extends WaterAbility {
 	private Location end;	
 	private WaterArms waterArms;
 	
-	public WaterArmsWhip() {
-	}
-
 	public WaterArmsWhip(Player player, Whip ability) {
 		super(player);
 		

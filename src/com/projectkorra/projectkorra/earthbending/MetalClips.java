@@ -52,8 +52,6 @@ public class MetalClips extends MetalAbility {
 	private LivingEntity targetEntity;
 	private ItemStack[] oldArmor;
 	private List<Item> trackedIngots;
-
-	public MetalClips() {}
 	
 	public MetalClips(Player player, int abilityType) {
 		super(player);

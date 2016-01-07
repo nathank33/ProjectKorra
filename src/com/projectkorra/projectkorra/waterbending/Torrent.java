@@ -55,9 +55,6 @@ public class Torrent extends WaterAbility {
 	private ArrayList<TempBlock> blocks;
 	private ArrayList<TempBlock> launchedBlocks;
 	private ArrayList<Entity> hurtEntities;
-
-	public Torrent() {
-	}
 	
 	public Torrent(Player player) {
 		super(player);

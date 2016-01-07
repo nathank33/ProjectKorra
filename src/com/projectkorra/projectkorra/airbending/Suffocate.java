@@ -54,8 +54,6 @@ public class Suffocate extends AirAbility {
 	private ArrayList<BukkitRunnable> tasks;
 	private ArrayList<LivingEntity> targets;
 	
-	public Suffocate() {}
-
 	public Suffocate(Player player) {
 		super(player);
 		if (bPlayer.isOnCooldown(this)) {

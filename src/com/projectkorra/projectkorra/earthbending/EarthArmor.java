@@ -35,9 +35,6 @@ public class EarthArmor extends EarthAbility {
 	private Material headType;
 	private Material legsType;
 	private ItemStack[] oldArmor;
-	
-	public EarthArmor() {
-	}
 
 	@SuppressWarnings("deprecation")
 	public EarthArmor(Player player) {

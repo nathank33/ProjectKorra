@@ -65,9 +65,6 @@ public class FireCombo extends FireAbility {
 	private ArrayList<LivingEntity> affectedEntities;
 	private ArrayList<FireComboStream> tasks;
 	
-	public FireCombo() {
-	}
-	
 	public FireCombo(Player player, String ability) {
 		super(player);
 		Bukkit.broadcastMessage("Here 0");

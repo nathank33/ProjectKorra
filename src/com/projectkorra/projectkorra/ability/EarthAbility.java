@@ -34,9 +34,6 @@ public abstract class EarthAbility extends BlockAbility {
 	private static final ArrayList<Block> PREVENT_PHYSICS = new ArrayList<Block>();
 	private static final ItemStack DIAMOND_PICKAXE = new ItemStack(Material.DIAMOND_PICKAXE);
 
-	public EarthAbility() {
-	}
-
 	public EarthAbility(Player player) {
 		super(player);
 	}

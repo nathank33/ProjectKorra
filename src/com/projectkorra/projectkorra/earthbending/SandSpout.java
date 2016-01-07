@@ -28,9 +28,6 @@ public class SandSpout extends SandAbility {
 	private double height;
 	private double currentHeight;
 	private Flight flight;
-
-	public SandSpout() {
-	}
 	
 	public SandSpout(Player player) {
 		super(player);

@@ -29,8 +29,6 @@ public class Tornado extends AirAbility {
 	private Flight flight;
 	private Location origin;
 	private ConcurrentHashMap<Integer, Integer> angles;
-	
-	public Tornado() {}
 
 	public Tornado(Player player) {
 		super(player);

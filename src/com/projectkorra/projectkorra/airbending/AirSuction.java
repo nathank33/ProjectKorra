@@ -39,8 +39,6 @@ public class AirSuction extends AirAbility {
 	private Location origin;
 	private Vector direction;
 	
-	public AirSuction() {}
-
 	public AirSuction(Player player) {
 		super(player);
 		if (bPlayer.isOnCooldown("AirSuction")) {

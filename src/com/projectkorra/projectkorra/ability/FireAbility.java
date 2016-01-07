@@ -39,10 +39,7 @@ public abstract class FireAbility extends ElementalAbility {
 			Material.HAY_BLOCK, Material.REDSTONE_LAMP_OFF, Material.REDSTONE_LAMP_ON, Material.EMERALD_ORE,
 			Material.EMERALD_BLOCK, Material.REDSTONE_BLOCK, Material.QUARTZ_BLOCK, Material.QUARTZ_ORE,
 			Material.STAINED_CLAY, Material.HARD_CLAY };
-	
-	public FireAbility() {
-	}
-	
+		
 	public FireAbility(Player player) {
 		super(player);
 	}

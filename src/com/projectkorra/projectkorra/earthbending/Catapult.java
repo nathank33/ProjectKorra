@@ -23,10 +23,6 @@ public class Catapult extends EarthAbility {
 	private Location location;
 	private Vector direction;
 	
-	public Catapult() {
-		
-	}
-
 	public Catapult(Player player) {
 		super(player);
 		setFields();

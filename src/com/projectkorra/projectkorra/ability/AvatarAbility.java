@@ -4,9 +4,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public abstract class AvatarAbility extends ElementalAbility {
-
-	public AvatarAbility() {
-	}
 	
 	public AvatarAbility(Player player) {
 		super(player);

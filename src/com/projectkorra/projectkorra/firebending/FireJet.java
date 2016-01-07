@@ -20,9 +20,6 @@ public class FireJet extends FireAbility {
 	private long cooldown;
 	private double speed;
 	private Random random;
-
-	public FireJet() {
-	}
 	
 	public FireJet(Player player) {
 		super(player);

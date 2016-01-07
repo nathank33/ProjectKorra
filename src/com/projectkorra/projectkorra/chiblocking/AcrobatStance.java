@@ -13,9 +13,6 @@ public class AcrobatStance extends ChiAbility {
 	private int jump;
 	private double chiBlockBoost;
 	private double paralyzeDodgeBoost;
-
-	public AcrobatStance () {
-	}
 	
 	public AcrobatStance(Player player) {
 		super(player);

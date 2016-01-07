@@ -22,9 +22,6 @@ public class ChiCombo extends ChiAbility {
 	private Entity target;
 	private String name;
 	
-	public ChiCombo() {
-	}
-	
 	public ChiCombo(Player player, String ability) {
 		super(player);
 		

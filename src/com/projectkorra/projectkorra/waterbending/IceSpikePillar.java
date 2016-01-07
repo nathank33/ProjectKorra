@@ -48,9 +48,6 @@ public class IceSpikePillar extends IceAbility {
 	private ConcurrentHashMap<Block, Block> affectedBlocks;
 	private ArrayList<LivingEntity> damaged;
 
-	public IceSpikePillar() {
-	}
-	
 	public IceSpikePillar(Player player) {
 		super(player);
 		setFields();

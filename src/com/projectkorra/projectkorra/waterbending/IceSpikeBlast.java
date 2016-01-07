@@ -44,8 +44,6 @@ public class IceSpikeBlast extends IceAbility {
 	private Location destination;
 	private TempBlock source;
 
-	public IceSpikeBlast() {}
-
 	public IceSpikeBlast(Player player) {
 		super(player);
 		

@@ -30,9 +30,6 @@ public class TorrentWave extends WaterAbility {
 	private ArrayList<Entity> affectedEntities;
 	private ConcurrentHashMap<Integer, ConcurrentHashMap<Integer, Double>> heights;
 
-	public TorrentWave() {
-	}
-
 	public TorrentWave(Player player, double radius) {
 		this(player, player.getEyeLocation(), radius);
 	}

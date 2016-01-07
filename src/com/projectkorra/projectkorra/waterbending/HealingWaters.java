@@ -22,9 +22,10 @@ public class HealingWaters extends HealingAbility {
 
 	private static long time = 0;
 	
-	public HealingWaters() {
+	public HealingWaters(Player player) {
+		super(player);
 	}
-
+	
 	public static void heal() {
 		if (System.currentTimeMillis() - time >= getInterval()) {
 			time = System.currentTimeMillis();

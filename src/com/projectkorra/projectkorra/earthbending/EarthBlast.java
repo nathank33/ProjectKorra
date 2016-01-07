@@ -43,9 +43,6 @@ public class EarthBlast extends EarthAbility {
 	private Location destination;
 	private Location firstDestination;
 	private Block sourceBlock;
-		
-	public EarthBlast() {
-	}
 
 	public EarthBlast(Player player) {
 		super(player);

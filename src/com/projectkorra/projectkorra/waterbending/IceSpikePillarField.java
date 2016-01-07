@@ -23,9 +23,6 @@ public class IceSpikePillarField extends IceAbility {
 	private int numberOfSpikes;
 	private long cooldown;
 	private Vector thrownForce;
-
-	public IceSpikePillarField() {
-	}
 	
 	public IceSpikePillarField(Player player) {
 		super(player);

@@ -20,8 +20,6 @@ public class AirSpout extends AirAbility {
 	private long updateInterval;
 	private long cooldown;
 	private double height;
-	
-	public AirSpout() {}
 
 	public AirSpout(Player player) {
 		super(player);

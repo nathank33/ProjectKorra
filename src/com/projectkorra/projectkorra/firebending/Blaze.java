@@ -15,9 +15,6 @@ public class Blaze extends FireAbility {
 	private long cooldown;
 	private double range;
 	private double speed;
-
-	public Blaze() {
-	}
 	
 	public Blaze(Player player) {
 		super(player);

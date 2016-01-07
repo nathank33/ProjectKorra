@@ -20,9 +20,6 @@ public class Extraction extends EarthAbility {
 	private long cooldown;
 	private Block originBlock;
 	
-	public Extraction() {
-	}
-	
 	public Extraction(Player player) {
 		super(player);
 		

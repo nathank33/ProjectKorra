@@ -27,9 +27,6 @@ public class Collapse extends EarthAbility {
 	private Block block;
 	private ConcurrentHashMap<Block, Block> affectedBlocks;
 	
-	public Collapse() {
-	}
-
 	public Collapse(Player player) {
 		super(player);
 		setFields();

@@ -23,9 +23,6 @@ public class PhaseChangeMelt extends IceAbility {
 	private double evaporateRadius;
 	private Location location;
 	
-	public PhaseChangeMelt() {
-	}
-
 	public PhaseChangeMelt(Player player) {
 		super(player);
 		

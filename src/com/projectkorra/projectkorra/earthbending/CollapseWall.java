@@ -24,9 +24,6 @@ public class CollapseWall extends EarthAbility {
 	private ConcurrentHashMap<Block, Block> blocks;
 	private ConcurrentHashMap<Block, Integer> baseBlocks;
 	
-	public CollapseWall() {
-	}
-
 	public CollapseWall(Player player) {
 		super(player);
 		if (bPlayer.isOnCooldown(this)) {

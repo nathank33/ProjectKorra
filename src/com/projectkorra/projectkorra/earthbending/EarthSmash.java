@@ -62,8 +62,6 @@ public class EarthSmash extends EarthAbility {
 	private ArrayList<BlockRepresenter> currentBlocks;
 	private ArrayList<TempBlock> affectedBlocks;
 
-	public EarthSmash() {}
-	
 	public EarthSmash(Player player, ClickType type) {
 		super(player);
 		

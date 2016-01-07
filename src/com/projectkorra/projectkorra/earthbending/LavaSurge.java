@@ -54,8 +54,6 @@ public class LavaSurge extends LavaAbility {
 	private ConcurrentHashMap<FallingBlock, TempBlock> lavaBlocks;
 	private ListIterator<Block> listIterator;
 	
-	public LavaSurge() {}
-	
 	public LavaSurge(Player player) {
 		super(player);
 		

@@ -17,9 +17,6 @@ public class RapidPunch extends ChiAbility {
 	private long cooldown;
 	private int numPunches;
 	private Entity target;
-
-	public RapidPunch() {
-	}
 	
 	public RapidPunch(Player player) {
 		super(player);

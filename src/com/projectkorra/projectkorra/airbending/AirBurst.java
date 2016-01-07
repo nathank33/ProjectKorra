@@ -30,8 +30,6 @@ public class AirBurst extends AirAbility {
 	private ArrayList<AirBlast> blasts;
 	private ArrayList<Entity> affectedEntities;
 	
-	public AirBurst() {}
-
 	public AirBurst(Player player, boolean isFallBurst) {
 		super(player);
 		if (bPlayer.isOnCooldown(this)) {

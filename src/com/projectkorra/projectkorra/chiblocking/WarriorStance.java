@@ -11,8 +11,6 @@ public class WarriorStance extends ChiAbility {
 
 	private int strength;
 	private int resistance;
-
-	public WarriorStance() {}
 	
 	public WarriorStance(Player player) {
 		super(player);

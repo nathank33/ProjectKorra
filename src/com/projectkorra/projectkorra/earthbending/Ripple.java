@@ -36,9 +36,6 @@ public class Ripple extends EarthAbility {
 	private ArrayList<Location> locations = new ArrayList<Location>();
 	private ArrayList<Entity> entities = new ArrayList<Entity>();
 
-	public Ripple() {
-	}
-
 	public Ripple(Player player, Vector direction) {
 		super(player);
 		initialize(player, getInitialLocation(player, direction), direction);

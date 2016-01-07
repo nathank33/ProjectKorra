@@ -22,9 +22,6 @@ public class EarthGrab extends EarthAbility {
 	private Vector direction;
 	private Entity closestEntity;
 
-	public EarthGrab() {
-	}
-	
 	public EarthGrab(Player player, boolean isOtherEntity) {
 		super(player);
 		

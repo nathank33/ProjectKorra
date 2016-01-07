@@ -28,9 +28,6 @@ public class HeatControlSolidify extends FireAbility {
 	private Location location;
 	private Random random;
 	private ArrayList<TempBlock> tempBlocks;
-
-	public HeatControlSolidify() {
-	}
 	
 	public HeatControlSolidify(Player player) {
 		super(player);

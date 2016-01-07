@@ -9,9 +9,7 @@ import org.bukkit.entity.Player;
  *  WaterBubble is currently implemented in AirBubble
  */
 public class WaterBubble extends WaterAbility {
-	
-	public WaterBubble() {}
-	
+		
 	public WaterBubble(Player player) {
 		super(player);
 	}

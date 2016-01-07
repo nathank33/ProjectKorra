@@ -48,9 +48,6 @@ public class WaterArmsSpear extends WaterAbility {
 	private WaterArms waterArms;
 	private List<Location> spearLocations;
 
-	public WaterArmsSpear() {
-	}
-
 	public WaterArmsSpear(Player player, boolean freeze) {
 		super(player);
 		this.canFreeze = freeze;

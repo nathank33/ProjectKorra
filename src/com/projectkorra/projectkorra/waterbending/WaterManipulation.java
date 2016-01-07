@@ -55,9 +55,6 @@ public class WaterManipulation extends WaterAbility {
 	private Vector firstDirection;
 	private Vector targetDirection;
 	private HashSet<Byte> waterTypes;
-
-	public WaterManipulation() {
-	}
 	
 	public WaterManipulation(Player player) {
 		super(player);

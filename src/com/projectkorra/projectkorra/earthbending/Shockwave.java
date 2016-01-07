@@ -18,8 +18,6 @@ public class Shockwave extends EarthAbility {
 	private double threshold;
 	private double range;
 
-	public Shockwave() {}
-	
 	public Shockwave(Player player) {
 		super(player);
 				

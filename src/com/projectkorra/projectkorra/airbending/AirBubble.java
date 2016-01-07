@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-// TODO: Split WaterBubble into its own class
 public class AirBubble extends AirAbility {
 
 	private boolean waterBubble;
@@ -25,8 +24,6 @@ public class AirBubble extends AirAbility {
 	private double airRadius;
 	private double waterRadius;
 	private ConcurrentHashMap<Block, BlockState> waterOrigins;
-	
-	public AirBubble() {}
 
 	public AirBubble(Player player) {
 		super(player);

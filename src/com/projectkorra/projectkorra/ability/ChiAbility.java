@@ -6,8 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public abstract class ChiAbility extends ElementalAbility {
-
-	public ChiAbility() {}
 	
 	public ChiAbility(Player player) {
 		super(player);

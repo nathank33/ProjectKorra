@@ -32,9 +32,6 @@ public class Combustion extends CombustionAbility {
 	private Location location;
 	private Location origin;
 	private Vector direction;
-	
-	public Combustion() {
-	}
 
 	public Combustion(Player player) {
 		super(player);

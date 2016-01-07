@@ -24,8 +24,6 @@ public class Tremorsense extends EarthAbility {
 	private int radius;
 	private long cooldown;
 	private Block block;
-
-	public Tremorsense() {}
 	
 	public Tremorsense(Player player) {
 		super(player);

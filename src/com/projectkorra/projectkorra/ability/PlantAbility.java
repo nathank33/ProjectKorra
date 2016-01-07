@@ -3,8 +3,6 @@ package com.projectkorra.projectkorra.ability;
 import org.bukkit.entity.Player;
 
 public abstract class PlantAbility extends WaterAbility implements SubAbility {
-
-	public PlantAbility() {}
 	
 	public PlantAbility(Player player) {
 		super(player);

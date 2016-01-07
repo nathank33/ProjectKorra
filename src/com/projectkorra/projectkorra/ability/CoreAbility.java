@@ -33,8 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public abstract class CoreAbility implements Ability {
-
-	private static final String INVALID_PLAYER = "Player is null, make sure the first line if your ability is super(player)";
+	
 	private static final ConcurrentHashMap<Class<? extends CoreAbility>, ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>>> INSTANCES = new ConcurrentHashMap<>();
 	private static final ConcurrentHashMap<Class<? extends CoreAbility>, Set<CoreAbility>> INSTANCES_BY_CLASS = new ConcurrentHashMap<>();
 	private static final ConcurrentSkipListMap<String, CoreAbility> ABILITIES_BY_NAME = new ConcurrentSkipListMap<>();
@@ -52,13 +51,16 @@ public abstract class CoreAbility implements Ability {
 	static {
 		idCounter = Integer.MIN_VALUE;
 	}
-
-	public CoreAbility() {}
+	
+	public CoreAbility() {
+		// Need the default constructor for reflection purposes
+	}
 
 	public CoreAbility(Player player) {
 		if (player == null) {
-			throw new IllegalArgumentException("Player cannot be null");
+			return;
 		}
+		
 		this.player = player;
 		this.bPlayer = BendingPlayer.getBendingPlayer(player);
 		this.startTime = System.currentTimeMillis();
@@ -74,7 +76,7 @@ public abstract class CoreAbility implements Ability {
 
 	public void start() {
 		if (player == null) {
-			throw new IllegalStateException(INVALID_PLAYER);
+			return;
 		}
 		
 		this.started = true;
@@ -99,7 +101,7 @@ public abstract class CoreAbility implements Ability {
 	@Override
 	public void remove() {
 		if (player == null) {
-			throw new IllegalStateException(INVALID_PLAYER);
+			return;
 		}
 		
 		removed = true;
@@ -214,12 +216,14 @@ public abstract class CoreAbility implements Ability {
 	
 	public static void registerAbilities() {
 		ABILITIES_BY_NAME.clear();
-		registerAbilities(ProjectKorra.class);
+		registerStockAbilities();
 		registerAddonAbilities();
 	}
 
-	private static void registerAbilities(Class<?> pluginClass) {
+	private static void registerStockAbilities() {
+		Class<?> pluginClass = ProjectKorra.class;
 		ClassLoader loader = pluginClass.getClassLoader();
+		ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
 		
 		try {
 			for (final ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
@@ -231,14 +235,14 @@ public abstract class CoreAbility implements Ability {
 						continue;
 					}
 					
-					ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
 					Constructor<?> objDef = CoreAbility.class.getDeclaredConstructor();
-					Constructor<?> intConstr = rf.newConstructorForSerialization(clazz, objDef);
+					Constructor<?> intConstr = rf.newConstructorForSerialization(clazz, objDef);;
 					CoreAbility ability = (CoreAbility) clazz.cast(intConstr.newInstance());
-				
+
 					if (ability != null && ability.getName() != null) {
 						ABILITIES_BY_NAME.put(ability.getName().toLowerCase(), ability);
 					}
+					ProjectKorra.log.info(ability.getElementName() + " " + ability.getName());
 				} catch (Exception e) {
 				} catch (Error e) {
 				}
@@ -251,8 +255,8 @@ public abstract class CoreAbility implements Ability {
 	private static void registerAddonAbilities() {
 		ProjectKorra plugin = ProjectKorra.plugin;
 		File path = new File(plugin.getDataFolder().toString() + "/Abilities/");
-		AbilityLoader<CoreAbility> abilityLoader = new AbilityLoader<CoreAbility>(plugin, path, new Object[] {});
-		List<CoreAbility> loadedAbilities = abilityLoader.load(CoreAbility.class);
+		AbilityLoader<CoreAbility> abilityLoader = new AbilityLoader<CoreAbility>(plugin, path);
+		List<CoreAbility> loadedAbilities = abilityLoader.load(CoreAbility.class, CoreAbility.class);
 		
 		for (CoreAbility coreAbil : loadedAbilities) {
 			if (!(coreAbil instanceof AddonAbility)) {

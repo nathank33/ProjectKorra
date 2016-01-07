@@ -3,8 +3,6 @@ package com.projectkorra.projectkorra.ability;
 import org.bukkit.entity.Player;
 
 public abstract class LavaAbility extends EarthAbility implements SubAbility {
-
-	public LavaAbility() {}
 	
 	public LavaAbility(Player player) {
 		super(player);

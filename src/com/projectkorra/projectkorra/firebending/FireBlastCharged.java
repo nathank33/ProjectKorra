@@ -44,9 +44,6 @@ public class FireBlastCharged extends FireAbility {
 	private Location location;
 	private Vector direction;
 	
-	public FireBlastCharged() {
-	}
-
 	public FireBlastCharged(Player player) {
 		super(player);
 		

@@ -51,9 +51,6 @@ public class Lightning extends LightningAbility {
 	private ArrayList<Entity> affectedEntities;
 	private ArrayList<Arc> arcs;
 	private ArrayList<BukkitRunnable> tasks;
-
-	public Lightning() {
-	}
 	
 	public Lightning(Player player) {
 		super(player);

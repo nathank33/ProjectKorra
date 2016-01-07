@@ -32,10 +32,7 @@ public class WaterArmsFreeze extends IceAbility {
 	private Location location;
 	private Vector direction;
 	private WaterArms waterArms;
-	
-	public WaterArmsFreeze() {
-	}
-	
+		
 	public WaterArmsFreeze(Player player) {
 		super(player);
 		

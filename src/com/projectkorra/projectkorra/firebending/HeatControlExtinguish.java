@@ -19,9 +19,6 @@ public class HeatControlExtinguish extends FireAbility {
 	private long cooldown;
 	private Location location;
 	
-	public HeatControlExtinguish() {
-	}
-
 	public HeatControlExtinguish(Player player) {
 		super(player);
 		

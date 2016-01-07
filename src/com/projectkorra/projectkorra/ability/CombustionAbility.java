@@ -3,8 +3,6 @@ package com.projectkorra.projectkorra.ability;
 import org.bukkit.entity.Player;
 
 public abstract class CombustionAbility extends FireAbility implements SubAbility {
-
-	public CombustionAbility() {}
 	
 	public CombustionAbility(Player player) {
 		super(player);

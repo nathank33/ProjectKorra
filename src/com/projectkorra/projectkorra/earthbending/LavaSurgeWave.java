@@ -42,8 +42,6 @@ public class LavaSurgeWave extends LavaAbility {
 	private ConcurrentHashMap<Block, Block> waveBlocks;
 	private ConcurrentHashMap<Block, Block> frozenBlocks;
 	
-	public LavaSurgeWave() {}
-	
 	public LavaSurgeWave(Player player) {
 		super(player);
 		

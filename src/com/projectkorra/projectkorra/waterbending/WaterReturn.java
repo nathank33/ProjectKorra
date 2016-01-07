@@ -23,9 +23,6 @@ public class WaterReturn extends WaterAbility {
 	private Location location;
 	private TempBlock block;
 	
-	public WaterReturn() {
-	}
-
 	public WaterReturn(Player player, Block block) {
 		super(player);
 		if (CoreAbility.hasAbility(player, WaterReturn.class)) {

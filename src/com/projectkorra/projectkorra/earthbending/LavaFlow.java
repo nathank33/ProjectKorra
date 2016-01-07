@@ -62,8 +62,6 @@ public class LavaFlow extends LavaAbility {
 	private Location origin;
 	private ArrayList<TempBlock> affectedBlocks;
 	private ArrayList<BukkitRunnable> tasks;
-
-	public LavaFlow() {}
 	
 	/**
 	 * Creates a new LavaFlow ability and initializes all of the variables and

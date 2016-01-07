@@ -34,9 +34,6 @@ public class WaterSpout extends WaterAbility {
 	private Block base;
 	private TempBlock baseBlock;
 	
-	public WaterSpout() {
-	}
-
 	public WaterSpout(Player player) {
 		super(player);
 	

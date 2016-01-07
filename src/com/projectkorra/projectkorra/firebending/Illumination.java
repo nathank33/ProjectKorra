@@ -21,9 +21,6 @@ public class Illumination extends FireAbility {
 	private Material normalType;
 	private Block block;
 	
-	public Illumination() {
-	}
-
 	public Illumination(Player player) {
 		super(player);
 		

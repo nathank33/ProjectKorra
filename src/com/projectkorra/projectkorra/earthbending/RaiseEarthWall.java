@@ -20,8 +20,6 @@ public class RaiseEarthWall extends EarthAbility {
 	private int width;
 	private long cooldown;
 	private Location location;
-
-	public RaiseEarthWall() {}
 	
 	public RaiseEarthWall(Player player) {
 		super(player);

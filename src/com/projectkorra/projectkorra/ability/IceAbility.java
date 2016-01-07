@@ -4,8 +4,6 @@ import org.bukkit.entity.Player;
 
 public abstract class IceAbility extends WaterAbility implements SubAbility {
 
-	public IceAbility() {}
-	
 	public IceAbility(Player player) {
 		super(player);
 	}

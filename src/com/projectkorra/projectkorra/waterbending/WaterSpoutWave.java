@@ -60,10 +60,7 @@ public class WaterSpoutWave extends WaterAbility {
 	private ArrayList<Entity> affectedEntities;
 	private ArrayList<BukkitRunnable> tasks;
 	private ConcurrentHashMap<Block, TempBlock> affectedBlocks;
-	
-	public WaterSpoutWave() {
-	}
-	
+		
 	public WaterSpoutWave(Player player, AbilityType type) {
 		super(player);
 		

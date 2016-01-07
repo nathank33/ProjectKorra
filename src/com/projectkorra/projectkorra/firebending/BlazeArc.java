@@ -32,8 +32,6 @@ public class BlazeArc extends FireAbility {
 	private Location origin;
 	private Location location;
 	private Vector direction;
-
-	public BlazeArc() {}
 	
 	public BlazeArc(Player player, Location location, Vector direction, double range) {
 		super(player);

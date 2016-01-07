@@ -15,9 +15,6 @@ public class BlazeRing extends FireAbility {
 	private double angleIncrement;
 	private Location location;
 	
-	public BlazeRing() {
-	}
-
 	public BlazeRing(Player player) {
 		super(player);
 		

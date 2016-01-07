@@ -37,9 +37,6 @@ public class Bloodbending extends BloodAbility {
 	private long cooldown;
 	private double throwFactor;
 
-	public Bloodbending() {
-	}
-	
 	public Bloodbending(Player player) {
 		super(player);
 		

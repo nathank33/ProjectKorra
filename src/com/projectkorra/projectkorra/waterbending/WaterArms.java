@@ -57,10 +57,7 @@ public class WaterArms extends WaterAbility {
 	private World world;
 	private String sneakMsg;
 	private Arm activeArm;
-	
-	public WaterArms() {
-	}
-	
+		
 	public WaterArms(Player player) {
 		super(player);
 		

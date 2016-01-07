@@ -60,8 +60,6 @@ public class AirBlast extends AirAbility {
 	private Random random;
 	private ArrayList<Block> affectedLevers;
 	private ArrayList<Entity> affectedEntities;
-	
-	public AirBlast() {}
 
 	public AirBlast(Player player) {
 		super(player);

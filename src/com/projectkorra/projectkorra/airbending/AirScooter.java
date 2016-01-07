@@ -27,8 +27,6 @@ public class AirScooter extends AirAbility {
 	private double maxHeightFromGround;
 	private Block floorblock;
 	private ArrayList<Double> angles;
-	
-	public AirScooter() {}
 
 	public AirScooter(Player player) {
 		super(player);

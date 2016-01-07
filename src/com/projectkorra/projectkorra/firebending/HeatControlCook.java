@@ -19,10 +19,7 @@ public class HeatControlCook extends FireAbility {
 	private long time;
 	private long cookTime;
 	private ItemStack item;
-	
-	public HeatControlCook() {
-	}
-	
+		
 	public HeatControlCook(Player player) {
 		super(player);
 		

@@ -36,9 +36,6 @@ public class WallOfFire extends FireAbility {
 	private Location origin;
 	private List<Block> blocks;
 	
-	public WallOfFire() {
-	}
-
 	public WallOfFire(Player player) {
 		super(player);
 		

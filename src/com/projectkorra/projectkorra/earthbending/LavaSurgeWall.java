@@ -41,8 +41,6 @@ public class LavaSurgeWall extends LavaAbility {
 	private Location targetDestination;
 	private Vector firstDirection;
 	private Vector targetDirection;
-
-	public LavaSurgeWall() {}
 	
 	public LavaSurgeWall(Player player) {
 		super(player);

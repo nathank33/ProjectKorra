@@ -13,8 +13,6 @@ public class QuickStrike extends ChiAbility {
 	private int blockChance;
 	private Entity target;
 	
-	public QuickStrike() {}
-	
 	public QuickStrike(Player player) {
 		super(player);
 		this.damage = getConfig().getInt("Abilities.Chi.QuickStrike.Damage");

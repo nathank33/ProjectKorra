@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability.util;
 
+import sun.reflect.ReflectionFactory;
+
 import com.projectkorra.projectkorra.event.AbilityLoadEvent;
 import com.projectkorra.projectkorra.util.FileExtensionFilter;
 
@@ -19,35 +21,23 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AbilityLoader<T> implements Listener {
 
 	private final Plugin plugin;
 	private final File directory;
-	private final Object[] parameters;
-	private final Class<?>[] constructorParams;
 	private final ArrayList<File> files;
-	private final List<T> loadables;
 	private ClassLoader loader;
 
-	public AbilityLoader(Plugin plugin, File dir, Object... paramTypes) {
+	public AbilityLoader(Plugin plugin, File directory) {
 		this.plugin = plugin;
-		this.directory = dir;
-		this.parameters = paramTypes;
+		this.directory = directory;
 		this.files = new ArrayList<File>();
-		this.loadables = new ArrayList<T>(0);
 
-		for (File f : dir.listFiles(new FileExtensionFilter(".jar"))) {
+		for (File f : directory.listFiles(new FileExtensionFilter(".jar"))) {
 			files.add(f);
 		}
 
-		List<Class<?>> constructorParams = new ArrayList<Class<?>>();
-		for (Object paramType : paramTypes) {
-			constructorParams.add(paramType.getClass());
-		}
-
-		this.constructorParams = constructorParams.toArray(new Class<?>[0]);
 		List<URL> urls = new ArrayList<URL>();
 		for (File file : files) {
 			try {
@@ -59,13 +49,16 @@ public class AbilityLoader<T> implements Listener {
 		}
 		this.loader = URLClassLoader.newInstance(urls.toArray(new URL[0]), plugin.getClass().getClassLoader());
 	}
-
-	public Logger getLogger() {
-		return plugin.getLogger();
-	}
-
+	
+	/**
+	 * @param classType
+	 * @param parentClass a parent of classType that has a visible default constructor
+	 * @return A list of all of the T objects that were loaded from the jar files within @param directory
+	 */
 	@SuppressWarnings("unchecked")
-	public final List<T> load(Class<?> classType) {		
+	public List<T> load(Class<?> classType, Class<?> parentClass) {
+		ArrayList<T> loadables = new ArrayList<>();
+		
 		for (File file : files) {
 			JarFile jarFile = null;
 			try {
@@ -90,10 +83,11 @@ public class AbilityLoader<T> implements Listener {
 						continue;
 					}
 					
-					Class<?> loadableClass = clazz.asSubclass(classType);
-					Constructor<?> ctor = loadableClass.getConstructor(constructorParams);
-					T loadable = (T) ctor.newInstance(parameters);
-					
+					ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
+					Constructor<?> objDef = parentClass.getDeclaredConstructor();
+					Constructor<?> intConstr = rf.newConstructorForSerialization(clazz, objDef);
+					T loadable = (T) clazz.cast(intConstr.newInstance());
+
 					loadables.add(loadable);
 					AbilityLoadEvent<T> event = new AbilityLoadEvent<T>(plugin, loadable, jarFile);
 					plugin.getServer().getPluginManager().callEvent(event);
@@ -101,8 +95,8 @@ public class AbilityLoader<T> implements Listener {
 		
 			} catch (Exception e) {
 				e.printStackTrace();
-				getLogger().log(Level.WARNING, "Unknown cause");
-				getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
+				plugin.getLogger().log(Level.WARNING, "Unknown cause");
+				plugin.getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
 			} finally {
 				if (jarFile != null) {
 					try {
@@ -113,33 +107,23 @@ public class AbilityLoader<T> implements Listener {
 				}
 			}
 		}
-
 		return loadables;
 	}
 
-	public List<T> reload(Class<?> classType) {
-		unload();
-
-		List<URL> urls = new ArrayList<URL>();
-		files.clear();
-		for (String loadableFile : directory.list()) {
-			if (loadableFile.endsWith(".jar")) {
-				File file = new File(directory, loadableFile);
-				files.add(file);
-				try {
-					urls.add(file.toURI().toURL());
-				}
-				catch (MalformedURLException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		this.loader = URLClassLoader.newInstance(urls.toArray(new URL[urls.size()]), plugin.getClass().getClassLoader());
-		return load(classType);
+	public ClassLoader getLoader() {
+		return loader;
 	}
 
-	public void unload() {
-		loadables.clear();
+	public Plugin getPlugin() {
+		return plugin;
 	}
+
+	public File getDirectory() {
+		return directory;
+	}
+
+	public ArrayList<File> getFiles() {
+		return files;
+	}
+
 }

@@ -16,9 +16,6 @@ public class PlantRegrowth extends PlantAbility {
 	private Material type;
 	private Block block;
 	
-	public PlantRegrowth() {
-	}
-
 	@SuppressWarnings("deprecation")
 	public PlantRegrowth(Player player, Block block) {
 		super(player);

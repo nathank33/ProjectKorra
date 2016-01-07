@@ -30,8 +30,6 @@ public abstract class ElementalAbility extends CoreAbility {
 	private static final PotionEffectType[] NEGATIVE_EFFECTS = {PotionEffectType.POISON, PotionEffectType.BLINDNESS, PotionEffectType.CONFUSION, 
 				PotionEffectType.HARM, PotionEffectType.HUNGER, PotionEffectType.SLOW, PotionEffectType.SLOW_DIGGING, PotionEffectType.WEAKNESS, PotionEffectType.WITHER};
 	
-	public ElementalAbility() {}
-	
 	public ElementalAbility(Player player) {
 		super(player);
 	}

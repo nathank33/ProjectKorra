@@ -19,8 +19,6 @@ public class AirFlight extends FlightAbility {
 	private boolean firstProgressIteration;
 	private int maxHitsBeforeRemoval;
 	private Flight flight;
-		
-	public AirFlight() {}
 
 	public AirFlight(Player player) {
 		super(player);		

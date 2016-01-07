@@ -27,9 +27,6 @@ public class FireBurst extends FireAbility {
 	private double particlesPercentage;
 	private ArrayList<FireBlast> blasts;
 	
-	public FireBurst() {
-	}
-
 	public FireBurst(Player player) {
 		super(player);
 		

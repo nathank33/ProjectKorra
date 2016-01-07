@@ -30,9 +30,6 @@ public class PlantArmor extends PlantAbility {
 	private Location location;
 	private PlantRegrowth plantbending;
 	private ItemStack[] oldArmor;	
-
-	public PlantArmor() {
-	}
 	
 	public PlantArmor(Player player) {
 		super(player);

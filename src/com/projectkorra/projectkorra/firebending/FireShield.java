@@ -32,9 +32,6 @@ public class FireShield extends FireAbility {
 	private double fireTicks;
 	private Random random;
 
-	public FireShield() {
-	}
-	
 	public FireShield(Player player) {
 		this(player, false);
 	}

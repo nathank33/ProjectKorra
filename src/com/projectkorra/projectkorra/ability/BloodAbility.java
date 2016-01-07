@@ -3,8 +3,6 @@ package com.projectkorra.projectkorra.ability;
 import org.bukkit.entity.Player;
 
 public abstract class BloodAbility extends WaterAbility implements SubAbility {
-
-	public BloodAbility() {}
 	
 	public BloodAbility(Player player) {
 		super(player);

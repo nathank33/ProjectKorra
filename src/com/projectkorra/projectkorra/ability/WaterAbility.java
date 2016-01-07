@@ -26,8 +26,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public abstract class WaterAbility extends BlockAbility {
-		
-	public WaterAbility() {}
 
 	public WaterAbility(Player player) {
 		super(player);
