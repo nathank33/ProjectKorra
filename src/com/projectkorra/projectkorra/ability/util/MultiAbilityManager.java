@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.multiability;
+package com.projectkorra.projectkorra.ability.util;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
@@ -25,17 +25,17 @@ public class MultiAbilityManager {
 	public static ConcurrentHashMap<Player, HashMap<Integer, String>> playerAbilities = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<Player, Integer> playerSlot = new ConcurrentHashMap<>();
 	public static ConcurrentHashMap<Player, String> playerBoundAbility = new ConcurrentHashMap<>();
-	public static ArrayList<MultiAbility> multiAbilityList = new ArrayList<MultiAbility>();
+	public static ArrayList<MultiAbilityInfo> multiAbilityList = new ArrayList<MultiAbilityInfo>();
 
 	public MultiAbilityManager() {
-		ArrayList<MultiAbilitySub> waterArms = new ArrayList<MultiAbilitySub>();
-		waterArms.add(new MultiAbilitySub("Pull", Element.Water, null));
-		waterArms.add(new MultiAbilitySub("Punch", Element.Water, null));
-		waterArms.add(new MultiAbilitySub("Grapple", Element.Water, null));
-		waterArms.add(new MultiAbilitySub("Grab", Element.Water, null));
-		waterArms.add(new MultiAbilitySub("Freeze", Element.Water, SubElement.Icebending));
-		waterArms.add(new MultiAbilitySub("Spear", Element.Water, SubElement.Icebending));
-		multiAbilityList.add(new MultiAbility("WaterArms", waterArms));
+		ArrayList<MultiAbilityInfoSub> waterArms = new ArrayList<MultiAbilityInfoSub>();
+		waterArms.add(new MultiAbilityInfoSub("Pull", Element.Water, null));
+		waterArms.add(new MultiAbilityInfoSub("Punch", Element.Water, null));
+		waterArms.add(new MultiAbilityInfoSub("Grapple", Element.Water, null));
+		waterArms.add(new MultiAbilityInfoSub("Grab", Element.Water, null));
+		waterArms.add(new MultiAbilityInfoSub("Freeze", Element.Water, SubElement.Icebending));
+		waterArms.add(new MultiAbilityInfoSub("Spear", Element.Water, SubElement.Icebending));
+		multiAbilityList.add(new MultiAbilityInfo("WaterArms", waterArms));
 		manage();
 	}
 
@@ -57,7 +57,7 @@ public class MultiAbilityManager {
 		}
 		playerAbilities.put(player, currAbilities);
 
-		List<MultiAbilitySub> modes = getMultiAbility(multiAbility).getAbilities();
+		List<MultiAbilityInfoSub> modes = getMultiAbility(multiAbility).getAbilities();
 
 		bPlayer.getAbilities().clear();
 		for (int i = 0; i < modes.size(); i++) {
@@ -94,8 +94,8 @@ public class MultiAbilityManager {
 	 * @param multiAbility Name of the multiability
 	 * @return the multiability object or null
 	 */
-	public static MultiAbility getMultiAbility(String multiAbility) {
-		for (MultiAbility ma : multiAbilityList) {
+	public static MultiAbilityInfo getMultiAbility(String multiAbility) {
+		for (MultiAbilityInfo ma : multiAbilityList) {
 			if (ma.getName().equalsIgnoreCase(multiAbility))
 				return ma;
 		}
@@ -154,10 +154,6 @@ public class MultiAbilityManager {
 	 * Cleans up all MultiAbilities.
 	 */
 	public static void removeAll() {
-		List<MultiAbilityModule> abilities = MultiAbilityModuleManager.multiAbility;
-		for (MultiAbilityModule mam : abilities)
-			mam.stop();
-
 		playerAbilities.clear();
 		playerSlot.clear();
 		playerBoundAbility.clear();
@@ -226,16 +222,16 @@ public class MultiAbilityManager {
 	 * MultiAbility class. Manages each MultiAbility's sub abilities.
 	 *
 	 */
-	public static class MultiAbility {
+	public static class MultiAbilityInfo {
 		private String name;
-		private ArrayList<MultiAbilitySub> abilities;
+		private ArrayList<MultiAbilityInfoSub> abilities;
 
-		public MultiAbility(String name, ArrayList<MultiAbilitySub> abilities) {
+		public MultiAbilityInfo(String name, ArrayList<MultiAbilityInfoSub> abilities) {
 			this.name = name;
 			this.abilities = abilities;
 		}
 
-		public ArrayList<MultiAbilitySub> getAbilities() {
+		public ArrayList<MultiAbilityInfoSub> getAbilities() {
 			return abilities;
 		}
 
@@ -243,7 +239,7 @@ public class MultiAbilityManager {
 			return name;
 		}
 
-		public void setAbilities(ArrayList<MultiAbilitySub> abilities) {
+		public void setAbilities(ArrayList<MultiAbilityInfoSub> abilities) {
 			this.abilities = abilities;
 		}
 
@@ -252,12 +248,12 @@ public class MultiAbilityManager {
 		}
 	}
 
-	public static class MultiAbilitySub {
+	public static class MultiAbilityInfoSub {
 		private String name;
 		private Element element;
 		private SubElement sub;
 
-		public MultiAbilitySub(String name, Element element, SubElement sub) {
+		public MultiAbilityInfoSub(String name, Element element, SubElement sub) {
 			this.name = name;
 			this.element = element;
 			this.sub = sub;

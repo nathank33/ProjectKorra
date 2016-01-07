@@ -1,9 +1,15 @@
 package com.projectkorra.projectkorra.ability;
 
+import sun.reflect.ReflectionFactory;
+
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.util.AbilityLoader;
+import com.projectkorra.projectkorra.ability.util.ComboManager;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager.MultiAbilityInfo;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.Bukkit;
@@ -149,7 +155,7 @@ public abstract class CoreAbility implements Ability {
 	}
 	
 	public static CoreAbility getAbility(String abilityName) {
-		return abilityName != null ? ABILITIES_BY_NAME.get(abilityName) : null;
+		return abilityName != null ? ABILITIES_BY_NAME.get(abilityName.toLowerCase()) : null;
 	}
 	
 	public static ArrayList<CoreAbility> getAbilities() {
@@ -224,15 +230,14 @@ public abstract class CoreAbility implements Ability {
 					if (!CoreAbility.class.isAssignableFrom(clazz) || clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
 						continue;
 					}
-
-					Constructor<?> constructor = clazz.getConstructor();
-					CoreAbility ability = (CoreAbility) constructor.newInstance();
-					ABILITIES_BY_NAME.put(ability.getName(), ability); 
-				} catch (NoSuchMethodException e) {
-					if (clazz != null) {
-						String msg = clazz.getName() + " is a CoreAbility and needs a default constructor.";
-						ProjectKorra.log.info(msg);
-						throw new IllegalStateException(msg);
+					
+					ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
+					Constructor<?> objDef = CoreAbility.class.getDeclaredConstructor();
+					Constructor<?> intConstr = rf.newConstructorForSerialization(clazz, objDef);
+					CoreAbility ability = (CoreAbility) clazz.cast(intConstr.newInstance());
+				
+					if (ability != null && ability.getName() != null) {
+						ABILITIES_BY_NAME.put(ability.getName().toLowerCase(), ability);
 					}
 				} catch (Exception e) {
 				} catch (Error e) {
@@ -247,7 +252,7 @@ public abstract class CoreAbility implements Ability {
 		ProjectKorra plugin = ProjectKorra.plugin;
 		File path = new File(plugin.getDataFolder().toString() + "/Abilities/");
 		AbilityLoader<CoreAbility> abilityLoader = new AbilityLoader<CoreAbility>(plugin, path, new Object[] {});
-		List<CoreAbility> loadedAbilities = abilityLoader.load(AddonAbility.class);
+		List<CoreAbility> loadedAbilities = abilityLoader.load(CoreAbility.class);
 		
 		for (CoreAbility coreAbil : loadedAbilities) {
 			if (!(coreAbil instanceof AddonAbility)) {
@@ -256,9 +261,24 @@ public abstract class CoreAbility implements Ability {
 			}
 			
 			AddonAbility addon = (AddonAbility) coreAbil;
+			String name = coreAbil.getName();
+			
 			try {
 				addon.load();
-				ABILITIES_BY_NAME.put(coreAbil.getName(), coreAbil);
+				ABILITIES_BY_NAME.put(name.toLowerCase(), coreAbil);
+				
+				if (coreAbil instanceof ComboAbility) {
+					ComboAbility combo = (ComboAbility) coreAbil;
+					ComboManager.comboAbilityList.put(name, new ComboManager.ComboAbilityInfo(name, combo.getCombination(), combo));
+					ComboManager.descriptions.put(name, coreAbil.getDescription());
+					ComboManager.instructions.put(name, combo.getInstructions());
+					ComboManager.authors.put(name, addon.getAuthor());
+				}
+				
+				if (coreAbil instanceof MultiAbility) {
+					MultiAbility multiAbil = (MultiAbility) coreAbil;
+					MultiAbilityManager.multiAbilityList.add(new MultiAbilityInfo(name, multiAbil.getMultiAbilities()));
+				}
 			} catch (Exception | Error e) {
 				plugin.getLogger().warning("The ability " + coreAbil.getName() + " was not able to load, if this message shows again please remove it!");
 				e.printStackTrace();
@@ -294,7 +314,7 @@ public abstract class CoreAbility implements Ability {
 	
 	@Override
 	public String getDescription() {
-		return getConfig().getString("Properties." + getElementName() + "." + getName() + ".Description");
+		return getConfig().getString("Abilities." + getElementName() + "." + getName() + ".Description");
 	}
 
 	@Override

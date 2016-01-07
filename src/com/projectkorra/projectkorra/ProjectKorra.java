@@ -1,10 +1,8 @@
 package com.projectkorra.projectkorra;
 
 import com.projectkorra.projectkorra.ability.CoreAbility;
-import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityModuleManager;
+import com.projectkorra.projectkorra.ability.util.ComboManager;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirbendingManager;
 import com.projectkorra.projectkorra.chiblocking.ChiblockingManager;
 import com.projectkorra.projectkorra.command.Commands;
@@ -49,14 +47,13 @@ public class ProjectKorra extends JavaPlugin {
 		catch (SecurityException | IOException e) {
 			e.printStackTrace();
 		}
+		
+		CoreAbility.registerAbilities();
 		new ConfigManager();
 		new GeneralMethods(this);
 		updater = new Updater(this, "http://projectkorra.com/forum/forums/dev-builds.16/index.rss");
 		new Commands(this);
-		CoreAbility.registerAbilities();
-		new MultiAbilityModuleManager();
 		new MultiAbilityManager();
-		new ComboModuleManager();
 		new ComboManager();
 
 		DBConnection.host = getConfig().getString("Storage.MySQL.host");

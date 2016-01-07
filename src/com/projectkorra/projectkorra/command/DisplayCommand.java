@@ -12,7 +12,7 @@ import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.ability.SubAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
-import com.projectkorra.projectkorra.ability.combo.ComboManager;
+import com.projectkorra.projectkorra.ability.util.ComboManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

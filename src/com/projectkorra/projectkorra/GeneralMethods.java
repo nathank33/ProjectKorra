@@ -35,13 +35,10 @@ import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.ability.SubAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
-import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
-import com.projectkorra.projectkorra.ability.combo.ComboManager;
-import com.projectkorra.projectkorra.ability.combo.ComboManager.AbilityInformation;
-import com.projectkorra.projectkorra.ability.combo.ComboManager.ComboAbility;
-import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityModuleManager;
+import com.projectkorra.projectkorra.ability.util.ComboManager;
+import com.projectkorra.projectkorra.ability.util.ComboManager.AbilityInformation;
+import com.projectkorra.projectkorra.ability.util.ComboManager.ComboAbilityInfo;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirBlast;
 import com.projectkorra.projectkorra.airbending.AirCombo;
 import com.projectkorra.projectkorra.airbending.AirShield;
@@ -164,11 +161,7 @@ public class GeneralMethods {
 	 * @return true if ability exists
 	 */
 	public static boolean abilityExists(String string) {
-		for (String st : AbilityModuleManager.abilities) {
-			if (string.equalsIgnoreCase(st))
-				return true;
-		}
-		return false;
+		return CoreAbility.getAbility(string) != null;
 	}
 
 	/**
@@ -885,8 +878,9 @@ public class GeneralMethods {
 	 * @return The ChatColor to be used
 	 */
 	public static ChatColor getComboColor(String combo) {
+		// TODO: FIX this
 		for (String ability : ComboManager.comboAbilityList.keySet()) {
-			ComboAbility comboability = ComboManager.comboAbilityList.get(ability);
+			ComboAbilityInfo comboability = ComboManager.comboAbilityList.get(ability);
 			if (!comboability.getName().equalsIgnoreCase(combo)) {
 				continue;
 			}
@@ -895,31 +889,7 @@ public class GeneralMethods {
 				return ChatColor.STRIKETHROUGH; //This is so we know it shouldn't be used. Should not come up anyway.
 			}
 
-			if (comboability.getComboType() instanceof ComboAbilityModule) {
-				ComboAbilityModule module = (ComboAbilityModule) comboability.getComboType();
-				if (module.getSubElement() != null) {
-					if (module.getSubElement() == SubElement.Bloodbending || module.getSubElement() == SubElement.Icebending || module.getSubElement() == SubElement.Plantbending || module.getSubElement() == SubElement.Healing)
-						return WaterAbility.getSubChatColor();
-					else if (module.getSubElement() == SubElement.Lightning || module.getSubElement() == SubElement.Combustion)
-						return FireAbility.getSubChatColor();
-					else if (module.getSubElement() == SubElement.Sandbending || module.getSubElement() == SubElement.Metalbending || module.getSubElement() == SubElement.Lavabending)
-						return EarthAbility.getSubChatColor();
-					else if (module.getSubElement() == SubElement.Flight || module.getSubElement() == SubElement.SpiritualProjection)
-						return AirAbility.getSubChatColor();
-				}
-				if (module.getElement().equalsIgnoreCase(Element.Water.toString()))
-					return WaterAbility.getChatColor();
-				else if (module.getElement().equalsIgnoreCase(Element.Earth.toString()))
-					return EarthAbility.getChatColor();
-				else if (module.getElement().equalsIgnoreCase(Element.Fire.toString()))
-					return FireAbility.getChatColor();
-				else if (module.getElement().equalsIgnoreCase(Element.Air.toString()))
-					return AirAbility.getChatColor();
-				else if (module.getElement().equalsIgnoreCase(Element.Chi.toString()))
-					return ChiAbility.getChatColor();
-				else
-					return getAvatarColor();
-			} else if (combo.equalsIgnoreCase("IceBullet") || combo.equalsIgnoreCase("IceWave")) {
+			if (combo.equalsIgnoreCase("IceBullet") || combo.equalsIgnoreCase("IceWave")) {
 				return WaterAbility.getSubChatColor();
 			} else if (comboability.getComboType().equals(WaterCombo.class)) {
 				return WaterAbility.getChatColor();
@@ -1313,7 +1283,8 @@ public class GeneralMethods {
 	}
 
 	public static boolean isHarmlessAbility(String ability) {
-		return AbilityModuleManager.harmlessabilities.contains(ability);
+		return false; // TODO: FIX
+		//return AbilityModuleManager.harmlessabilities.contains(ability);
 	}
 
 	public static boolean isImportEnabled() {
@@ -1389,8 +1360,11 @@ public class GeneralMethods {
 		boolean respectGriefPrevention = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectGriefPrevention");
 		boolean respectLWC = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectLWC");
 
-		List<String> ignite = AbilityModuleManager.igniteabilities;
-		List<String> explode = AbilityModuleManager.explodeabilities;
+		//List<String> ignite = AbilityModuleManager.igniteabilities;
+		//List<String> explode = AbilityModuleManager.explodeabilities;
+		// TODO: fix
+		List<String> ignite = new ArrayList<>();
+		List<String> explode = new ArrayList<>();
 
 		if (ability == null && allowharmless)
 			return false;
@@ -1565,15 +1539,18 @@ public class GeneralMethods {
 		ConfigManager.defaultConfig.reload();
 		ConfigManager.deathMsgConfig.reload();
 		BendingManager.getInstance().reloadVariables();
+		
 		CoreAbility.registerAbilities();
 		new ComboManager();
-		new MultiAbilityModuleManager();
+		new MultiAbilityManager();
+		
 		DBConnection.host = plugin.getConfig().getString("Storage.MySQL.host");
 		DBConnection.port = plugin.getConfig().getInt("Storage.MySQL.port");
 		DBConnection.pass = plugin.getConfig().getString("Storage.MySQL.pass");
 		DBConnection.db = plugin.getConfig().getString("Storage.MySQL.db");
 		DBConnection.user = plugin.getConfig().getString("Storage.MySQL.user");
 		DBConnection.init();
+		
 		if (!DBConnection.isOpen()) {
 			ProjectKorra.log.severe("Unable to enable ProjectKorra due to the database not being open");
 			stopPlugin();
@@ -1863,13 +1840,6 @@ public class GeneralMethods {
 			}
 		}
 
-		HashMap<String, ComboManager.ComboAbility> combos = ComboManager.comboAbilityList;
-		for (String combo : combos.keySet()) {
-			ComboManager.ComboAbility c = combos.get(combo);
-			if (c.getComboType() instanceof ComboAbilityModule)
-				((ComboAbilityModule) c.getComboType()).stop();
-		}
-
 		CoreAbility.removeAll();
 		EarthAbility.stopBending();
 		WaterAbility.stopBending();
@@ -1908,13 +1878,6 @@ public class GeneralMethods {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public ComboAbilityModule getCombo(String name) {
-		for (ComboAbilityModule c : ComboModuleManager.combo)
-			if (name.equalsIgnoreCase(c.getName()))
-				return c;
-		return null;
 	}
 
 	public static class BlockCacheElement {

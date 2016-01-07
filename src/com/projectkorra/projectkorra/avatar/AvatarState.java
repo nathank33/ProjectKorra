@@ -160,7 +160,7 @@ public class AvatarState extends AvatarAbility {
 		return cooldown;
 	}
 
-	@Override
+	/*@Override
 	public boolean isSneakAbiliity() {
 		return false;
 	}
@@ -168,5 +168,5 @@ public class AvatarState extends AvatarAbility {
 	@Override
 	public boolean isHarmlessAbility() {
 		return true;
-	}
+	}*/
 }

@@ -2,7 +2,7 @@ package com.projectkorra.projectkorra.command;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
+import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

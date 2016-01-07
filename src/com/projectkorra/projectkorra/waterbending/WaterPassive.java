@@ -40,7 +40,7 @@ public class WaterPassive {
 			if (bPlayer == null) {
 				continue;
 			}
-			
+			/*
 			String ability = bPlayer.getBoundAbilityName();
 			if (GeneralMethods.canBendPassive(player.getName(), Element.Water)) {
 				if (CoreAbility.hasAbility(player, WaterSpout.class) || CoreAbility.hasAbility(player, EarthArmor.class)) {
@@ -50,7 +50,7 @@ public class WaterPassive {
 						player.setVelocity(player.getEyeLocation().getDirection().clone().normalize().multiply(swimSpeed));
 					}
 				}
-			}
+			}*/
 		}
 	}
 }

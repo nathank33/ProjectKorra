@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability;
+package com.projectkorra.projectkorra.ability.util;
 
 import com.projectkorra.projectkorra.event.AbilityLoadEvent;
 import com.projectkorra.projectkorra.util.FileExtensionFilter;
@@ -6,14 +6,15 @@ import com.projectkorra.projectkorra.util.FileExtensionFilter;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -64,51 +65,52 @@ public class AbilityLoader<T> implements Listener {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final List<T> load(Class<?> classType) {
+	public final List<T> load(Class<?> classType) {		
 		for (File file : files) {
-			try (final JarFile jarFile = new JarFile(file)) {
-				String mainClass = null;
-
-				if (jarFile.getEntry("path.yml") != null) {
-					JarEntry element = jarFile.getJarEntry("path.yml");
-					BufferedReader reader = new BufferedReader(new InputStreamReader(jarFile.getInputStream(element)));
-					mainClass = reader.readLine().substring(12);
-				}
-
-				if (mainClass != null) {
-					Class<?> clazz = Class.forName(mainClass, true, loader);
-
-					if (clazz != null) {
-						Class<?> loadableClass = clazz.asSubclass(classType);
-						Constructor<?> ctor = loadableClass.getConstructor(constructorParams);
-						T loadable = (T) ctor.newInstance(parameters);
-						
-						loadables.add(loadable);
-						AbilityLoadEvent<T> event = new AbilityLoadEvent<T>(plugin, loadable, jarFile);
-						plugin.getServer().getPluginManager().callEvent(event);
-					} else {
-						jarFile.close();
-						throw new ClassNotFoundException();
+			JarFile jarFile = null;
+			try {
+				jarFile = new JarFile(file);
+				Enumeration<JarEntry> entries = jarFile.entries();
+				
+				while (entries.hasMoreElements()) {
+					JarEntry entry = entries.nextElement();
+					if (!entry.getName().endsWith(".class")) {
+						continue;
 					}
-				} else {
-					jarFile.close();
-					throw new ClassNotFoundException();
+					
+			        String className = entry.getName().replace('/', '.').substring(0, entry.getName().length() - 6);
+					Class<?> clazz = null;
+					try {
+						clazz = Class.forName(className, true, loader);
+					} catch (Exception e) {
+						continue;
+					}
+
+					if (!classType.isAssignableFrom(clazz) || clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
+						continue;
+					}
+					
+					Class<?> loadableClass = clazz.asSubclass(classType);
+					Constructor<?> ctor = loadableClass.getConstructor(constructorParams);
+					T loadable = (T) ctor.newInstance(parameters);
+					
+					loadables.add(loadable);
+					AbilityLoadEvent<T> event = new AbilityLoadEvent<T>(plugin, loadable, jarFile);
+					plugin.getServer().getPluginManager().callEvent(event);
 				}
-			}
-			catch (ClassCastException e) {
-				e.printStackTrace();
-				getLogger().log(Level.WARNING, "The JAR file " + file.getPath() + " is in the wrong directory");
-				getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
-			}
-			catch (ClassNotFoundException e) {
-				e.printStackTrace();
-				getLogger().log(Level.WARNING, "Invalid path.yml");
-				getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load.");
-			}
-			catch (Exception e) {
+		
+			} catch (Exception e) {
 				e.printStackTrace();
 				getLogger().log(Level.WARNING, "Unknown cause");
 				getLogger().log(Level.WARNING, "The JAR file " + file.getName() + " failed to load");
+			} finally {
+				if (jarFile != null) {
+					try {
+						jarFile.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 
