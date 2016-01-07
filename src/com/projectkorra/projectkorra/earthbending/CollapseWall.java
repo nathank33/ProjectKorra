@@ -9,7 +9,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.ClickType;
 

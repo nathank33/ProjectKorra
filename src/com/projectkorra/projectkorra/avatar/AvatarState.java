@@ -1,8 +1,8 @@
-package com.projectkorra.projectkorra.ability;
+package com.projectkorra.projectkorra.avatar;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.AvatarAbility;
+import com.projectkorra.projectkorra.ability.AvatarAbility;
 import com.projectkorra.projectkorra.util.Flight;
 
 import org.bukkit.Location;
@@ -83,7 +83,7 @@ public class AvatarState extends AvatarAbility {
 			instances.remove(player);
 			return;
 		}
-		if (!GeneralMethods.canBend(player.getName(), StockAbility.AvatarState.name())) {
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			instances.remove(player);
 			if (player != null) {
 				if (GeneralMethods.getBendingPlayer(player.getName()).isOnCooldown("AvatarState")) {
@@ -158,5 +158,15 @@ public class AvatarState extends AvatarAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+
+	@Override
+	public boolean isSneakAbiliity() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
 	}
 }

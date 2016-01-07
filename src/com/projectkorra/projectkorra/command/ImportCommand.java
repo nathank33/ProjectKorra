@@ -4,7 +4,6 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.StockAbility;
 import com.projectkorra.projectkorra.storage.DBConnection;
 
 import org.bukkit.Bukkit;
@@ -57,29 +56,16 @@ public class ImportCommand extends PKCommand {
 			@SuppressWarnings("deprecation")
 			UUID uuid = ProjectKorra.plugin.getServer().getOfflinePlayer(playername).getUniqueId();
 			ArrayList<Element> element = new ArrayList<Element>();
-			List<Integer> oe = bendingPlayers.getIntegerList(string + ".BendingTypes");
-			HashMap<Integer, String> abilities = new HashMap<Integer, String>();
-			List<Integer> oa = bendingPlayers.getIntegerList(string + ".SlotAbilities");
+			List<Integer> bendingTypes = bendingPlayers.getIntegerList(string + ".BendingTypes");
 			boolean permaremoved = bendingPlayers.getBoolean(string + ".Permaremoved");
 
-			int slot = 1;
-			for (int i : oa) {
-				if (StockAbility.getAbility(i) != null) {
-					abilities.put(slot, StockAbility.getAbility(i).toString());
-					slot++;
-				} else {
-					abilities.put(slot, null);
-					slot++;
-				}
-			}
-
-			for (int i : oe) {
+			for (int i : bendingTypes) {
 				if (Element.getType(i) != null) {
 					element.add(Element.getType(i));
 				}
 			}
 
-			BendingPlayer bPlayer = new BendingPlayer(uuid, playername, element, abilities, permaremoved);
+			BendingPlayer bPlayer = new BendingPlayer(uuid, playername, element, new HashMap<Integer, String>(), permaremoved);
 			bPlayers.add(bPlayer);
 		}
 

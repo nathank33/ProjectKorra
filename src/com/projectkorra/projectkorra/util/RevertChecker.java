@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.util;
 
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.Chunk;

@@ -2,7 +2,7 @@ package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;

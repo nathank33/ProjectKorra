@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 public interface SubAbility {
 

@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
@@ -40,6 +40,21 @@ public abstract class EarthAbility extends BlockAbility {
 	public EarthAbility(Player player) {
 		super(player);
 	}
+	
+	@Override
+	public boolean isIgniteAbility() {
+		return false;
+	}
+	
+	@Override
+	public boolean isExplosiveAbility() {
+		return false;
+	}
+	
+	@Override
+	public final String getElementName() {
+		return "Earth";
+	}
 
 	public int getEarthbendableBlocksLength(Block block, Vector direction, int maxlength) {
 		Location location = block.getLocation();
@@ -55,11 +70,6 @@ public abstract class EarthAbility extends BlockAbility {
 
 	public Block getEarthSourceBlock(double range) {
 		return getEarthSourceBlock(player, getName(), range);
-	}
-	
-	@Override
-	public final String getElementName() {
-		return "Earth";
 	}
 
 	public Block getLavaSourceBlock(double range) {

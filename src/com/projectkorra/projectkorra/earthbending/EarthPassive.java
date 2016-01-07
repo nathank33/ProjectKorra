@@ -3,7 +3,7 @@ package com.projectkorra.projectkorra.earthbending;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.api.ElementalAbility;
+import com.projectkorra.projectkorra.ability.ElementalAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Bukkit;

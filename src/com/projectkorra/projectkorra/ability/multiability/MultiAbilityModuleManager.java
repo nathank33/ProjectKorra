@@ -3,7 +3,7 @@ package com.projectkorra.projectkorra.ability.multiability;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.StockAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager.MultiAbility;
 import com.projectkorra.projectkorra.util.AbilityLoader;
 
@@ -30,11 +30,12 @@ public class MultiAbilityModuleManager {
 		for (MultiAbilityModule mam : multiAbility) {
 			mam.onThisLoad();
 			AbilityModuleManager.abilities.add(mam.getName());
-			for (StockAbility a : StockAbility.values()) {
-				if (a.name().equalsIgnoreCase(mam.getName())) {
-					AbilityModuleManager.disabledStockAbilities.add(a.name());
+			for (CoreAbility ability : CoreAbility.getAbilities()) {
+				if (ability.getName().equalsIgnoreCase(mam.getName())) {
+					AbilityModuleManager.disabledStockAbilities.add(ability.getName());
 				}
 			}
+			
 			if (mam.getElement() == Element.Air.toString())
 				AbilityModuleManager.airbendingabilities.add(mam.getName());
 			if (mam.getElement() == Element.Water.toString())

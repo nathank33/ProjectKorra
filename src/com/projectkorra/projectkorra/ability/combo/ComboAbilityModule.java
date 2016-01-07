@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.ability.combo;
 
-import com.projectkorra.projectkorra.SubElement;
-import com.projectkorra.projectkorra.util.AbilityLoadable;
+import com.projectkorra.projectkorra.ability.AddonAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 
 import org.bukkit.entity.Player;
 
@@ -10,56 +10,14 @@ import java.util.ArrayList;
 /**
  * Created by Carbogen on 2/7/2015.
  */
-public abstract class ComboAbilityModule extends AbilityLoadable implements Cloneable {
-	/**
-	 * AbilityModule Constructor.
-	 *
-	 * @param name The name of the ability.
-	 */
-	public ComboAbilityModule(final String name) {
-		super(name);
+public abstract class ComboAbilityModule extends CoreAbility implements AddonAbility {
+
+	public ComboAbilityModule() {
 	}
-
-	/**
-	 * Called when the ability is loaded by PK. This is where the developer
-	 * registers Listeners and Permissions.
-	 */
-	public abstract void onThisLoad();
-
-	// Must be overridden
-
-	/**
-	 * Accessor Method to get the version of the ability.
-	 *
-	 * @return The version of the ability as a String.
-	 */
-	public abstract String getVersion();
-
-	/**
-	 * Accessor Method to get the Element of the ability. It is recommended to
-	 * use the Element ENUM to get the returned String. This can be an empty
-	 * String, in which case the ability will not belong to any element (such as
-	 * AvatarState).
-	 *
-	 * @return The Element the ability belongs to.
-	 */
-	public abstract String getElement();
-
-	/**
-	 * Accessor Method to get the name of the author.
-	 *
-	 * @return The name of the author.
-	 */
-	public abstract String getAuthor();
-
-	/**
-	 * Accessor Method to get the description of the ability. This String is
-	 * sent to any player who runs /pk display ability.
-	 *
-	 * @return The Description of the ability.
-	 */
-	public abstract String getDescription();
-
+	
+	public ComboAbilityModule(Player player) {
+	}
+	
 	/**
 	 * Accessor Method to get the instructions for using this combo.
 	 *
@@ -83,34 +41,5 @@ public abstract class ComboAbilityModule extends AbilityLoadable implements Clon
 	 * @return An ArrayList containing the combo's steps.
 	 */
 	public abstract ArrayList<ComboManager.AbilityInformation> getCombination();
-
-	/**
-	 * Void Method called whenever ProjectKorra stops and the ability is
-	 * unloaded.
-	 *
-	 */
-	public void stop() {
-
-	}
-
-	/**
-	 * Accessor Method to get which SubElement the ability belongs to. If
-	 * isSubAbility() returns true, the developer absolutely must implement this
-	 * as well.
-	 *
-	 * List of sub-elements:
-	 *
-	 * Water: Icebending. Bloodbending. Plantbending. Healing.
-	 *
-	 * Earth: Sandbending. Metalbending. Lavabending.
-	 *
-	 * Fire: Combustion. Lightning.
-	 *
-	 * Air: Flight. SpiritualProjection.
-	 *
-	 * @return The SubElement the ability belongs to.
-	 */
-	public SubElement getSubElement() {
-		return null;
-	}
+	
 }

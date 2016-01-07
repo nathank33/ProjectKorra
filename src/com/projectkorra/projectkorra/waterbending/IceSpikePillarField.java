@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.IceAbility;
+import com.projectkorra.projectkorra.ability.IceAbility;
 
 import org.bukkit.Location;
 import org.bukkit.Material;

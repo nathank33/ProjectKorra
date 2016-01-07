@@ -1,12 +1,12 @@
 package com.projectkorra.projectkorra;
 
-import com.projectkorra.projectkorra.ability.AvatarState;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AddonAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirBlast;
@@ -20,6 +20,7 @@ import com.projectkorra.projectkorra.airbending.AirSuction;
 import com.projectkorra.projectkorra.airbending.AirSwipe;
 import com.projectkorra.projectkorra.airbending.Suffocate;
 import com.projectkorra.projectkorra.airbending.Tornado;
+import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.chiblocking.AcrobatStance;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
 import com.projectkorra.projectkorra.chiblocking.ChiPassive;
@@ -65,8 +66,8 @@ import com.projectkorra.projectkorra.firebending.FireBurst;
 import com.projectkorra.projectkorra.firebending.FireDamageTimer;
 import com.projectkorra.projectkorra.firebending.FireJet;
 import com.projectkorra.projectkorra.firebending.FireShield;
-import com.projectkorra.projectkorra.firebending.HeatControlSolidify;
 import com.projectkorra.projectkorra.firebending.HeatControlExtinguish;
+import com.projectkorra.projectkorra.firebending.HeatControlSolidify;
 import com.projectkorra.projectkorra.firebending.Illumination;
 import com.projectkorra.projectkorra.firebending.Lightning;
 import com.projectkorra.projectkorra.firebending.WallOfFire;
@@ -1167,8 +1168,9 @@ public class PKListener implements Listener {
 		
 		CoreAbility coreAbil = CoreAbility.getAbility(abil);
 		if (!player.isSneaking() && GeneralMethods.canBend(player.getName(), abil)) {
-			if (GeneralMethods.isDisabledStockAbility(abil))
+			if (coreAbil instanceof AddonAbility) {
 				return;
+			}
 			if (coreAbil instanceof AirAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {
 					return;
@@ -1355,8 +1357,9 @@ public class PKListener implements Listener {
 		if (coreAbil == null && !MultiAbilityManager.hasMultiAbilityBound(player))
 			return;
 		if (GeneralMethods.canBend(player.getName(), abil)) {
-			if (GeneralMethods.isDisabledStockAbility(abil))
+			if (coreAbil instanceof AddonAbility) {
 				return;
+			}
 
 			if (coreAbil instanceof AirAbility && GeneralMethods.getBendingPlayer(player.getName()).isElementToggled(Element.Air) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {

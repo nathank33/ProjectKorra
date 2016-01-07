@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
@@ -19,16 +20,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public abstract class CoreAbility implements Ability {
 
 	private static final String INVALID_PLAYER = "Player is null, make sure the first line if your ability is super(player)";
 	private static final ConcurrentHashMap<Class<? extends CoreAbility>, ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>>> INSTANCES = new ConcurrentHashMap<>();
 	private static final ConcurrentHashMap<Class<? extends CoreAbility>, Set<CoreAbility>> INSTANCES_BY_CLASS = new ConcurrentHashMap<>();
-	private static final ConcurrentHashMap<String, CoreAbility> ABILITIES_BY_NAME = new ConcurrentHashMap<>();
+	private static final ConcurrentSkipListMap<String, CoreAbility> ABILITIES_BY_NAME = new ConcurrentSkipListMap<>();
 	
 	private static int idCounter;
 
@@ -36,13 +39,12 @@ public abstract class CoreAbility implements Ability {
 	protected Player player;
 	protected BendingPlayer bPlayer;
 	
-	private boolean hasStarted;
-	private boolean hasBeenRemoved;
+	private boolean started;
+	private boolean removed;
 	private int id;
 
 	static {
 		idCounter = Integer.MIN_VALUE;
-		registerAbilities(ProjectKorra.class);
 	}
 
 	public CoreAbility() {}
@@ -54,7 +56,7 @@ public abstract class CoreAbility implements Ability {
 		this.player = player;
 		this.bPlayer = BendingPlayer.getBendingPlayer(player);
 		this.startTime = System.currentTimeMillis();
-		this.hasStarted = false;
+		this.started = false;
 		this.id = CoreAbility.idCounter;
 		
 		if (idCounter == Integer.MAX_VALUE) {
@@ -69,7 +71,7 @@ public abstract class CoreAbility implements Ability {
 			throw new IllegalStateException(INVALID_PLAYER);
 		}
 		
-		this.hasStarted = true;
+		this.started = true;
 		this.startTime = System.currentTimeMillis();
 		Class<? extends CoreAbility> clazz = getClass();
 		UUID uuid = player.getUniqueId();
@@ -94,7 +96,7 @@ public abstract class CoreAbility implements Ability {
 			throw new IllegalStateException(INVALID_PLAYER);
 		}
 		
-		hasBeenRemoved = true;
+		removed = true;
 		
 		ConcurrentHashMap<UUID, ConcurrentHashMap<Integer, CoreAbility>> classMap = INSTANCES.get(getClass());
 		if (classMap != null) {
@@ -176,6 +178,8 @@ public abstract class CoreAbility implements Ability {
 			for (CoreAbility ability : getAbilities()) {
 				if (ability.getElementName().equalsIgnoreCase(element)) {
 					abilities.add(ability);
+				} else if (ability instanceof SubAbility && ((SubAbility) ability).getSubElementName().equalsIgnoreCase(element)) {
+					abilities.add(ability);
 				}
 			}
 		}
@@ -201,8 +205,14 @@ public abstract class CoreAbility implements Ability {
 		}
 		return players;
 	}
+	
+	public static void registerAbilities() {
+		ABILITIES_BY_NAME.clear();
+		registerAbilities(ProjectKorra.class);
+		registerAddonAbilities();
+	}
 
-	public static void registerAbilities(Class<?> pluginClass) {
+	private static void registerAbilities(Class<?> pluginClass) {
 		ClassLoader loader = pluginClass.getClassLoader();
 		
 		try {
@@ -232,30 +242,42 @@ public abstract class CoreAbility implements Ability {
 			e.printStackTrace();
 		}
 	}
-
-	public ChatColor getElementColor() {
-		String element = (this instanceof SubAbility) ? getElementName() + "Sub" : getElementName();
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors." + element));
+	
+	private static void registerAddonAbilities() {
+		ProjectKorra plugin = ProjectKorra.plugin;
+		File path = new File(plugin.getDataFolder().toString() + "/Abilities/");
+		AbilityLoader<CoreAbility> abilityLoader = new AbilityLoader<CoreAbility>(plugin, path, new Object[] {});
+		List<CoreAbility> loadedAbilities = abilityLoader.load(AddonAbility.class);
+		
+		for (CoreAbility coreAbil : loadedAbilities) {
+			if (!(coreAbil instanceof AddonAbility)) {
+				plugin.getLogger().warning(coreAbil.getName() + " is an addon ability and must implement the AddonAbility interface");
+				continue;
+			}
+			
+			AddonAbility addon = (AddonAbility) coreAbil;
+			try {
+				addon.load();
+				ABILITIES_BY_NAME.put(coreAbil.getName(), coreAbil);
+			} catch (Exception | Error e) {
+				plugin.getLogger().warning("The ability " + coreAbil.getName() + " was not able to load, if this message shows again please remove it!");
+				e.printStackTrace();
+				addon.stop();
+				ABILITIES_BY_NAME.remove(coreAbil.getName(), coreAbil);				
+			}
+		}
 	}
 	
 	public long getStartTime() {
 		return startTime;
 	}
 
-	public boolean hasStarted() {
-		return hasStarted;
+	public boolean isStarted() {
+		return started;
 	}
 	
-	public boolean hasBeenRemoved() {
-		return hasBeenRemoved;
-	}
-	
-	public boolean isHiddenAbility() {
-		return false;
-	}
-
-	public Player getPlayer() {
-		return player;
+	public boolean isRemoved() {
+		return removed;
 	}
 
 	public BendingPlayer getBendingPlayer() {
@@ -265,9 +287,25 @@ public abstract class CoreAbility implements Ability {
 	public int getId() {
 		return id;
 	}
-
+	
+	public boolean isHiddenAbility() {
+		return false;
+	}
+	
+	@Override
 	public String getDescription() {
 		return getConfig().getString("Properties." + getElementName() + "." + getName() + ".Description");
+	}
+
+	@Override
+	public Player getPlayer() {
+		return player;
+	}
+	
+	@Override
+	public ChatColor getElementColor() {
+		String element = (this instanceof SubAbility) ? getElementName() + "Sub" : getElementName();
+		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors." + element));
 	}
 
 	public static FileConfiguration getConfig() {

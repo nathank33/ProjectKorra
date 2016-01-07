@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra;
 
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.ability.combo.ComboModuleManager;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
@@ -33,7 +33,7 @@ public class ProjectKorra extends JavaPlugin {
 	public static PKLogHandler handler;
 	public static long time_step = 1;
 	public Updater updater;
-	public AbilityModuleManager abManager;
+	
 	@Override
 	public void onEnable() {
 		plugin = this;
@@ -53,7 +53,7 @@ public class ProjectKorra extends JavaPlugin {
 		new GeneralMethods(this);
 		updater = new Updater(this, "http://projectkorra.com/forum/forums/dev-builds.16/index.rss");
 		new Commands(this);
-		abManager = new AbilityModuleManager(this);
+		CoreAbility.registerAbilities();
 		new MultiAbilityModuleManager();
 		new MultiAbilityManager();
 		new ComboModuleManager();

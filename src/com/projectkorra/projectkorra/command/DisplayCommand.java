@@ -3,16 +3,15 @@ package com.projectkorra.projectkorra.command;
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.SubElement;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.AvatarAbility;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.SubAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.AvatarAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.SubAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 
 import org.bukkit.ChatColor;
@@ -198,16 +197,16 @@ public class DisplayCommand extends PKCommand {
 	 * @param element The subelement to show the moves for
 	 */
 	private void displaySubElement(CommandSender sender, String element) {
-		List<String> abilities = ProjectKorra.plugin.abManager.getAbilities(element);
+		List<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(element);
 		if (abilities.isEmpty() && element != null) {
 			Element e = SubElement.getType(element.toLowerCase()).getMainElement();
 			ChatColor color = GeneralMethods.getSubBendingColor(e);
 			sender.sendMessage(ChatColor.YELLOW + "There are no " + color + element + ChatColor.YELLOW + " abilities installed!");
 			return;
 		}
-		for (String ability : abilities) {
-			if (!(sender instanceof Player) || GeneralMethods.canView((Player) sender, ability)) {
-				sender.sendMessage(GeneralMethods.getSubBendingColor(Element.getType(getElement(element))) + ability);
+		for (CoreAbility ability : abilities) {
+			if (!(sender instanceof Player) || GeneralMethods.canView((Player) sender, ability.getName())) {
+				sender.sendMessage(GeneralMethods.getSubBendingColor(Element.getType(getElement(element))) + ability.getName());
 			}
 		}
 	}

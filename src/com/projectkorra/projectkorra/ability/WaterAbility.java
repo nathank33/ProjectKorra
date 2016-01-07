@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.BendingManager;
 import com.projectkorra.projectkorra.BendingPlayer;
@@ -32,6 +32,21 @@ public abstract class WaterAbility extends BlockAbility {
 	public WaterAbility(Player player) {
 		super(player);
 	}
+	
+	@Override
+	public boolean isIgniteAbility() {
+		return false;
+	}
+	
+	@Override
+	public boolean isExplosiveAbility() {
+		return false;
+	}
+	
+	@Override
+	public final String getElementName() {
+		return "Water";
+	}
 
 	public boolean canAutoSource() {
 		return getConfig().getBoolean("Abilities." + getElementName() + "." + getName() + ".CanAutoSource");
@@ -39,11 +54,6 @@ public abstract class WaterAbility extends BlockAbility {
 	
 	public boolean canDynamicSource() {
 		return getConfig().getBoolean("Abilities." + getElementName() + "." + getName() + ".CanDynamicSource");
-	}
-	
-	@Override
-	public final String getElementName() {
-		return "Water";
 	}
 	
 	public Block getIceSourceBlock(double range) {

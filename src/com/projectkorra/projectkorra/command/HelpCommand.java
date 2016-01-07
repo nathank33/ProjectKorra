@@ -1,12 +1,12 @@
 package com.projectkorra.projectkorra.command;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 
 import org.bukkit.ChatColor;
@@ -36,15 +36,15 @@ public class HelpCommand extends PKCommand {
 
 		String arg = args.get(0);
 
-		if (instances.keySet().contains(arg.toLowerCase())) {//bending help command
+		if (instances.keySet().contains(arg.toLowerCase())) { //bending help command
 			instances.get(arg).help(sender, true);
 		} else if (Arrays.asList(Commands.comboaliases).contains(arg)) { //bending help elementcombo
 			sender.sendMessage(ChatColor.GOLD + "Proper Usage: " + ChatColor.RED + "/bending display " + arg + ChatColor.GOLD + " or " + ChatColor.RED + "/bending help <Combo Name>");
-		} else if (GeneralMethods.abilityExists(arg)) { //bending help ability
-			String ability = GeneralMethods.getAbility(arg);
-			ChatColor color = GeneralMethods.getAbilityColor(ability);
-			sender.sendMessage(color + ability + " - ");
-			sender.sendMessage(color + AbilityModuleManager.descriptions.get(GeneralMethods.getAbility(ability)));
+		} else if (CoreAbility.getAbility(arg) != null) { //bending help ability
+			CoreAbility ability = CoreAbility.getAbility(arg);
+			ChatColor color = ability.getElementColor();
+			sender.sendMessage(color + ability.getName() + " - ");
+			sender.sendMessage(color + ability.getDescription());
 		} else if (Arrays.asList(Commands.airaliases).contains(args.get(0))) {
 			sender.sendMessage(AirAbility.getChatColor() + "Air is the element of freedom. Airbenders are natural pacifists and " + "great explorers. There is nothing stopping them from scaling the tallest of mountains and walls easily. They specialize in redirection, " + "from blasting things away with gusts of winds, to forming a shield around them to prevent damage. Easy to get across flat terrains, " + "such as oceans, there is practically no terrain off limits to Airbenders. They lack much raw damage output, but make up for it with " + "with their ridiculous amounts of utility and speed.");
 			sender.sendMessage(ChatColor.YELLOW + "Airbenders can chain their abilities into combos, type " + AirAbility.getChatColor() + "/b help AirCombos" + ChatColor.YELLOW + " for more information.");

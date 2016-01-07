@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.ability.combo;
 
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.util.AbilityLoader;
+import com.projectkorra.projectkorra.ability.AbilityLoader;
 
 import java.io.File;
 import java.util.List;
@@ -25,7 +25,7 @@ public class ComboModuleManager {
 
 	private void loadComboModules() {
 		for (ComboAbilityModule cm : combo) {
-			cm.onThisLoad();
+			cm.load();
 			ComboManager.comboAbilityList.put(cm.getName(), new ComboManager.ComboAbility(cm.getName(), cm.getCombination(), cm));
 			ComboManager.descriptions.put(cm.getName(), cm.getDescription());
 			ComboManager.instructions.put(cm.getName(), cm.getInstructions());

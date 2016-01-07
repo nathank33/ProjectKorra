@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.BendingManager;
 import com.projectkorra.projectkorra.GeneralMethods;
@@ -45,6 +45,16 @@ public abstract class FireAbility extends ElementalAbility {
 	
 	public FireAbility(Player player) {
 		super(player);
+	}
+	
+	@Override
+	public boolean isIgniteAbility() {
+		return true;
+	}
+	
+	@Override
+	public boolean isExplosiveAbility() {
+		return true;
 	}
 
 	@Override

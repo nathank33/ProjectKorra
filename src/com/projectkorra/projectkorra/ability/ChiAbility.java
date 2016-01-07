@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
@@ -13,6 +13,16 @@ public abstract class ChiAbility extends ElementalAbility {
 		super(player);
 	}
 
+	@Override
+	public boolean isIgniteAbility() {
+		return false;
+	}
+	
+	@Override
+	public boolean isExplosiveAbility() {
+		return false;
+	}
+	
 	@Override
 	public final String getElementName() {
 		return "Chi";

@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.firebending;
 
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.waterbending.PlantRegrowth;
 
 import org.bukkit.Location;

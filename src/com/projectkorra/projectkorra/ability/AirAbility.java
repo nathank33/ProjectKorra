@@ -1,4 +1,4 @@
-package com.projectkorra.projectkorra.ability.api;
+package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.airbending.AirSpout;
@@ -22,6 +22,16 @@ public abstract class AirAbility extends ElementalAbility {
 		super(player);
 	}
 
+	@Override
+	public boolean isIgniteAbility() {
+		return false;
+	}
+	
+	@Override
+	public boolean isExplosiveAbility() {
+		return false;
+	}
+	
 	@Override
 	public final String getElementName() {
 		return "Air";

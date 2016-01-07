@@ -3,8 +3,8 @@ package com.projectkorra.projectkorra.waterbending;
 import com.projectkorra.projectkorra.BendingManager;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.multiability.MultiAbilityManager;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.util.TempBlock;
@@ -381,7 +381,7 @@ public class WaterArmsWhip extends WaterAbility {
 	public static void checkValidEntities() {
 		for (LivingEntity livingEnt : GRABBED_ENTITIES.keySet()) {
 			WaterArmsWhip whip = GRABBED_ENTITIES.get(livingEnt);
-			if (!whip.hasBeenRemoved()) {
+			if (!whip.isRemoved()) {
 				if (whip.grabbedEntity == null) {
 					GRABBED_ENTITIES.remove(livingEnt);
 				}

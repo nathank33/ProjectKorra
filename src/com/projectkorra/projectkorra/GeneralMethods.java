@@ -26,16 +26,15 @@ import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 import com.palmergames.bukkit.towny.war.flagwar.TownyWar;
 import com.palmergames.bukkit.towny.war.flagwar.TownyWarConfig;
-import com.projectkorra.projectkorra.ability.AbilityModule;
-import com.projectkorra.projectkorra.ability.AbilityModuleManager;
-import com.projectkorra.projectkorra.ability.StockAbility;
-import com.projectkorra.projectkorra.ability.api.Ability;
-import com.projectkorra.projectkorra.ability.api.AirAbility;
-import com.projectkorra.projectkorra.ability.api.ChiAbility;
-import com.projectkorra.projectkorra.ability.api.CoreAbility;
-import com.projectkorra.projectkorra.ability.api.EarthAbility;
-import com.projectkorra.projectkorra.ability.api.FireAbility;
-import com.projectkorra.projectkorra.ability.api.WaterAbility;
+import com.projectkorra.projectkorra.ability.Ability;
+import com.projectkorra.projectkorra.ability.AddonAbility;
+import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.ChiAbility;
+import com.projectkorra.projectkorra.ability.CoreAbility;
+import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.SubAbility;
+import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.combo.ComboAbilityModule;
 import com.projectkorra.projectkorra.ability.combo.ComboManager;
 import com.projectkorra.projectkorra.ability.combo.ComboManager.AbilityInformation;
@@ -651,23 +650,6 @@ public class GeneralMethods {
 	}
 
 	/**
-	 * Gets the ability from specified ability name.
-	 * 
-	 * @param string The ability name
-	 * @return Ability name if found in {@link AbilityModuleManager#abilities}
-	 *         <p>
-	 *         else null
-	 *         </p>
-	 */
-	public static String getAbility(String string) {
-		for (String st : AbilityModuleManager.abilities) {
-			if (st.equalsIgnoreCase(string))
-				return st;
-		}
-		return null;
-	}
-
-	/**
 	 * Gets the Element color from the Ability name specified.
 	 * 
 	 * @param ability The ability name
@@ -679,31 +661,12 @@ public class GeneralMethods {
 	 *         else {@link #getAvatarColor()}
 	 */
 	public static ChatColor getAbilityColor(String ability) {
-		if (AbilityModuleManager.chiabilities.contains(ability))
-			return ChiAbility.getChatColor();
-		if (AbilityModuleManager.airbendingabilities.contains(ability)) {
-			if (AbilityModuleManager.subabilities.contains(ability))
-				return getSubBendingColor(Element.Air);
-			return AirAbility.getChatColor();
-		}
-		if (AbilityModuleManager.waterbendingabilities.contains(ability)) {
-			if (AbilityModuleManager.subabilities.contains(ability))
-				return getSubBendingColor(Element.Water);
-			return WaterAbility.getChatColor();
-		}
-		if (AbilityModuleManager.earthbendingabilities.contains(ability)) {
-			if (AbilityModuleManager.subabilities.contains(ability))
-				return getSubBendingColor(Element.Earth);
-			return EarthAbility.getChatColor();
-		}
-		if (AbilityModuleManager.firebendingabilities.contains(ability)) {
-			if (AbilityModuleManager.subabilities.contains(ability))
-				return getSubBendingColor(Element.Fire);
-			return FireAbility.getChatColor();
-		}
-
-		else
+		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		if (coreAbil != null) {
+			return coreAbil.getElementColor();
+		} else {
 			return getAvatarColor();
+		}
 	}
 
 	/**
@@ -713,18 +676,11 @@ public class GeneralMethods {
 	 * @return the element
 	 */
 	public static Element getAbilityElement(String ability) {
-		if (AbilityModuleManager.airbendingabilities.contains(ability))
-			return Element.Air;
-		else if (AbilityModuleManager.earthbendingabilities.contains(ability))
-			return Element.Earth;
-		else if (AbilityModuleManager.firebendingabilities.contains(ability))
-			return Element.Fire;
-		else if (AbilityModuleManager.waterbendingabilities.contains(ability))
-			return Element.Water;
-		else if (AbilityModuleManager.chiabilities.contains(ability))
-			return Element.Chi;
-		else
-			return null;
+		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		if (coreAbil != null) {
+			return Element.getType(coreAbil.getElementName());
+		}
+		return null;
 	}
 
 	/**
@@ -734,28 +690,10 @@ public class GeneralMethods {
 	 * @return SubElement
 	 */
 	public static SubElement getAbilitySubElement(String ability) {
-		if (AbilityModuleManager.bloodabilities.contains(ability))
-			return SubElement.Bloodbending;
-		if (AbilityModuleManager.iceabilities.contains(ability))
-			return SubElement.Icebending;
-		if (AbilityModuleManager.plantabilities.contains(ability))
-			return SubElement.Plantbending;
-		if (AbilityModuleManager.healingabilities.contains(ability))
-			return SubElement.Healing;
-		if (AbilityModuleManager.sandabilities.contains(ability))
-			return SubElement.Sandbending;
-		if (AbilityModuleManager.metalabilities.contains(ability))
-			return SubElement.Metalbending;
-		if (AbilityModuleManager.lavaabilities.contains(ability))
-			return SubElement.Lavabending;
-		if (AbilityModuleManager.lightningabilities.contains(ability))
-			return SubElement.Lightning;
-		if (AbilityModuleManager.combustionabilities.contains(ability))
-			return SubElement.Combustion;
-		if (AbilityModuleManager.spiritualprojectionabilities.contains(ability))
-			return SubElement.SpiritualProjection;
-		if (AbilityModuleManager.flightabilities.contains(ability))
-			return SubElement.Flight;
+		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		if (coreAbil != null && coreAbil instanceof SubAbility) {
+			return SubElement.getType(((SubAbility) coreAbil).getSubElementName());
+		}
 		return null;
 	}
 
@@ -1347,11 +1285,6 @@ public class GeneralMethods {
 		return Bukkit.getServer().getPluginManager().getPlugin("ProjectKorraRPG") != null;
 	}
 
-	public static boolean isAbilityInstalled(String name, String author) {
-		String ability = getAbility(name);
-		return ability != null && AbilityModuleManager.authors.get(name).equalsIgnoreCase(author);
-	}
-
 	public static boolean isAdjacentToThreeOrMoreSources(Block block) {
 		if (TempBlock.isTempBlock(block))
 			return false;
@@ -1377,14 +1310,6 @@ public class GeneralMethods {
 	public static boolean isBender(String player, Element element) {
 		BendingPlayer bPlayer = getBendingPlayer(player);
 		return bPlayer != null && bPlayer.hasElement(element);
-	}
-
-	public static boolean isDisabledStockAbility(String string) {
-		for (String st : AbilityModuleManager.disabledStockAbilities) {
-			if (string.equalsIgnoreCase(st))
-				return true;
-		}
-		return false;
 	}
 
 	public static boolean isHarmlessAbility(String ability) {
@@ -1615,9 +1540,6 @@ public class GeneralMethods {
 		return !Arrays.asList(nonOpaque).contains(block.getTypeId());
 	}
 
-	public static boolean isSubAbility(String ability) {
-		return AbilityModuleManager.subabilities.contains(ability);
-	}
 
 	/** Checks if an entity is Undead **/
 	public static boolean isUndead(Entity entity) {
@@ -1643,7 +1565,7 @@ public class GeneralMethods {
 		ConfigManager.defaultConfig.reload();
 		ConfigManager.deathMsgConfig.reload();
 		BendingManager.getInstance().reloadVariables();
-		new AbilityModuleManager(plugin);
+		CoreAbility.registerAbilities();
 		new ComboManager();
 		new MultiAbilityModuleManager();
 		DBConnection.host = plugin.getConfig().getString("Storage.MySQL.host");
@@ -1742,11 +1664,12 @@ public class GeneralMethods {
 		writeToDebug("====================");
 		ArrayList<String> stockAbils = new ArrayList<String>();
 		ArrayList<String> unofficialAbils = new ArrayList<String>();
-		for (String ability : AbilityModuleManager.abilities) {
-			if (StockAbility.isStockAbility(ability))
-				stockAbils.add(ability);
-			else
-				unofficialAbils.add(ability);
+		for (CoreAbility ability : CoreAbility.getAbilities()) {
+			if (ability.getClass().getPackage().getName().startsWith("com.projectkorra")) {
+				stockAbils.add(ability.getName());
+			} else {
+				unofficialAbils.add(ability.getName());
+			}
 		}
 		if (!stockAbils.isEmpty()) {
 			Collections.sort(stockAbils);
@@ -1934,9 +1857,10 @@ public class GeneralMethods {
 	}
 
 	public static void stopBending() {
-		List<AbilityModule> abilities = AbilityModuleManager.ability;
-		for (AbilityModule ab : abilities) {
-			ab.stop();
+		for (CoreAbility ability : CoreAbility.getAbilities()) {
+			if (ability instanceof AddonAbility) {
+				((AddonAbility) ability).stop();
+			}
 		}
 
 		HashMap<String, ComboManager.ComboAbility> combos = ComboManager.comboAbilityList;
