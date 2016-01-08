@@ -94,11 +94,14 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						}
 					}
 					for (Player player : world.getPlayers()) {
+						BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+						if (!player.hasPermission("bending.message.nightmessage")) {
+							continue;
+						} else if (bPlayer == null) {
+							continue;
+						}
 
-						if (!player.hasPermission("bending.message.nightmessage"))
-							return;
-
-						if (GeneralMethods.isBender(player.getName(), Element.Water)) {
+						if (bPlayer.hasElement(NewElement.WATER)) {
 							if (GeneralMethods.hasRPG()) {
 								if (RPGMethods.isLunarEclipse(world)) {
 									player.sendMessage(WaterAbility.getChatColor() + lunarEclipseMessage);
@@ -115,7 +118,7 @@ public class BendingManager implements Runnable, ConfigLoadable {
 								}
 							}
 						}
-						if (GeneralMethods.isBender(player.getName(), Element.Fire)) {
+						if (bPlayer.hasElement(NewElement.FIRE)) {
 							if (!player.hasPermission("bending.message.daymessage"))
 								return;
 							player.sendMessage(FireAbility.getChatColor() + sunsetMessage);
@@ -138,10 +141,15 @@ public class BendingManager implements Runnable, ConfigLoadable {
 						events.put(world, "");
 					}
 					for (Player player : world.getPlayers()) {
-						if (GeneralMethods.isBender(player.getName(), Element.Water) && player.hasPermission("bending.message.nightmessage")) {
+						BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+						if (bPlayer == null) {
+							continue;
+						}
+						
+						if (bPlayer.hasElement(NewElement.WATER) && player.hasPermission("bending.message.nightmessage")) {
 							player.sendMessage(WaterAbility.getChatColor() + moonsetMessage);
 						}
-						if (GeneralMethods.isBender(player.getName(), Element.Fire) && player.hasPermission("bending.message.daymessage")) {
+						if (bPlayer.hasElement(NewElement.FIRE) && player.hasPermission("bending.message.daymessage")) {
 							if (GeneralMethods.hasRPG()) {
 								if (RPGMethods.isSozinsComet(world)) {
 									player.sendMessage(FireAbility.getChatColor() + sozinsCometMessage);
@@ -175,8 +183,7 @@ public class BendingManager implements Runnable, ConfigLoadable {
 			ChiCombo.handleParalysis();
 			HorizontalVelocityTracker.updateAll();
 			handleCooldowns();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			GeneralMethods.stopBending();
 			e.printStackTrace();
 		}

@@ -1,15 +1,16 @@
 package com.projectkorra.projectkorra.ability.util;
 
 import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.NewElement;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.AvatarAbility;
 import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.sun.java.util.jar.pack.Attribute.Layout.Element;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -250,16 +251,16 @@ public class MultiAbilityManager {
 
 	public static class MultiAbilityInfoSub {
 		private String name;
-		private Element element;
-		private SubElement sub;
+		private String element;
+		private String sub;
 
-		public MultiAbilityInfoSub(String name, Element element, SubElement sub) {
+		public MultiAbilityInfoSub(String name, String element, String sub) {
 			this.name = name;
 			this.element = element;
 			this.sub = sub;
 		}
 
-		public Element getElement() {
+		public String getElement() {
 			return element;
 		}
 
@@ -267,11 +268,11 @@ public class MultiAbilityManager {
 			return name;
 		}
 
-		public SubElement getSubElement() {
+		public String getSubElement() {
 			return sub;
 		}
 
-		public void setElement(Element element) {
+		public void setElement(String element) {
 			this.element = element;
 		}
 
@@ -279,32 +280,12 @@ public class MultiAbilityManager {
 			this.name = name;
 		}
 
-		public void setSubElement(SubElement sub) {
+		public void setSubElement(String sub) {
 			this.sub = sub;
 		}
 
 		public ChatColor getAbilityColor() {
-			if (element == null) {
-				return GeneralMethods.getAvatarColor();
-			}
-			if (sub == null) {
-				switch (element) {
-					case Air:
-						return AirAbility.getChatColor();
-					case Water:
-						return WaterAbility.getChatColor();
-					case Fire:
-						return FireAbility.getChatColor();
-					case Earth:
-						return EarthAbility.getChatColor();
-					case Chi:
-						return ChiAbility.getChatColor();
-					default:
-						return GeneralMethods.getAvatarColor();
-				}
-			} else {
-				return GeneralMethods.getSubBendingColor(element);
-			}
+			return NewElement.getElementColor(element)
 		}
 	}
 

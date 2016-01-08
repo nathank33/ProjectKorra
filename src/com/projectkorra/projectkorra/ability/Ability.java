@@ -26,7 +26,7 @@ public interface Ability {
 	
 	public String getDescription();
 	
-	public String getElementName();
+	public String getElementName(); // TODO: rename to get element
 	
 	public Location getLocation();
 	

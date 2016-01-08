@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.ability.util;
 
-import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.ComboAbility;
@@ -159,7 +159,12 @@ public class ComboManager {
 	}
 
 	public static void addComboAbility(Player player, ClickType type) {
-		String abilityName = GeneralMethods.getBoundAbility(player);
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null) {
+			return;
+		}
+		
+		String abilityName = bPlayer.getBoundAbilityName();
 		if (abilityName == null) {
 			return;
 		}

@@ -2,20 +2,19 @@ package com.projectkorra.projectkorra.ability;
 
 import org.bukkit.entity.Player;
 
-public abstract class LightningAbility extends FireAbility implements SubAbility {
+public abstract class SpiritualAbility extends AirAbility implements SubAbility {
 
-	public LightningAbility(Player player) {
+	public SpiritualAbility(Player player) {
 		super(player);
 	}
 
 	@Override
 	public Class<? extends Ability> getParentAbility() {
-		return FireAbility.class;
+		return AirAbility.class;
 	}
 	
 	@Override
 	public String getSubElementName() {
-		return "Lightning";
+		return "Spiritual";
 	}
-	
 }

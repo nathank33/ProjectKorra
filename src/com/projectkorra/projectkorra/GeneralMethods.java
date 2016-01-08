@@ -28,16 +28,12 @@ import com.palmergames.bukkit.towny.war.flagwar.TownyWar;
 import com.palmergames.bukkit.towny.war.flagwar.TownyWarConfig;
 import com.projectkorra.projectkorra.ability.Ability;
 import com.projectkorra.projectkorra.ability.AddonAbility;
-import com.projectkorra.projectkorra.ability.AirAbility;
-import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
-import com.projectkorra.projectkorra.ability.SubAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.util.ComboManager;
 import com.projectkorra.projectkorra.ability.util.ComboManager.AbilityInformation;
-import com.projectkorra.projectkorra.ability.util.ComboManager.ComboAbilityInfo;
 import com.projectkorra.projectkorra.ability.util.MultiAbilityManager;
 import com.projectkorra.projectkorra.airbending.AirBlast;
 import com.projectkorra.projectkorra.airbending.AirCombo;
@@ -45,12 +41,10 @@ import com.projectkorra.projectkorra.airbending.AirShield;
 import com.projectkorra.projectkorra.airbending.AirSpout;
 import com.projectkorra.projectkorra.airbending.AirSuction;
 import com.projectkorra.projectkorra.airbending.AirSwipe;
-import com.projectkorra.projectkorra.chiblocking.Paralyze;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.earthbending.EarthPassive;
-import com.projectkorra.projectkorra.earthbending.MetalClips;
 import com.projectkorra.projectkorra.event.BendingReloadEvent;
 import com.projectkorra.projectkorra.event.PlayerBendingDeathEvent;
 import com.projectkorra.projectkorra.firebending.Combustion;
@@ -58,12 +52,11 @@ import com.projectkorra.projectkorra.firebending.FireBlast;
 import com.projectkorra.projectkorra.firebending.FireCombo;
 import com.projectkorra.projectkorra.firebending.FireShield;
 import com.projectkorra.projectkorra.storage.DBConnection;
+import com.projectkorra.projectkorra.util.BlockCacheElement;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
-import com.projectkorra.projectkorra.waterbending.Bloodbending;
 import com.projectkorra.projectkorra.waterbending.PhaseChangeFreeze;
-import com.projectkorra.projectkorra.waterbending.WaterCombo;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -74,7 +67,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -190,8 +182,12 @@ public class GeneralMethods {
 			return;
 		}
 
-		BendingPlayer bPlayer = getBendingPlayer(player.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player.getName());
 		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		
+		if (bPlayer == null) {
+			return;
+		}
 		bPlayer.getAbilities().put(slot, ability);
 		
 		if (coreAbil != null) {
@@ -257,78 +253,6 @@ public class GeneralMethods {
 		block.breakNaturally(new ItemStack(Material.AIR));
 	}
 
-	/**
-	 * Checks to see if a Player can bend a specific Ability.
-	 * 
-	 * @param player The player name to check
-	 * @param ability The Ability name to check
-	 * @return true If player can bend specified ability and has the permissions
-	 *         to do so
-	 */
-	public static boolean canBend(String player, String ability) {
-		BendingPlayer bPlayer = getBendingPlayer(player);
-		Player p = Bukkit.getPlayer(player);
-		if (bPlayer == null)
-			return false;
-		if (p == null || p.isDead() || !p.isOnline())
-			return false;
-		if (plugin.getConfig().getStringList("Properties.DisabledWorlds") != null && p.getWorld() != null && plugin.getConfig().getStringList("Properties.DisabledWorlds").contains(p.getWorld().getName()))
-			return false;
-		if (Commands.isToggledForAll)
-			return false;
-		if (!bPlayer.isToggled())
-			return false;
-		if (p.getGameMode() == GameMode.SPECTATOR)
-			return false;
-		if (cooldowns.containsKey(p.getName())) {
-			if (cooldowns.get(p.getName()) + ProjectKorra.plugin.getConfig().getLong("Properties.GlobalCooldown") >= System.currentTimeMillis()) {
-				return false;
-			}
-			cooldowns.remove(p.getName());
-		}
-		if (bPlayer.isChiBlocked())
-			return false;
-		if (!p.hasPermission("bending.ability." + ability))
-			return false;
-		if (!bPlayer.canBind(CoreAbility.getAbility(ability)))
-			return false;
-		if (bPlayer.isElementToggled(GeneralMethods.getAbilityElement(ability)) == false)
-			return false;
-		if (isRegionProtectedFromBuild(p, ability, p.getLocation()))
-			return false;
-		if (Paralyze.isParalyzed(p) || Bloodbending.isBloodbended(p))
-			return false;
-		if (MetalClips.isControlled(p))
-			return false;
-		if (BendingManager.events.get(p.getWorld()) != null && BendingManager.events.get(p.getWorld()).equalsIgnoreCase("SolarEclipse"))
-			return false;
-		if (BendingManager.events.get(p.getWorld()) != null && BendingManager.events.get(p.getWorld()).equalsIgnoreCase("LunarEclipse"))
-			return false;
-		return true;
-	}
-
-	public static boolean canBendPassive(String player, Element element) {
-		BendingPlayer bPlayer = getBendingPlayer(player);
-		Player p = Bukkit.getPlayer(player);
-		if (bPlayer == null)
-			return false;
-		if (p == null)
-			return false;
-		if (!p.hasPermission("bending." + element.toString().toLowerCase() + ".passive"))
-			return false;
-		if (!bPlayer.isToggled())
-			return false;
-		if (!bPlayer.hasElement(element))
-			return false;
-		if (bPlayer.isElementToggled(element) == false)
-			return false;
-		if (isRegionProtectedFromBuild(p, null, p.getLocation()))
-			return false;
-		if (bPlayer.isChiBlocked())
-			return false;
-		return true;
-	}
-
 	public static boolean canView(Player player, String ability) {
 		return player.hasPermission("bending.ability." + ability);
 	}
@@ -366,9 +290,8 @@ public class GeneralMethods {
 	private static void createBendingPlayerAsynchronously(final UUID uuid, final String player) {
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM pk_players WHERE uuid = '" + uuid.toString() + "'");
 		try {
-			if (!rs2.next()) { // Data doesn't exist, we want a completely new
-				// player.
-				new BendingPlayer(uuid, player, new ArrayList<Element>(), new HashMap<Integer, String>(), false);
+			if (!rs2.next()) { // Data doesn't exist, we want a completely new player.
+				new BendingPlayer(uuid, player, new ArrayList<String>(), new HashMap<Integer, String>(), false);
 				DBConnection.sql.modifyQuery("INSERT INTO pk_players (uuid, player) VALUES ('" + uuid.toString() + "', '" + player + "')");
 				ProjectKorra.log.info("Created new BendingPlayer for " + player);
 			} else {
@@ -383,18 +306,18 @@ public class GeneralMethods {
 				String element = rs2.getString("element");
 				String permaremoved = rs2.getString("permaremoved");
 				boolean p = false;
-				final ArrayList<Element> elements = new ArrayList<Element>();
+				final ArrayList<String> elements = new ArrayList<String>();
 				if (element != null) { // Player has an element.
 					if (element.contains("a"))
-						elements.add(Element.Air);
+						elements.add(NewElement.AIR);
 					if (element.contains("w"))
-						elements.add(Element.Water);
+						elements.add(NewElement.WATER);
 					if (element.contains("e"))
-						elements.add(Element.Earth);
+						elements.add(NewElement.EARTH);
 					if (element.contains("f"))
-						elements.add(Element.Fire);
+						elements.add(NewElement.FIRE);
 					if (element.contains("c"))
-						elements.add(Element.Chi);
+						elements.add(NewElement.CHI);
 				}
 
 				final HashMap<Integer, String> abilities = new HashMap<Integer, String>();
@@ -421,56 +344,11 @@ public class GeneralMethods {
 			ex.printStackTrace();
 		}
 	}
-
-	/**
-	 * Damages an Entity by amount of damage specified. Starts a
-	 * {@link EntityDamageByEntityEvent}.
-	 * 
-	 * @param player The player dealing the damage
-	 * @param entity The entity receiving the damage
-	 * @param damage The amount of damage to deal
-	 * @param ability The ability that is used to damage the entity
-	 */
-	public static void damageEntity(Player player, Entity entity, double damage, String ability) {
-		if (ability != null && abilityExists(ability)) {
-			damageEntity(player, entity, damage, getAbilityElement(ability), getAbilitySubElement(ability), ability);
-		} else {
-			damageEntity(player, entity, damage, null, null, ability);
-		}
-	}
 	
 	public static void damageEntity(Ability ability, Entity entity, double damage) {
 		damageEntity(ability.getPlayer(), entity, damage, ability.getName());
 	}
-	
-	/**
-	 * Damages an Entity by amount of damage specified. Starts a
-	 * {@link EntityDamageByEntityEvent}.
-	 * 
-	 * @param player The player dealing the damage
-	 * @param entity The entity receiving the damage
-	 * @param damage The amount of damage to deal
-	 * @param element The element of the ability
-	 * @param ability The ability that is used to damage the entity
-	 */
-	public static void damageEntity(Player player, Entity entity, double damage, Element element, String ability) {
-		damageEntity(player, entity, damage, element, null, ability);
-	}
-	
-	/**
-	 * Damages an Entity by amount of damage specified. Starts a
-	 * {@link EntityDamageByEntityEvent}.
-	 * 
-	 * @param player The player dealing the damage
-	 * @param entity The entity receiving the damage
-	 * @param damage The amount of damage to deal
-	 * @param sub The subelement of the ability
-	 * @param ability The ability that is used to damage the entity
-	 */
-	public static void damageEntity(Player player, Entity entity, double damage, SubElement sub, String ability) {
-		damageEntity(player, entity, damage, null, sub, ability);
-	}
-	
+			
 	/**
 	 * Damages an Entity by amount of damage specified. Starts a
 	 * {@link EntityDamageByEntityEvent}.
@@ -482,7 +360,7 @@ public class GeneralMethods {
 	 * @param sub The sub element of the ability
 	 * @param ability The ability that is used to damage the entity
 	 */
-	public static void damageEntity(Player player, Entity entity, double damage, Element element, SubElement sub, String ability) {
+	public static void damageEntity(Player player, Entity entity, double damage, String ability) {
 		if (entity instanceof LivingEntity) {
 			if (entity instanceof Player) {
 				if (Commands.invincible.contains(entity.getName()))
@@ -492,7 +370,7 @@ public class GeneralMethods {
 				NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT_REACH);
 			}
 			if (((LivingEntity) entity).getHealth() - damage <= 0 && entity instanceof Player && !entity.isDead()) {
-				PlayerBendingDeathEvent event = new PlayerBendingDeathEvent((Player) entity, player, damage, element, sub, ability);
+				PlayerBendingDeathEvent event = new PlayerBendingDeathEvent((Player) entity, player, damage, ability);
 				Bukkit.getServer().getPluginManager().callEvent(event);
 			}
 			((LivingEntity) entity).damage(damage, player);
@@ -642,82 +520,6 @@ public class GeneralMethods {
 			block.getWorld().dropItem(block.getLocation(), item);
 	}
 
-	/**
-	 * Gets the Element color from the Ability name specified.
-	 * 
-	 * @param ability The ability name
-	 * @return {@link ChiAbility#getChatColor()} <br />
-	 *         {@link AirMethods#getAirColor()} <br />
-	 *         {@link WaterAbility#getChatColor()} <br />
-	 *         {@link EarthMethods#getChatColor()} <br />
-	 *         {@link FireAbility#getFireColor()} <br />
-	 *         else {@link #getAvatarColor()}
-	 */
-	public static ChatColor getAbilityColor(String ability) {
-		CoreAbility coreAbil = CoreAbility.getAbility(ability);
-		if (coreAbil != null) {
-			return coreAbil.getElementColor();
-		} else {
-			return getAvatarColor();
-		}
-	}
-
-	/**
-	 * Returns the element an ability belongs to.
-	 * 
-	 * @param ability
-	 * @return the element
-	 */
-	public static Element getAbilityElement(String ability) {
-		CoreAbility coreAbil = CoreAbility.getAbility(ability);
-		if (coreAbil != null) {
-			return Element.getType(coreAbil.getElementName());
-		}
-		return null;
-	}
-
-	/**
-	 * Returns the subelement of the ability if applicable.
-	 * 
-	 * @param ability
-	 * @return SubElement
-	 */
-	public static SubElement getAbilitySubElement(String ability) {
-		CoreAbility coreAbil = CoreAbility.getAbility(ability);
-		if (coreAbil != null && coreAbil instanceof SubAbility) {
-			return SubElement.getType(((SubAbility) coreAbil).getSubElementName());
-		}
-		return null;
-	}
-
-	/**
-	 * Gets the AvatarColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getAvatarColor() {
-		return ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.Avatar"));
-	}
-
-	/**
-	 * Attempts to get a {@link BendingPlayer} from specified player name. this
-	 * method tries to get a {@link Player} object and gets the uuid and then
-	 * calls {@link #getBendingPlayer(UUID)}
-	 * 
-	 * @param playerName The name of the Player
-	 * @return The BendingPlayer object if {@link BendingPlayer#players}
-	 *         contains the player name
-	 * 
-	 * @see #getBendingPlayer(UUID)
-	 */
-	public static BendingPlayer getBendingPlayer(String player) {
-		OfflinePlayer oPlayer = Bukkit.getPlayer(player);
-		if (player == null) {
-			oPlayer = Bukkit.getOfflinePlayer(oPlayer.getUniqueId());
-		}
-		return BendingPlayer.getPlayers().get(oPlayer.getUniqueId());
-	}
-
 	public static List<Block> getBlocksAlongLine(Location ploc, Location tloc, World w) {
 		List<Block> blocks = new ArrayList<Block>();
 
@@ -806,24 +608,6 @@ public class GeneralMethods {
 		return blocks;
 	}
 
-	/**
-	 * Gets the Ability bound to the slot that the player is in.
-	 * 
-	 * @param player The player to check
-	 * @return The Ability name bounded to the slot
-	 *         <p>
-	 *         else null
-	 *         </p>
-	 */
-	public static String getBoundAbility(Player player) {
-		BendingPlayer bPlayer = getBendingPlayer(player.getName());
-		if (bPlayer == null) {
-			return "";
-		}
-		int slot = player.getInventory().getHeldItemSlot() + 1;
-		return bPlayer.getAbilities().get(slot);
-	}
-
 	public static BlockFace getCardinalDirection(Vector vector) {
 		BlockFace[] faces = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
 		Vector n, ne, e, se, s, sw, w, nw;
@@ -869,68 +653,6 @@ public class GeneralMethods {
 			}
 		}
 		return circleblocks;
-	}
-
-	/**
-	 * Returns the ChatColor that should be associated with the combo name.
-	 * 
-	 * @param combo
-	 * @return The ChatColor to be used
-	 */
-	public static ChatColor getComboColor(String combo) {
-		// TODO: FIX this
-		for (String ability : ComboManager.comboAbilityList.keySet()) {
-			ComboAbilityInfo comboability = ComboManager.comboAbilityList.get(ability);
-			if (!comboability.getName().equalsIgnoreCase(combo)) {
-				continue;
-			}
-
-			if (!ComboManager.descriptions.containsKey(comboability.getName())) {
-				return ChatColor.STRIKETHROUGH; //This is so we know it shouldn't be used. Should not come up anyway.
-			}
-
-			if (combo.equalsIgnoreCase("IceBullet") || combo.equalsIgnoreCase("IceWave")) {
-				return WaterAbility.getSubChatColor();
-			} else if (comboability.getComboType().equals(WaterCombo.class)) {
-				return WaterAbility.getChatColor();
-			} else if (comboability.getComboType().equals(FireCombo.class)) {
-				return FireAbility.getChatColor();
-			} else if (comboability.getComboType().equals(AirCombo.class)) {
-				return AirAbility.getChatColor();
-			} else {
-				Element element = null;
-				for (AbilityInformation abilityinfo : comboability.getAbilities()) {
-					Element currElement = getAbilityElement(abilityinfo.getAbilityName());
-					if (currElement == null)
-						return getAvatarColor();
-					else if (element == null)
-						element = currElement;
-					if (getAbilitySubElement(abilityinfo.getAbilityName()) != null) {
-						SubElement sub = getAbilitySubElement(abilityinfo.getAbilityName());
-						if (sub == SubElement.Bloodbending || sub == SubElement.Icebending || sub == SubElement.Plantbending || sub == SubElement.Healing)
-							return WaterAbility.getSubChatColor();
-						else if (sub == SubElement.Lightning || sub == SubElement.Combustion)
-							return FireAbility.getSubChatColor();
-						else if (sub == SubElement.Sandbending || sub == SubElement.Metalbending || sub == SubElement.Lavabending)
-							return EarthAbility.getSubChatColor();
-						else if (sub == SubElement.Flight || sub == SubElement.SpiritualProjection)
-							return AirAbility.getSubChatColor();
-					}
-				}
-				if (element == Element.Air)
-					return AirAbility.getChatColor();
-				if (element == Element.Earth)
-					return EarthAbility.getChatColor();
-				if (element == Element.Fire)
-					return FireAbility.getChatColor();
-				if (element == Element.Water)
-					return WaterAbility.getChatColor();
-				if (element == Element.Chi)
-					return ChiAbility.getChatColor();
-				return getAvatarColor();
-			}
-		}
-		return getAvatarColor();
 	}
 
 	public static String getCurrentDate() {
@@ -1137,26 +859,7 @@ public class GeneralMethods {
 		}
 		return null;
 	}
-
-	public static ChatColor getSubBendingColor(Element element) {
-		switch (element) {
-			case Fire:
-				return ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.FireSub"));
-			case Air:
-				return ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.AirSub"));
-			case Water:
-				return ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.WaterSub"));
-			case Earth:
-				return ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.EarthSub"));
-			default:
-				return getAvatarColor();
-		}
-	}
 	
-	public static SubElement getSubElementByString(String sub) {
-		return SubElement.getType(sub);
-	}
-
 	@SuppressWarnings("unused")
 	public static Entity getTargetedEntity(Player player, double range, List<Entity> avoid) {
 		double longestr = range + 1;
@@ -1275,11 +978,6 @@ public class GeneralMethods {
 			}
 		}
 		return sources >= 2;
-	}
-
-	public static boolean isBender(String player, Element element) {
-		BendingPlayer bPlayer = getBendingPlayer(player);
-		return bPlayer != null && bPlayer.hasElement(element);
 	}
 
 	public static boolean isHarmlessAbility(String ability) {
@@ -1572,15 +1270,19 @@ public class GeneralMethods {
 	}
 
 	public static void removeUnusableAbilities(String player) {
-		BendingPlayer bPlayer = getBendingPlayer(player);
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null) {
+			return;
+		}
+		
 		HashMap<Integer, String> slots = bPlayer.getAbilities();
-		HashMap<Integer, String> finalabilities = new HashMap<Integer, String>();
+		HashMap<Integer, String> finalAbilities = new HashMap<Integer, String>();
 		for (int i : slots.keySet()) {
-			if (canBend(player, slots.get(i))) {
-				finalabilities.put(i, slots.get(i));
+			if (bPlayer.canBendIgnoreBindsCooldownsRegions(CoreAbility.getAbility(slots.get(i)))) {
+				finalAbilities.put(i, slots.get(i));
 			}
 		}
-		bPlayer.setAbilities(finalabilities);
+		bPlayer.setAbilities(finalAbilities);
 	}
 
 	public static Vector rotateVectorAroundVector(Vector axis, Vector rotator, double degrees) {
@@ -1764,15 +1466,15 @@ public class GeneralMethods {
 		String uuid = bPlayer.getUUIDString();
 
 		StringBuilder elements = new StringBuilder();
-		if (bPlayer.hasElement(Element.Air))
+		if (bPlayer.hasElement(NewElement.AIR))
 			elements.append("a");
-		if (bPlayer.hasElement(Element.Water))
+		if (bPlayer.hasElement(NewElement.WATER))
 			elements.append("w");
-		if (bPlayer.hasElement(Element.Earth))
+		if (bPlayer.hasElement(NewElement.EARTH))
 			elements.append("e");
-		if (bPlayer.hasElement(Element.Fire))
+		if (bPlayer.hasElement(NewElement.FIRE))
 			elements.append("f");
-		if (bPlayer.hasElement(Element.Chi))
+		if (bPlayer.hasElement(NewElement.CHI))
 			elements.append("c");
 
 		DBConnection.sql.modifyQuery("UPDATE pk_players SET element = '" + elements + "' WHERE uuid = '" + uuid + "'");
@@ -1878,78 +1580,5 @@ public class GeneralMethods {
 		catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static class BlockCacheElement {
-		private Player player;
-		private Block block;
-		private String ability;
-		private boolean allowed;
-		private long time;
-
-		public BlockCacheElement(Player player, Block block, String ability, boolean allowed, long time) {
-			this.player = player;
-			this.block = block;
-			this.ability = ability;
-			this.allowed = allowed;
-			this.time = time;
-		}
-
-		public String getAbility() {
-			return ability;
-		}
-
-		public Block getBlock() {
-			return block;
-		}
-
-		public Player getPlayer() {
-			return player;
-		}
-
-		public long getTime() {
-			return time;
-		}
-
-		public boolean isAllowed() {
-			return allowed;
-		}
-
-		public void setAbility(String ability) {
-			this.ability = ability;
-		}
-
-		public void setAllowed(boolean allowed) {
-			this.allowed = allowed;
-		}
-
-		public void setBlock(Block block) {
-			this.block = block;
-		}
-
-		public void setPlayer(Player player) {
-			this.player = player;
-		}
-
-		public void setTime(long time) {
-			this.time = time;
-		}
-
-	}
-
-	public static ChatColor getElementColor(Element element) {
-		switch (element) {
-			case Air:
-				return AirAbility.getChatColor();
-			case Fire:
-				return FireAbility.getChatColor();
-			case Earth:
-				return EarthAbility.getChatColor();
-			case Water:
-				return WaterAbility.getChatColor();
-			case Chi:
-				return ChiAbility.getChatColor();
-		}
-		return null;
 	}
 }
