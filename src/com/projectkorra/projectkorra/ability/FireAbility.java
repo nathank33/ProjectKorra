@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.BendingManager;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.firebending.BlazeArc;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class FireAbility extends ElementalAbility {
@@ -55,8 +57,8 @@ public abstract class FireAbility extends ElementalAbility {
 	}
 
 	@Override
-	public final String getElementName() {
-		return "Fire";
+	public Element getElement() {
+		return Element.FIRE;
 	}
 		
 	public double getDayFactor(double value) {
@@ -81,8 +83,8 @@ public abstract class FireAbility extends ElementalAbility {
 			return;
 		}
 		Information info = new Information();
-		long time = getConfig().getLong("Properties.Fire.RevertTicks")
-				+ (long) (GeneralMethods.rand.nextDouble() * getConfig().getLong("Properties.Fire.RevertTicks"));
+		long time = getConfig().getLong("Properties.Fire.RevertTicks") 
+				+ (long) ((new Random()).nextDouble() * getConfig().getLong("Properties.Fire.RevertTicks"));
 		if (TEMP_FIRE.containsKey(loc)) {
 			info = TEMP_FIRE.get(loc);
 		} else {
@@ -93,15 +95,6 @@ public abstract class FireAbility extends ElementalAbility {
 		info.setTime(time + System.currentTimeMillis());
 		loc.getBlock().setType(Material.FIRE);
 		TEMP_FIRE.put(loc, info);
-	}
-	
-	/**
-	 * Gets the FireColor from the getConfig().
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Fire"));
 	}
 
 	public static double getDayFactor() {

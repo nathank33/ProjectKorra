@@ -456,9 +456,10 @@ public class WaterManipulation extends WaterAbility {
 
 	@SuppressWarnings("deprecation")
 	public static void moveWater(Player player) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
-
-		if (bPlayer.isOnCooldown("WaterManipulation")) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null) {
+			return;
+		} if (bPlayer.isOnCooldown("WaterManipulation")) {
 			redirectTargettedBlasts(player);
 			return;
 		}

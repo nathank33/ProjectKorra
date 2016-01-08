@@ -88,8 +88,9 @@ public class ProjectKorra extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+		double cacheTime = ConfigManager.getConfig().getDouble("Properties.RegionProtection.CacheBlockTime");
 		GeneralMethods.deserializeFile();
-		GeneralMethods.startCacheCleaner(GeneralMethods.CACHE_TIME);
+		GeneralMethods.startCacheCleaner(cacheTime);
 		updater.checkUpdate();
 	}
 

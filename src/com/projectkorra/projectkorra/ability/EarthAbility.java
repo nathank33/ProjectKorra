@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.earthbending.EarthPassive;
@@ -49,8 +50,8 @@ public abstract class EarthAbility extends BlockAbility {
 	}
 	
 	@Override
-	public final String getElementName() {
-		return "Earth";
+	public Element getElement() {
+		return Element.EARTH;
 	}
 
 	public int getEarthbendableBlocksLength(Block block, Vector direction, int maxlength) {
@@ -235,15 +236,6 @@ public abstract class EarthAbility extends BlockAbility {
 			}
 
 		}
-	}
-
-	/**
-	 * Gets the EarthColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Earth"));
 	}
 
 	/**

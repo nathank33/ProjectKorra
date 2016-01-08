@@ -1,6 +1,6 @@
 package com.projectkorra.projectkorra.event;
 
-import com.projectkorra.projectkorra.NewElement;
+import com.projectkorra.projectkorra.Element;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,17 +18,17 @@ public class PlayerChangeElementEvent extends Event {
 	private static final HandlerList handlers = new HandlerList();
 	private CommandSender sender;
 	private Player target;
-	private String element;
+	private Element element;
 	private Result result;
 
 	/**
 	 * 
 	 * @param sender the {@link CommandSender} who changed the player's bending
 	 * @param target the {@link Player player} who's bending was changed
-	 * @param element the {@link NewElement element} that was affected
+	 * @param element the {@link Element element} that was affected
 	 * @param result whether the element was chosen, added, removed, or permaremoved
 	 */
-	public PlayerChangeElementEvent(CommandSender sender, Player target, String element, Result result) {
+	public PlayerChangeElementEvent(CommandSender sender, Player target, Element element, Result result) {
 		this.sender = sender;
 		this.target = target;
 		this.element = element;
@@ -61,9 +61,9 @@ public class PlayerChangeElementEvent extends Event {
 
 	/**
 	 * 
-	 * @return the {@link NewElement element} that was affected
+	 * @return the {@link Element element} that was affected
 	 */
-	public String getElement() {
+	public Element getElement() {
 		return element;
 	}
 

@@ -1,6 +1,5 @@
 package com.projectkorra.projectkorra.firebending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AirAbility;
@@ -176,7 +175,7 @@ public class FireCombo extends FireAbility {
 		entity.getLocation().getWorld().playSound(entity.getLocation(), Sound.VILLAGER_HIT, 0.3f, 0.3f);
 
 		if (ability.equalsIgnoreCase("FireKick")) {
-			GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireKick");
+			GeneralMethods.damageEntity(this, entity, damage);
 			fstream.remove();
 		} else if (ability.equalsIgnoreCase("FireSpin")) {
 			if (entity instanceof Player) {
@@ -186,19 +185,19 @@ public class FireCombo extends FireAbility {
 			}
 			
 			double newKnockback = bPlayer.isAvatarState() ? knockback + 0.5 : knockback;
-			GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireSpin");
+			GeneralMethods.damageEntity(this, entity, damage);
 			entity.setVelocity(direction.normalize().multiply(newKnockback));
 			fstream.remove();
 		} else if (ability.equalsIgnoreCase("JetBlaze")) {
 			if (!affectedEntities.contains(entity)) {
 				affectedEntities.add(entity);
-				GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "JetBlaze");
+				GeneralMethods.damageEntity(this, entity, damage);
 				entity.setFireTicks((int) (fireTicks * 20));
 			}
 		} else if (ability.equalsIgnoreCase("FireWheel")) {
 			if (!affectedEntities.contains(entity)) {
 				affectedEntities.add(entity);
-				GeneralMethods.damageEntity(player, entity, damage, Element.Fire, "FireWheel");
+				GeneralMethods.damageEntity(this, entity, damage);
 				entity.setFireTicks((int) (fireTicks * 20));
 				this.remove();
 			}

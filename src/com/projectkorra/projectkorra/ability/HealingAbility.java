@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class HealingAbility extends WaterAbility implements SubAbility {
@@ -14,7 +16,12 @@ public abstract class HealingAbility extends WaterAbility implements SubAbility 
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Healing";
+	public Element getElement() {
+		return Element.HEALING;
+	}
+	
+	@Override
+	public Element getParentElement() {
+		return Element.WATER;
 	}
 }

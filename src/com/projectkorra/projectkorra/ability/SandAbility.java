@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class SandAbility extends EarthAbility implements SubAbility {
@@ -14,8 +16,13 @@ public abstract class SandAbility extends EarthAbility implements SubAbility {
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Sand";
+	public Element getElement() {
+		return Element.SAND;
+	}
+	
+	@Override
+	public Element getParentElement() {
+		return Element.EARTH;
 	}
 	
 }

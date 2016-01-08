@@ -1,8 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
-import com.projectkorra.projectkorra.configuration.ConfigManager;
+import com.projectkorra.projectkorra.Element;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public abstract class ChiAbility extends ElementalAbility {
@@ -22,26 +21,8 @@ public abstract class ChiAbility extends ElementalAbility {
 	}
 	
 	@Override
-	public final String getElementName() {
-		return "Chi";
+	public Element getElement() {
+		return Element.CHI;
 	}
-
-	/**
-	 * Gets the AirColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Chi"));
-	}
-	
-	/**
-	 * Gets the AirSubColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getSubChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Chi"));
-	}
-	
+		
 }

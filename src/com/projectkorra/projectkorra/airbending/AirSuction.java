@@ -1,5 +1,6 @@
 package com.projectkorra.projectkorra.airbending;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
@@ -17,6 +18,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AirSuction extends AirAbility {
@@ -35,6 +37,7 @@ public class AirSuction extends AirAbility {
 	private double range;
 	private double radius;
 	private double pushFactor;
+	private Random random;
 	private Location location;
 	private Location origin;
 	private Vector direction;
@@ -59,6 +62,7 @@ public class AirSuction extends AirAbility {
 		this.radius = getConfig().getDouble("Abilities.Air.AirSuction.Radius");
 		this.pushFactor = getConfig().getDouble("Abilities.Air.AirSuction.Push");
 		this.cooldown = GeneralMethods.getGlobalCooldown();
+		this.random = new Random();
 
 		if (ORIGINS.containsKey(player)) {
 			origin = ORIGINS.get(player);
@@ -68,7 +72,7 @@ public class AirSuction extends AirAbility {
 			origin = player.getEyeLocation();
 		}
 
-		location = GeneralMethods.getTargetedLocation(player, range, GeneralMethods.nonOpaque);
+		location = GeneralMethods.getTargetedLocation(player, range, GeneralMethods.NON_OPAQUE);
 		direction = GeneralMethods.getDirection(location, origin).normalize();
 		Entity entity = GeneralMethods.getTargetedEntity(player, range);
 
@@ -87,16 +91,13 @@ public class AirSuction extends AirAbility {
 		}
 
 		Location origin = ORIGINS.get(player);
-		if (player.isDead() || !player.isOnline()) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null || player.isDead() || !player.isOnline()) {
 			return;
 		} else if (!origin.getWorld().equals(player.getWorld())) {
 			ORIGINS.remove(player);
 			return;
-		} else if (GeneralMethods.getBoundAbility(player) == null) {
-			ORIGINS.remove(player);
-			return;
-		} else if (!GeneralMethods.getBoundAbility(player).equalsIgnoreCase("AirSuction")
-				|| !GeneralMethods.canBend(player.getName(), "AirSuction")) {
+		} else if (!bPlayer.canBendIgnoreCooldowns(getAbility("AirSuction"))) {
 			ORIGINS.remove(player);
 			return;
 		} else if (origin.distanceSquared(player.getEyeLocation()) > ORIGIN_SELECT_RANGE * ORIGIN_SELECT_RANGE) {
@@ -114,7 +115,7 @@ public class AirSuction extends AirAbility {
 	}
 
 	public static void setOrigin(Player player) {
-		Location location = GeneralMethods.getTargetedLocation(player, ORIGIN_SELECT_RANGE, GeneralMethods.nonOpaque);
+		Location location = GeneralMethods.getTargetedLocation(player, ORIGIN_SELECT_RANGE, GeneralMethods.NON_OPAQUE);
 		if (location.getBlock().isLiquid() || GeneralMethods.isSolid(location.getBlock())) {
 			return;
 		} else if (GeneralMethods.isRegionProtectedFromBuild(player, "AirSuction", location)) {
@@ -128,7 +129,7 @@ public class AirSuction extends AirAbility {
 
 	private void advanceLocation() {
 		playAirbendingParticles(location, particleCount, 0.275F, 0.275F, 0.275F);
-		if (GeneralMethods.rand.nextInt(4) == 0) {
+		if (random.nextInt(4) == 0) {
 			playAirbendingSound(location);
 		}
 		double speedFactor = speed * (ProjectKorra.time_step / 1000.);
@@ -204,7 +205,7 @@ public class AirSuction extends AirAbility {
 				}
 
 				GeneralMethods.setVelocity(entity, velocity);
-				new HorizontalVelocityTracker(entity, player, 200l, "AirSuction", Element.Air, null);
+				new HorizontalVelocityTracker(entity, player, 200l, "AirSuction", Element.AIR);
 				entity.setFallDistance(0);
 				if (entity.getEntityId() != player.getEntityId() && entity instanceof Player) {
 					new Flight((Player) entity, player);

@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class CombustionAbility extends FireAbility implements SubAbility {
@@ -14,8 +16,12 @@ public abstract class CombustionAbility extends FireAbility implements SubAbilit
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Combustion";
+	public Element getElement() {
+		return Element.COMBUSTION;
 	}
 	
+	@Override
+	public Element getParentElement() {
+		return Element.FIRE;
+	}
 }

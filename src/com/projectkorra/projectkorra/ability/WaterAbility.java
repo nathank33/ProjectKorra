@@ -2,19 +2,18 @@ package com.projectkorra.projectkorra.ability;
 
 import com.projectkorra.projectkorra.BendingManager;
 import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.util.BlockSource;
 import com.projectkorra.projectkorra.util.TempBlock;
 import com.projectkorra.projectkorra.waterbending.PhaseChangeFreeze;
-import com.projectkorra.projectkorra.waterbending.WaterArms;
-import com.projectkorra.projectkorra.waterbending.WaterSpout;
 import com.projectkorra.projectkorra.waterbending.SurgeWall;
 import com.projectkorra.projectkorra.waterbending.SurgeWave;
+import com.projectkorra.projectkorra.waterbending.WaterArms;
+import com.projectkorra.projectkorra.waterbending.WaterSpout;
 import com.projectkorra.rpg.RPGMethods;
 import com.projectkorra.rpg.WorldEvents;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,16 +41,16 @@ public abstract class WaterAbility extends BlockAbility {
 	}
 	
 	@Override
-	public final String getElementName() {
-		return "Water";
+	public Element getElement() {
+		return Element.WATER;
 	}
 
 	public boolean canAutoSource() {
-		return getConfig().getBoolean("Abilities." + getElementName() + "." + getName() + ".CanAutoSource");
+		return getConfig().getBoolean("Abilities." + getElement() + "." + getName() + ".CanAutoSource");
 	}
 	
 	public boolean canDynamicSource() {
-		return getConfig().getBoolean("Abilities." + getElementName() + "." + getName() + ".CanDynamicSource");
+		return getConfig().getBoolean("Abilities." + getElement() + "." + getName() + ".CanDynamicSource");
 	}
 	
 	public Block getIceSourceBlock(double range) {
@@ -85,15 +84,6 @@ public abstract class WaterAbility extends BlockAbility {
 		return getConfig().getBoolean("Properties.Water.CanBendPackedIce");
 	}
 	
-	/**
-	 * Gets the WaterColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors.Water"));
-	}
-
 	public static Block getIceSourceBlock(Player player, double range) {
 		Location location = player.getEyeLocation();
 		Vector vector = location.getDirection().clone().normalize();
@@ -154,10 +144,6 @@ public abstract class WaterAbility extends BlockAbility {
 			}
 		}
 		return null;
-	}
-	
-	public static ChatColor getSubChatColor() {
-		return ChatColor.valueOf(getConfig().getString("Properties.Chat.Colors.WaterSub"));
 	}
 	
 	/**

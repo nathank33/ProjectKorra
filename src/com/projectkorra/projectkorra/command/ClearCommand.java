@@ -28,10 +28,10 @@ public class ClearCommand extends PKCommand {
 			return;
 		}
 
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(sender.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
 		if (bPlayer == null) {
 			GeneralMethods.createBendingPlayer(((Player) sender).getUniqueId(), sender.getName());
-			bPlayer = GeneralMethods.getBendingPlayer(sender.getName());
+			bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
 		}
 		if (args.size() == 0) {
 			bPlayer.getAbilities().clear();

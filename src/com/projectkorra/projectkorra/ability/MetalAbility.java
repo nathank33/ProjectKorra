@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class MetalAbility extends EarthAbility implements SubAbility {
@@ -14,8 +16,12 @@ public abstract class MetalAbility extends EarthAbility implements SubAbility {
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Metal";
+	public Element getElement() {
+		return Element.METAL;
 	}
 
+	@Override
+	public Element getParentElement() {
+		return Element.EARTH;
+	}
 }

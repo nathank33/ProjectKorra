@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.object;
 
 import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.storage.DBConnection;
 
 import org.bukkit.entity.Player;
@@ -117,7 +117,7 @@ public class Preset {
 	 */
 	@SuppressWarnings("unchecked")
 	public static boolean bindPreset(Player player, String name) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer == null)
 			return false;
 		if (!presets.containsKey(player.getUniqueId()))
@@ -133,7 +133,7 @@ public class Preset {
 		}
 		boolean boundAll = true;
 		for (int i = 1; i <= 9; i++) {
-			if (!GeneralMethods.canBend(player.getName(), abilities.get(i))) {
+			if (!bPlayer.canBend(CoreAbility.getAbility(abilities.get(i)))) {
 				abilities.remove(i);
 				boundAll = false;
 			}

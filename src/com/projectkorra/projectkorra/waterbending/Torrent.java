@@ -1,5 +1,6 @@
 package com.projectkorra.projectkorra.waterbending;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.AirAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
@@ -538,7 +539,10 @@ public class Torrent extends WaterAbility {
 	public static void progressAllCleanup() {
 		for (TempBlock block : FROZEN_BLOCKS.keySet()) {
 			Player player = FROZEN_BLOCKS.get(block);
-			if (block.getBlock().getType() != Material.ICE) {
+			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+			if (bPlayer == null) {
+				return;
+			} else if (block.getBlock().getType() != Material.ICE) {
 				FROZEN_BLOCKS.remove(block);
 				continue;
 			} else if (!player.isOnline()) {
@@ -548,7 +552,7 @@ public class Torrent extends WaterAbility {
 				thaw(block);
 				continue;
 			} else if (block.getLocation().distanceSquared(player.getLocation()) > CLEANUP_RANGE * CLEANUP_RANGE 
-					|| !GeneralMethods.canBend(player.getName(), "Torrent")) {
+					|| !bPlayer.canBendIgnoreBindsCooldowns(getAbility("Torrent"))) {
 				thaw(block);
 			}
 		}

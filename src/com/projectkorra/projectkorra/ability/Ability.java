@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
-import org.bukkit.ChatColor;
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -26,11 +27,10 @@ public interface Ability {
 	
 	public String getDescription();
 	
-	public String getElementName(); // TODO: rename to get element
+	public Element getElement();
 	
 	public Location getLocation();
 	
 	public Player getPlayer();
-	
-	public ChatColor getElementColor();
+
 }

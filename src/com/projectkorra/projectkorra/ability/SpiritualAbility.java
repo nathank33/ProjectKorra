@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class SpiritualAbility extends AirAbility implements SubAbility {
@@ -14,7 +16,12 @@ public abstract class SpiritualAbility extends AirAbility implements SubAbility 
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Spiritual";
+	public Element getElement() {
+		return Element.SPIRITUAL;
+	}
+	
+	@Override
+	public Element getParentElement() {
+		return Element.WATER;
 	}
 }

@@ -5,6 +5,7 @@ import sun.reflect.ReflectionFactory;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.util.AbilityLoader;
 import com.projectkorra.projectkorra.ability.util.ComboManager;
@@ -13,7 +14,6 @@ import com.projectkorra.projectkorra.ability.util.MultiAbilityManager.MultiAbili
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -180,14 +180,17 @@ public abstract class CoreAbility implements Ability {
 		return (Collection<T>) INSTANCES.get(clazz).get(player.getUniqueId()).values();
 	}
 	
-	public static ArrayList<CoreAbility> getAbilitiesByElement(String element) {
+	public static ArrayList<CoreAbility> getAbilitiesByElement(Element element) {
 		ArrayList<CoreAbility> abilities = new ArrayList<CoreAbility>();
 		if (element != null) {
 			for (CoreAbility ability : getAbilities()) {
-				if (ability.getElementName().equalsIgnoreCase(element)) {
+				if (ability.getElement() == element) {
 					abilities.add(ability);
-				} else if (ability instanceof SubAbility && ((SubAbility) ability).getSubElementName().equalsIgnoreCase(element)) {
-					abilities.add(ability);
+				} else if (ability instanceof SubAbility) {
+					SubAbility subAbil = (SubAbility) ability;
+					if (subAbil.getParentElement() == element) {
+						abilities.add(ability);
+					}
 				}
 			}
 		}
@@ -242,7 +245,7 @@ public abstract class CoreAbility implements Ability {
 					if (ability != null && ability.getName() != null) {
 						ABILITIES_BY_NAME.put(ability.getName().toLowerCase(), ability);
 					}
-					ProjectKorra.log.info(ability.getElementName() + " " + ability.getName());
+					ProjectKorra.log.info(ability.getElement() + " " + ability.getName());
 				} catch (Exception e) {
 				} catch (Error e) {
 				}
@@ -318,7 +321,7 @@ public abstract class CoreAbility implements Ability {
 	
 	@Override
 	public String getDescription() {
-		return getConfig().getString("Abilities." + getElementName() + "." + getName() + ".Description");
+		return getConfig().getString("Abilities." + getElement() + "." + getName() + ".Description");
 	}
 
 	@Override
@@ -326,12 +329,6 @@ public abstract class CoreAbility implements Ability {
 		return player;
 	}
 	
-	@Override
-	public ChatColor getElementColor() {
-		String element = (this instanceof SubAbility) ? getElementName() + "Sub" : getElementName();
-		return ChatColor.valueOf(ConfigManager.getConfig().getString("Properties.Chat.Colors." + element));
-	}
-
 	public static FileConfiguration getConfig() {
 		return ConfigManager.getConfig();
 	}

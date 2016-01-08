@@ -48,10 +48,10 @@ public class BendingPlayer {
 	private UUID uuid;
 	private String name;
 	private ChiAbility stance;
-	private ArrayList<NewElement> elements;
+	private ArrayList<Element> elements;
 	private HashMap<Integer, String> abilities;
 	private ConcurrentHashMap<String, Long> cooldowns;
-	private ConcurrentHashMap<NewElement, Boolean> toggledElements;	
+	private ConcurrentHashMap<Element, Boolean> toggledElements;	
 
 	/**
 	 * Creates a new {@link BendingPlayer}.
@@ -62,7 +62,7 @@ public class BendingPlayer {
 	 * @param abilities The known abilities
 	 * @param permaRemoved The permanent removed status
 	 */
-	public BendingPlayer(UUID uuid, String playerName, ArrayList<NewElement> elements, HashMap<Integer, String> abilities,
+	public BendingPlayer(UUID uuid, String playerName, ArrayList<Element> elements, HashMap<Integer, String> abilities,
 			boolean permaRemoved) {
 		this.uuid = uuid;
 		this.name = playerName;
@@ -74,12 +74,12 @@ public class BendingPlayer {
 		this.tremorSense = true;
 		this.chiBlocked = false;
 		cooldowns = new ConcurrentHashMap<String, Long>();
-		toggledElements = new ConcurrentHashMap<NewElement, Boolean>();
-		toggledElements.put(NewElement.AIR, true);
-		toggledElements.put(NewElement.EARTH, true);
-		toggledElements.put(NewElement.FIRE, true);
-		toggledElements.put(NewElement.WATER, true);
-		toggledElements.put(NewElement.CHI, true);
+		toggledElements = new ConcurrentHashMap<Element, Boolean>();
+		toggledElements.put(Element.AIR, true);
+		toggledElements.put(Element.EARTH, true);
+		toggledElements.put(Element.FIRE, true);
+		toggledElements.put(Element.WATER, true);
+		toggledElements.put(Element.CHI, true);
 
 		PLAYERS.put(uuid, this);
 		PKListener.login(this);
@@ -112,7 +112,7 @@ public class BendingPlayer {
 	 * 
 	 * @param e The element to add
 	 */
-	public void addElement(NewElement element) {
+	public void addElement(Element element) {
 		this.elements.add(element);
 	}
 
@@ -168,7 +168,7 @@ public class BendingPlayer {
 			return false;
 		} else if (disabledWorlds != null && disabledWorlds.contains(player.getWorld().getName())) {
 			return false;
-		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getName())) {
+		} else if (Commands.isToggledForAll || !isToggled() || !isElementToggled(ability.getElement())) {
 			return false;
 		} else if (player.getGameMode() == GameMode.SPECTATOR) {
 			return false;
@@ -216,7 +216,7 @@ public class BendingPlayer {
 		return canBend(ability, true, true, true);
 	}
 
-	public boolean canBendPassive(String element) {
+	public boolean canBendPassive(Element element) {
 		if (element == null || player == null) {
 			return false;
 		} else if (!player.hasPermission("bending." + element + ".passive")) {
@@ -251,11 +251,11 @@ public class BendingPlayer {
 			return false;
 		} else if (!player.hasPermission("bending.ability." + ability.getName())) {
 			return false;
-		} else if (!hasElement(ability.getElementName())) {
+		} else if (!hasElement(ability.getElement())) {
 			return false;
 		} else if (ability instanceof SubAbility) {
 			SubAbility subAbil = (SubAbility) ability;
-			if (!hasElement(subAbil.getSubElementName())) {
+			if (!hasElement(subAbil.getParentElement())) {
 				return false;
 			}
 		}
@@ -409,7 +409,7 @@ public class BendingPlayer {
 	 * 
 	 * @return a list of elements
 	 */
-	public List<String> getElements() {
+	public List<Element> getElements() {
 		return this.elements;
 	}
 
@@ -449,17 +449,13 @@ public class BendingPlayer {
 		return this.uuid.toString();
 	}
 	
-	public boolean hasElement(NewElement element) {
-		return this.elements
-	}
-
 	/**
 	 * Checks to see if the {@link BendingPlayer} knows a specific element.
 	 * 
 	 * @param element The element to check
 	 * @return true If the player knows the element
 	 */
-	public boolean hasElement(String element) {
+	public boolean hasElement(Element element) {
 		return this.elements.contains(element);
 	}
 
@@ -484,7 +480,7 @@ public class BendingPlayer {
 		return MetalClips.isControlled(player);
 	}
 
-	public boolean isElementToggled(String element) {
+	public boolean isElementToggled(Element element) {
 		if (element != null) {
 			return this.toggledElements.get(element);
 		}
@@ -539,6 +535,12 @@ public class BendingPlayer {
 		return this.tremorSense;
 	}
 
+	public void removeCooldown(CoreAbility ability) {
+		if (ability != null) {
+			removeCooldown(ability.getName());
+		}
+	}
+	
 	/**
 	 * Removes the cooldown of an ability.
 	 * 
@@ -571,7 +573,7 @@ public class BendingPlayer {
 	 * 
 	 * @param e The element to set
 	 */
-	public void setElement(String element) {
+	public void setElement(Element element) {
 		this.elements.clear();
 		this.elements.add(element);
 	}
@@ -610,7 +612,7 @@ public class BendingPlayer {
 		toggled = !toggled;
 	}
 
-	public void toggleElement(String element) {
+	public void toggleElement(Element element) {
 		toggledElements.put(element, !toggledElements.get(element));
 	}
 	

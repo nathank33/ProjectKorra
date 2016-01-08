@@ -1,6 +1,5 @@
 package com.projectkorra.projectkorra.waterbending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
@@ -353,9 +352,9 @@ public class WaterArms extends WaterAbility {
 								FireAbility.playLightningbendingParticle(l1);
 							}
 							if (lightningKill) {
-								GeneralMethods.damageEntity(lightning.getPlayer(), player, 60D, Element.Water, "Electrocution");
+								GeneralMethods.damageEntity(lightning, player, 60D);
 							} else {
-								GeneralMethods.damageEntity(lightning.getPlayer(), player, lightningDamage, Element.Water, "Electrocution");
+								GeneralMethods.damageEntity(lightning, player, lightningDamage);
 							}
 						}
 					}
@@ -413,7 +412,7 @@ public class WaterArms extends WaterAbility {
 	}
 
 	public void displayBoundMsg() {
-		player.sendMessage(getElementColor() + sneakMsg + " " + bPlayer.getBoundAbilityName());
+		player.sendMessage(getElement().getColor() + sneakMsg + " " + bPlayer.getBoundAbilityName());
 	}
 
 	/**

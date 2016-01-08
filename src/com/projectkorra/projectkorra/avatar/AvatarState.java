@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AvatarState extends AvatarAbility {
 
 	public static ConcurrentHashMap<Player, AvatarState> instances = new ConcurrentHashMap<Player, AvatarState>();
-	//public static Map<String, Long> cooldowns = new HashMap<String, Long>();
 	public static Map<String, Long> startTimes = new HashMap<String, Long>();
 
 	public static FileConfiguration config = ProjectKorra.plugin.getConfig();
@@ -33,34 +32,25 @@ public class AvatarState extends AvatarAbility {
 	private static boolean fireResistanceEnabled = config.getBoolean("Abilities.AvatarState.PotionEffects.FireResistance.Enabled");
 	private static int fireResistancePower = config.getInt("Abilities.AvatarState.PotionEffects.FireResistance.Power") - 1;
 	private static long duration = config.getLong("Abilities.AvatarState.Duration");
-
+	
 	public static final double factor = config.getDouble("Abilities.AvatarState.PowerMultiplier");
-
-	Player player;
-
-	// boolean canfly = false;
 	
 	public AvatarState(Player player) {
 		super(player);
-		this.player = player;
+		
 		if (instances.containsKey(player)) {
 			instances.remove(player);
 			return;
 		}
-		//if (cooldowns.containsKey(player.getName())) {
-		//if (cooldowns.get(player.getName()) + cooldown >= System.currentTimeMillis()) {
-		//return;
-		//} else {
-		//cooldowns.remove(player.getName());
-		//}
-		//}
-		if (GeneralMethods.getBendingPlayer(player.getName()).isOnCooldown("AvatarState")) {
+
+		if (bPlayer.isOnCooldown(this)) {
 			return;
 		}
+		
 		new Flight(player);
 		GeneralMethods.playAvatarSound(player.getLocation());
 		instances.put(player, this);
-		GeneralMethods.getBendingPlayer(player.getName()).addCooldown("AvatarState", cooldown);
+		bPlayer.addCooldown(this);
 		if (duration != 0) {
 			startTimes.put(player.getName(), System.currentTimeMillis());
 		}
@@ -84,8 +74,8 @@ public class AvatarState extends AvatarAbility {
 		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			instances.remove(player);
 			if (player != null) {
-				if (GeneralMethods.getBendingPlayer(player.getName()).isOnCooldown("AvatarState")) {
-					GeneralMethods.getBendingPlayer(player.getName()).removeCooldown("AvatarState");
+				if (bPlayer.isOnCooldown(this)) {
+					bPlayer.removeCooldown(this);
 				}
 				return;
 			}

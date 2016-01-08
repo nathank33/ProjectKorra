@@ -175,7 +175,7 @@ public class PKListener implements Listener {
 			return;
 		}
 
-		if (GeneralMethods.toggedOut.contains(player.getUniqueId())) {
+		if (GeneralMethods.TOGGLED_OUT.contains(player.getUniqueId())) {
 			bPlayer.toggleBending();
 			player.sendMessage(ChatColor.YELLOW + "Reminder, you toggled your bending before signing off. Enable it again with /bending toggle.");
 		}
@@ -187,19 +187,19 @@ public class PKListener implements Listener {
 		if ((player.hasPermission("bending.avatar") || bPlayer.getElements().size() > 1) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Avatar");
 			color = ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.Avatar"));
-		} else if (bPlayer.hasElement(NewElement.AIR) && chatEnabled) {
+		} else if (bPlayer.hasElement(Element.AIR) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Air");
 			color = AirAbility.getChatColor();
-		} else if (bPlayer.hasElement(NewElement.WATER) && chatEnabled) {
+		} else if (bPlayer.hasElement(Element.WATER) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Water");
 			color = WaterAbility.getChatColor();
-		} else if (bPlayer.hasElement(NewElement.EARTH) && chatEnabled) {
+		} else if (bPlayer.hasElement(Element.EARTH) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Earth");
 			color = EarthAbility.getChatColor();
-		} else if (bPlayer.hasElement(NewElement.FIRE) && chatEnabled) {
+		} else if (bPlayer.hasElement(Element.FIRE) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Fire");
 			color = FireAbility.getChatColor();
-		} else if (bPlayer.hasElement(NewElement.CHI) && chatEnabled) {
+		} else if (bPlayer.hasElement(Element.CHI) && chatEnabled) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Chi");
 			color = ChiAbility.getChatColor();
 		}
@@ -372,7 +372,7 @@ public class PKListener implements Listener {
 	public void onElementChange(PlayerChangeElementEvent event) {
 		Player player = event.getTarget();
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
-		String element = event.getElement();
+		Element element = event.getElement();
 		String append = "";
 		ChatColor color = null;
 		
@@ -384,13 +384,9 @@ public class PKListener implements Listener {
 		if (bPlayer.getElements().size() > 1) {
 			append = plugin.getConfig().getString("Properties.Chat.Prefixes.Avatar");
 			color = ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.Avatar"));
-		} else {
-			for (String otherElement : NewElement.MAIN_ELEMENTS) {
-				if (element.equals(otherElement)) {
-					append = plugin.getConfig().getString("Properties.Chat.Prefixes." + element);
-					color = NewElement.getElementColor(element);
-				}
-			}
+		} else if (element != null) {
+			append = plugin.getConfig().getString("Properties.Chat.Prefixes." + element.getName());
+			color = element.getColor();
 		}
 		
 		if (chatEnabled) {
@@ -475,7 +471,7 @@ public class PKListener implements Listener {
 				return;
 			}
 			
-			if (bPlayer.isElementToggled(NewElement.FIRE)) {
+			if (bPlayer.isElementToggled(Element.FIRE)) {
 				return;
 			}
 			if (bPlayer.getBoundAbilityName().equalsIgnoreCase("HeatControl")) {
@@ -730,7 +726,7 @@ public class PKListener implements Listener {
 		if (player.hasPermission("bending.avatar") || bPlayer.getElements().size() > 1) {
 			color = ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors.Avatar"));
 		} else {
-			for (String element : NewElement.MAIN_ELEMENTS) {
+			for (Element element : Element.getMainElements()) {
 				if (bPlayer.hasElement(element)) {
 					color = ChatColor.valueOf(plugin.getConfig().getString("Properties.Chat.Colors." + element));
 					break;
@@ -758,12 +754,12 @@ public class PKListener implements Listener {
 				return;
 			}
 
-			if (bPlayer.hasElement(NewElement.EARTH) && event.getCause() == DamageCause.FALL) {
+			if (bPlayer.hasElement(Element.EARTH) && event.getCause() == DamageCause.FALL) {
 				Shockwave shockwave = new Shockwave(player);
 				shockwave.fallShockwave();
 			}
 
-			if (bPlayer.hasElement(NewElement.AIR) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(NewElement.AIR)) {
+			if (bPlayer.hasElement(Element.AIR) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(Element.AIR)) {
 				new Flight(player);
 				player.setAllowFlight(true);
 				new AirBurst(player, true);
@@ -772,7 +768,7 @@ public class PKListener implements Listener {
 				event.setCancelled(true);
 			}
 
-			if (!event.isCancelled() && bPlayer.hasElement(NewElement.WATER) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(NewElement.WATER)) {
+			if (!event.isCancelled() && bPlayer.hasElement(Element.WATER) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(Element.WATER)) {
 				if (WaterPassive.applyNoFall(player)) {
 					new Flight(player);
 					player.setAllowFlight(true);
@@ -782,7 +778,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (!event.isCancelled() && bPlayer.hasElement(NewElement.EARTH) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(NewElement.EARTH)) {
+			if (!event.isCancelled() && bPlayer.hasElement(Element.EARTH) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(Element.EARTH)) {
 				if (EarthPassive.softenLanding(player)) {
 					new Flight(player);
 					player.setAllowFlight(true);
@@ -792,7 +788,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (!event.isCancelled() && bPlayer.hasElement(NewElement.CHI) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(NewElement.CHI)) {
+			if (!event.isCancelled() && bPlayer.hasElement(Element.CHI) && event.getCause() == DamageCause.FALL && bPlayer.canBendPassive(Element.CHI)) {
 				if (player.isSprinting()) {
 					event.setDamage(0);
 					event.setCancelled(true);
@@ -812,13 +808,13 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (bPlayer.canBendPassive(NewElement.FIRE) 
-					&& bPlayer.hasElement(NewElement.FIRE) 
+			if (bPlayer.canBendPassive(Element.FIRE) 
+					&& bPlayer.hasElement(Element.FIRE) 
 					&& (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK)) {
 				event.setCancelled(!HeatControlExtinguish.canBurn(player));
 			}
 
-			if (bPlayer.hasElement(NewElement.EARTH) && event.getCause() == DamageCause.SUFFOCATION && TempBlock.isTempBlock(player.getEyeLocation().getBlock())) {
+			if (bPlayer.hasElement(Element.EARTH) && event.getCause() == DamageCause.SUFFOCATION && TempBlock.isTempBlock(player.getEyeLocation().getBlock())) {
 				event.setDamage(0D);
 				event.setCancelled(true);
 			}
@@ -862,13 +858,13 @@ public class PKListener implements Listener {
 				
 				String boundAbil = sourceBPlayer.getBoundAbilityName(); 
 				
-				if (sourceBPlayer.canBendPassive(NewElement.CHI)) {
+				if (sourceBPlayer.canBendPassive(Element.CHI)) {
 					if (e.getCause() == DamageCause.ENTITY_ATTACK && e.getDamage() == 1) {
 						if (sourceBPlayer.getBoundAbility() instanceof ChiAbility) {
 							if (GeneralMethods.isWeapon(sourcePlayer.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
 								return;
 							}
-							if (sourceBPlayer.isElementToggled(NewElement.CHI) == true) {
+							if (sourceBPlayer.isElementToggled(Element.CHI) == true) {
 								if (boundAbil.equalsIgnoreCase("Paralyze")) {
 									new Paralyze(sourcePlayer, targetPlayer);
 								} else {
@@ -880,11 +876,11 @@ public class PKListener implements Listener {
 						}
 					}
 				}
-				if (sourceBPlayer.canBendPassive(NewElement.CHI)) {
+				if (sourceBPlayer.canBendPassive(Element.CHI)) {
 					if (GeneralMethods.isWeapon(sourcePlayer.getItemInHand().getType()) && !ProjectKorra.plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
 						return;
 					}
-					if (e.getCause() == DamageCause.ENTITY_ATTACK && sourceBPlayer.isElementToggled(NewElement.CHI) == true) {
+					if (e.getCause() == DamageCause.ENTITY_ATTACK && sourceBPlayer.isElementToggled(Element.CHI) == true) {
 						if (boundAbil.equalsIgnoreCase("Paralyze") && e.getDamage() == 1) {
 							if (sourcePlayer.getWorld().equals(targetPlayer.getWorld()) 
 									&& Math.abs(sourcePlayer.getLocation().distance(targetPlayer.getLocation())) < 3) {
@@ -981,11 +977,11 @@ public class PKListener implements Listener {
 				String ability = bendingDeathPlayer.get(event.getEntity());
 				String tempAbility = ChatColor.stripColor(ability).replaceAll(" ", "");
 				CoreAbility coreAbil = CoreAbility.getAbility(ability);
-				String element = null;
+				Element element = null;
 				boolean isAvatarAbility = false;
 				
 				if (coreAbil != null) {
-					element = coreAbil.getElementName();
+					element = coreAbil.getElement();
 				}
 	
 				if (HorizontalVelocityTracker.hasBeenDamagedByHorizontalVelocity(event.getEntity()) && Arrays.asList(HorizontalVelocityTracker.abils).contains(tempAbility)) {
@@ -1136,11 +1132,11 @@ public class PKListener implements Listener {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		
 		if (bPlayer != null) {
-			if (GeneralMethods.toggedOut.contains(player.getUniqueId()) && bPlayer.isToggled()) {
-				GeneralMethods.toggedOut.remove(player.getUniqueId());
+			if (GeneralMethods.TOGGLED_OUT.contains(player.getUniqueId()) && bPlayer.isToggled()) {
+				GeneralMethods.TOGGLED_OUT.remove(player.getUniqueId());
 			}
 			if (!bPlayer.isToggled()) {
-				GeneralMethods.toggedOut.add(player.getUniqueId());
+				GeneralMethods.TOGGLED_OUT.add(player.getUniqueId());
 			}
 		}
 
@@ -1225,7 +1221,7 @@ public class PKListener implements Listener {
 			if (coreAbil instanceof AddonAbility) {
 				return;
 			}
-			if (coreAbil instanceof AirAbility && bPlayer.isElementToggled(NewElement.AIR) == true) {
+			if (coreAbil instanceof AirAbility && bPlayer.isElementToggled(Element.AIR) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {
 					return;
 				}
@@ -1258,7 +1254,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (coreAbil instanceof WaterAbility && bPlayer.isElementToggled(NewElement.WATER) == true) {
+			if (coreAbil instanceof WaterAbility && bPlayer.isElementToggled(Element.WATER) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Water.CanBendWithWeapons")) {
 					return;
 				}
@@ -1291,7 +1287,7 @@ public class PKListener implements Listener {
 				}
 			}
 			
-			if (coreAbil instanceof EarthAbility && bPlayer.isElementToggled(NewElement.EARTH) == true) {
+			if (coreAbil instanceof EarthAbility && bPlayer.isElementToggled(Element.EARTH) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Earth.CanBendWithWeapons")) {
 					return;
 				}
@@ -1340,7 +1336,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (coreAbil instanceof FireAbility && bPlayer.isElementToggled(NewElement.FIRE) == true) {
+			if (coreAbil instanceof FireAbility && bPlayer.isElementToggled(Element.FIRE) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Fire.CanBendWithWeapons")) {
 					return;
 				}
@@ -1412,7 +1408,7 @@ public class PKListener implements Listener {
 				return;
 			}
 
-			if (coreAbil instanceof AirAbility && bPlayer.isElementToggled(NewElement.AIR) == true) {
+			if (coreAbil instanceof AirAbility && bPlayer.isElementToggled(Element.AIR) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Air.CanBendWithWeapons")) {
 					return;
 				}
@@ -1449,7 +1445,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (coreAbil instanceof WaterAbility && bPlayer.isElementToggled(NewElement.WATER) == true) {
+			if (coreAbil instanceof WaterAbility && bPlayer.isElementToggled(Element.WATER) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Water.CanBendWithWeapons")) {
 					return;
 				}
@@ -1485,7 +1481,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (coreAbil instanceof EarthAbility && bPlayer.isElementToggled(NewElement.EARTH) == true) {
+			if (coreAbil instanceof EarthAbility && bPlayer.isElementToggled(Element.EARTH) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Earth.CanBendWithWeapons")) {
 					return;
 				}
@@ -1540,7 +1536,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (coreAbil instanceof FireAbility && bPlayer.isElementToggled(NewElement.FIRE) == true) {
+			if (coreAbil instanceof FireAbility && bPlayer.isElementToggled(Element.FIRE) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Fire.CanBendWithWeapons")) {
 					return;
 				}
@@ -1573,7 +1569,7 @@ public class PKListener implements Listener {
 				}
 			}
 
-			if (coreAbil instanceof ChiAbility && bPlayer.isElementToggled(NewElement.CHI) == true) {
+			if (coreAbil instanceof ChiAbility && bPlayer.isElementToggled(Element.CHI) == true) {
 				if (GeneralMethods.isWeapon(player.getItemInHand().getType()) && !plugin.getConfig().getBoolean("Properties.Chi.CanBendWithWeapons")) {
 					return;
 				}

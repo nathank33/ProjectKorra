@@ -1,9 +1,7 @@
 package com.projectkorra.projectkorra.waterbending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.avatar.AvatarState;
@@ -182,11 +180,7 @@ public class WaterCombo extends WaterAbility {
 						}
 						if (damage != 0) {
 							if (entity instanceof LivingEntity) {
-								if (fstream.getAbility().equalsIgnoreCase("IceBullet")) {
-									GeneralMethods.damageEntity(player, entity, damage, SubElement.Icebending, "IceBullets");
-								} else {
-									GeneralMethods.damageEntity(player, entity, damage, Element.Water, "WaterCombo");
-								}
+								GeneralMethods.damageEntity(this, entity, damage);
 							}
 						}
 					}

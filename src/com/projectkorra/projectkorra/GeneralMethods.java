@@ -72,7 +72,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
@@ -115,31 +114,33 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("deprecation")
 public class GeneralMethods {
 	
-	public static List<Ability> invincible = new ArrayList<>();
-
-	static ProjectKorra plugin;
-
-	private static FileConfiguration config = ProjectKorra.plugin.getConfig();
-	public static Random rand = new Random();
-
-	public static double CACHE_TIME = config.getDouble("Properties.RegionProtection.CacheBlockTime");
-	public static ConcurrentHashMap<String, Long> cooldowns = new ConcurrentHashMap<String, Long>();
-
+	private static final ArrayList<Ability> INVINCIBLE = new ArrayList<>();
+	
 	// Represents PlayerName, previously checked blocks, and whether they were true or false
-	public static ConcurrentHashMap<String, ConcurrentHashMap<Block, BlockCacheElement>> blockProtectionCache = new ConcurrentHashMap<String, ConcurrentHashMap<Block, BlockCacheElement>>();
+	private static final ConcurrentHashMap<String, ConcurrentHashMap<Block, BlockCacheElement>> BLOCK_CACHE = new ConcurrentHashMap<>();
 
-	public static Integer[] nonOpaque = { 0, 6, 8, 9, 10, 11, 27, 28, 30, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 68, 69, 70, 72, 75, 76, 77, 78, 83, 90, 93, 94, 104, 105, 106, 111, 115, 119, 127, 131, 132, 175 };
-	public static Material[] interactable = { Material.ACACIA_DOOR, Material.ACACIA_FENCE_GATE, Material.ANVIL, Material.ARMOR_STAND, Material.BEACON, Material.BED, Material.BED_BLOCK, Material.BIRCH_DOOR, Material.BIRCH_FENCE_GATE, Material.BOAT, Material.BREWING_STAND, Material.BURNING_FURNACE, Material.CAKE_BLOCK, Material.CHEST, Material.COMMAND, Material.DARK_OAK_DOOR, Material.DARK_OAK_FENCE_GATE, Material.DISPENSER, Material.DRAGON_EGG, Material.DROPPER, Material.ENCHANTMENT_TABLE, Material.ENDER_CHEST, Material.ENDER_PORTAL_FRAME, Material.FENCE_GATE, Material.FURNACE, Material.HOPPER, Material.HOPPER_MINECART, Material.COMMAND_MINECART, Material.ITEM_FRAME, Material.JUKEBOX, Material.JUNGLE_DOOR, Material.JUNGLE_FENCE_GATE, Material.LEVER, Material.MINECART, Material.NOTE_BLOCK, Material.PAINTING, Material.SPRUCE_DOOR, Material.SPRUCE_FENCE_GATE, Material.STONE_BUTTON, Material.TRAPPED_CHEST, Material.TRAP_DOOR, Material.WOOD_BUTTON, Material.WOOD_DOOR, Material.WORKBENCH };
-
-	// Stands for toggled = false while logging out
-	public static List<UUID> toggedOut = new ArrayList<UUID>();
+	public static Integer[] NON_OPAQUE = { 0, 6, 8, 9, 10, 11, 27, 28, 30, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 68, 
+			69, 70, 72, 75, 76, 77, 78, 83, 90, 93, 94, 104, 105, 106, 111, 115, 119, 127, 131, 132, 175 };
+	private static Material[] INTERACTABLE_MATERIALS = { Material.ACACIA_DOOR, Material.ACACIA_FENCE_GATE, Material.ANVIL, 
+			Material.ARMOR_STAND, Material.BEACON, Material.BED, Material.BED_BLOCK, Material.BIRCH_DOOR,
+			Material.BIRCH_FENCE_GATE, Material.BOAT, Material.BREWING_STAND, Material.BURNING_FURNACE, 
+			Material.CAKE_BLOCK, Material.CHEST, Material.COMMAND, Material.DARK_OAK_DOOR, 
+			Material.DARK_OAK_FENCE_GATE, Material.DISPENSER, Material.DRAGON_EGG, Material.DROPPER, 
+			Material.ENCHANTMENT_TABLE, Material.ENDER_CHEST, Material.ENDER_PORTAL_FRAME, Material.FENCE_GATE, 
+			Material.FURNACE, Material.HOPPER, Material.HOPPER_MINECART, Material.COMMAND_MINECART, 
+			Material.ITEM_FRAME, Material.JUKEBOX, Material.JUNGLE_DOOR, Material.JUNGLE_FENCE_GATE, 
+			Material.LEVER, Material.MINECART, Material.NOTE_BLOCK, Material.PAINTING, Material.SPRUCE_DOOR, 
+			Material.SPRUCE_FENCE_GATE, Material.STONE_BUTTON, Material.TRAPPED_CHEST, Material.TRAP_DOOR, 
+			Material.WOOD_BUTTON, Material.WOOD_DOOR, Material.WORKBENCH };
+	public static ArrayList<UUID> TOGGLED_OUT = new ArrayList<>(); 	// Stands for toggled = false while logging out
+	
+	private static ProjectKorra plugin;
 
 	public GeneralMethods(ProjectKorra plugin) {
 		GeneralMethods.plugin = plugin;
@@ -291,7 +292,7 @@ public class GeneralMethods {
 		ResultSet rs2 = DBConnection.sql.readQuery("SELECT * FROM pk_players WHERE uuid = '" + uuid.toString() + "'");
 		try {
 			if (!rs2.next()) { // Data doesn't exist, we want a completely new player.
-				new BendingPlayer(uuid, player, new ArrayList<String>(), new HashMap<Integer, String>(), false);
+				new BendingPlayer(uuid, player, new ArrayList<Element>(), new HashMap<Integer, String>(), false);
 				DBConnection.sql.modifyQuery("INSERT INTO pk_players (uuid, player) VALUES ('" + uuid.toString() + "', '" + player + "')");
 				ProjectKorra.log.info("Created new BendingPlayer for " + player);
 			} else {
@@ -306,18 +307,18 @@ public class GeneralMethods {
 				String element = rs2.getString("element");
 				String permaremoved = rs2.getString("permaremoved");
 				boolean p = false;
-				final ArrayList<String> elements = new ArrayList<String>();
+				final ArrayList<Element> elements = new ArrayList<Element>();
 				if (element != null) { // Player has an element.
 					if (element.contains("a"))
-						elements.add(NewElement.AIR);
+						elements.add(Element.AIR);
 					if (element.contains("w"))
-						elements.add(NewElement.WATER);
+						elements.add(Element.WATER);
 					if (element.contains("e"))
-						elements.add(NewElement.EARTH);
+						elements.add(Element.EARTH);
 					if (element.contains("f"))
-						elements.add(NewElement.FIRE);
+						elements.add(Element.FIRE);
 					if (element.contains("c"))
-						elements.add(NewElement.CHI);
+						elements.add(Element.CHI);
 				}
 
 				final HashMap<Integer, String> abilities = new HashMap<Integer, String>();
@@ -357,7 +358,6 @@ public class GeneralMethods {
 	 * @param entity The entity that is receiving the damage
 	 * @param damage The amount of damage to deal
 	 * @param element The element of the ability
-	 * @param sub The sub element of the ability
 	 * @param ability The ability that is used to damage the entity
 	 */
 	public static void damageEntity(Player player, Entity entity, double damage, String ability) {
@@ -990,7 +990,7 @@ public class GeneralMethods {
 	}
 	
 	public static boolean isInteractable(Block block) {
-		return Arrays.asList(interactable).contains(block.getType());
+		return Arrays.asList(INTERACTABLE_MATERIALS).contains(block.getType());
 	}
 
 	public static boolean isObstructed(Location location1, Location location2) {
@@ -1022,10 +1022,10 @@ public class GeneralMethods {
 	 * in the map first.
 	 */
 	public static boolean isRegionProtectedFromBuild(Player player, String ability, Location loc) {
-		if (!blockProtectionCache.containsKey(player.getName()))
-			blockProtectionCache.put(player.getName(), new ConcurrentHashMap<Block, BlockCacheElement>());
+		if (!BLOCK_CACHE.containsKey(player.getName()))
+			BLOCK_CACHE.put(player.getName(), new ConcurrentHashMap<Block, BlockCacheElement>());
 
-		ConcurrentHashMap<Block, BlockCacheElement> blockMap = blockProtectionCache.get(player.getName());
+		ConcurrentHashMap<Block, BlockCacheElement> blockMap = BLOCK_CACHE.get(player.getName());
 		Block block = loc.getBlock();
 		if (blockMap.containsKey(block)) {
 			BlockCacheElement elem = blockMap.get(block);
@@ -1209,7 +1209,7 @@ public class GeneralMethods {
 	}
 
 	public static boolean isSolid(Block block) {
-		return !Arrays.asList(nonOpaque).contains(block.getTypeId());
+		return !Arrays.asList(NON_OPAQUE).contains(block.getTypeId());
 	}
 
 
@@ -1466,15 +1466,15 @@ public class GeneralMethods {
 		String uuid = bPlayer.getUUIDString();
 
 		StringBuilder elements = new StringBuilder();
-		if (bPlayer.hasElement(NewElement.AIR))
+		if (bPlayer.hasElement(Element.AIR))
 			elements.append("a");
-		if (bPlayer.hasElement(NewElement.WATER))
+		if (bPlayer.hasElement(Element.WATER))
 			elements.append("w");
-		if (bPlayer.hasElement(NewElement.EARTH))
+		if (bPlayer.hasElement(Element.EARTH))
 			elements.append("e");
-		if (bPlayer.hasElement(NewElement.FIRE))
+		if (bPlayer.hasElement(Element.FIRE))
 			elements.append("f");
-		if (bPlayer.hasElement(NewElement.CHI))
+		if (bPlayer.hasElement(Element.CHI))
 			elements.append("c");
 
 		DBConnection.sql.modifyQuery("UPDATE pk_players SET element = '" + elements + "' WHERE uuid = '" + uuid + "'");
@@ -1521,7 +1521,7 @@ public class GeneralMethods {
 	public static void startCacheCleaner(final double period) {
 		new BukkitRunnable() {
 			public void run() {
-				for (ConcurrentHashMap<Block, BlockCacheElement> map : blockProtectionCache.values()) {
+				for (ConcurrentHashMap<Block, BlockCacheElement> map : BLOCK_CACHE.values()) {
 					for (Iterator<Block> i = map.keySet().iterator(); i.hasNext();) {
 						Block key = i.next();
 						BlockCacheElement value = map.get(key);
@@ -1550,8 +1550,8 @@ public class GeneralMethods {
 		Flight.removeAll();
 		TempBlock.removeAll();
 		MultiAbilityManager.removeAll();
-		if (!invincible.isEmpty())
-			invincible.clear();
+		if (!INVINCIBLE.isEmpty())
+			INVINCIBLE.clear();
 	}
 
 	public static void stopPlugin() {

@@ -95,7 +95,7 @@ public class PresetCommand extends PKCommand {
 				return;
 			}
 
-			BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 			if (bPlayer == null)
 				return;
 			HashMap<Integer, String> abilities = bPlayer.getAbilities();

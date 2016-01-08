@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -20,8 +22,8 @@ public abstract class AvatarAbility extends ElementalAbility {
 	}
 
 	@Override
-	public final String getElementName() {
-		return "Avatar";
+	public final Element getElement() {
+		return Element.AVATAR;
 	}
 
 	public static ChatColor getChatColor() {

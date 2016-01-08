@@ -7,9 +7,9 @@ import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.earthbending.EarthBlast;
 import com.projectkorra.projectkorra.earthbending.SandSpout;
+import com.projectkorra.projectkorra.firebending.BlazeArc;
 import com.projectkorra.projectkorra.firebending.Combustion;
 import com.projectkorra.projectkorra.firebending.FireBlast;
-import com.projectkorra.projectkorra.firebending.BlazeArc;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
 
@@ -22,6 +22,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Set;
 
 public class AirShield extends AirAbility {
@@ -32,6 +33,7 @@ public class AirShield extends AirAbility {
 	private double speed;
 	private int numberOfStreams;
 	private int particleCount;
+	private Random random;
 	private HashMap<Integer, Integer> angles;
 	
 	public AirShield(Player player) {
@@ -43,6 +45,7 @@ public class AirShield extends AirAbility {
 		this.speed = 10;
 		this.numberOfStreams = (int) (.75 * this.maxRadius);
 		this.particleCount = 5;
+		this.random = new Random();
 		this.angles = new HashMap<>();
 
 		if (AvatarState.isAvatarState(player) && CoreAbility.hasAbility(player, AirShield.class) && isToggledByAvatarState) {
@@ -164,7 +167,7 @@ public class AirShield extends AirAbility {
 			Location effect = new Location(origin.getWorld(), x, y, z);
 			if (!GeneralMethods.isRegionProtectedFromBuild(this, effect)) {
 				playAirbendingParticles(effect, particleCount);
-				if (GeneralMethods.rand.nextInt(4) == 0) {
+				if (random.nextInt(4) == 0) {
 					playAirbendingSound(effect);
 				}
 			}

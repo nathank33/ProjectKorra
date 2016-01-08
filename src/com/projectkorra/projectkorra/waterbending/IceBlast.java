@@ -113,7 +113,7 @@ public class IceBlast extends IceAbility {
 	}
 
 	public static void activate(Player player) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer != null && bPlayer.isOnCooldown("IceBlast")) {
 			return;
 		}

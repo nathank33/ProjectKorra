@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.airbending;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 
 import org.bukkit.Bukkit;
@@ -36,11 +36,12 @@ public class AirPassive {
 	public static void handlePassive() {
 		for (World world : Bukkit.getServer().getWorlds()) {
 			for (Player player : world.getPlayers()) {
-				if (!player.isOnline()) {
+				BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+				if (!player.isOnline() || bPlayer == null) {
 					return;
 				}
 				
-				if (GeneralMethods.canBendPassive(player.getName(), Element.Air)) {
+				if (bPlayer.canBendPassive(Element.AIR)) {
 					player.setExhaustion(getExhaustion(player, player.getExhaustion()));
 					if (player.isSprinting()) {
 						if (!player.hasPotionEffect(PotionEffectType.SPEED)) {

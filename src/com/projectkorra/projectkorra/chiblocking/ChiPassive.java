@@ -1,7 +1,7 @@
 package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.BendingPlayer;
-import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
@@ -49,7 +49,7 @@ public class ChiPassive {
 			Suffocate.remove(player);
 		}
 		
-		final BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+		final BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		if (bPlayer == null) {
 			return;
 		}
@@ -70,7 +70,7 @@ public class ChiPassive {
 				continue;
 			}
 			
-			if (bPlayer.canBendPassive("Chi") && !bPlayer.canBendPassive("Air")) { // If they're an airbender and gets the boosts we want to give them that instead of the Chi.
+			if (bPlayer.canBendPassive(Element.CHI) && !bPlayer.canBendPassive(Element.AIR)) { // If they're an airbender and gets the boosts we want to give them that instead of the Chi.
 				ChiAbility stance = bPlayer.getStance();
 				if (player.isSprinting() && !(stance instanceof AcrobatStance)) {
 					if (!player.hasPotionEffect(PotionEffectType.JUMP)) {

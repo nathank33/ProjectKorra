@@ -2,8 +2,8 @@ package com.projectkorra.projectkorra.command;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.Element.SubElement;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.SubElement;
 import com.projectkorra.projectkorra.ability.AirAbility;
 import com.projectkorra.projectkorra.ability.AvatarAbility;
 import com.projectkorra.projectkorra.ability.ChiAbility;
@@ -40,38 +40,39 @@ public class DisplayCommand extends PKCommand {
 
 		//bending display [Element]
 		if (args.size() == 1) {
-			String element = args.get(0).toLowerCase();
+			String elementName = args.get(0).toLowerCase();
 			//combos
-			if (Arrays.asList(Commands.comboaliases).contains(element)) {
-				element = getElement(element);
-				Element e = Element.getType(element);
-				ArrayList<String> combos = ComboManager.getCombosForElement(e);
+			if (Arrays.asList(Commands.comboaliases).contains(elementName)) {
+				elementName = getElement(elementName);
+				Element element = Element.getElement(elementName);
+				ChatColor color = element != null ? element.getColor() : null;
+				ArrayList<String> combos = ComboManager.getCombosForElement(element);
+				
 				if (combos.isEmpty()) {
-					sender.sendMessage(GeneralMethods.getElementColor(e) + "There are no " + element + " combos avaliable.");
+					sender.sendMessage(color + "There are no " + elementName + " combos avaliable.");
 					return;
 				}
 				for (String combomove : combos) {
 					if (!sender.hasPermission("bending.ability." + combomove))
 						continue;
-					ChatColor color = GeneralMethods.getComboColor(combomove);
 					sender.sendMessage(color + combomove);
 				}
 				return;
 			}
 
 			//normal elements
-			else if (Arrays.asList(Commands.elementaliases).contains(element)) {
-				element = getElement(element);
-				displayElement(sender, element);
+			else if (Arrays.asList(Commands.elementaliases).contains(elementName)) {
+				elementName = getElement(elementName);
+				displayElement(sender, elementName);
 			}
 
 			//subelements
-			else if (Arrays.asList(Commands.subelementaliases).contains(element)) {
-				displaySubElement(sender, element);
+			else if (Arrays.asList(Commands.subelementaliases).contains(elementName)) {
+				displaySubElement(sender, elementName);
 			}
 			
 			//avatar
-			else if (Arrays.asList(Commands.avataraliases).contains(element)) {
+			else if (Arrays.asList(Commands.avataraliases).contains(elementName)) {
 				displayAvatar(sender);
 			}
 
@@ -84,16 +85,16 @@ public class DisplayCommand extends PKCommand {
 						+ FireAbility.getChatColor() + "Fire" + ChatColor.WHITE + " | " 
 						+ ChiAbility.getChatColor() + "Chi");
 				sender.sendMessage(w + "SubElements: "
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Air) + " Flight"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Earth) + " Lavabending"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Earth) + " Metalbending"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Earth) + " Sandbending"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Fire) + " Combustion"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Fire) + " Lightning"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Water) + " Bloodbending"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Water) + " Healing"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Water) + " Icebending"
-						+ w + "\n-" + GeneralMethods.getSubBendingColor(Element.Water) + " Plantbending");
+						+ w + "\n-" + Element.AIR.getColor() + " Flight"
+						+ w + "\n-" + Element.EARTH.getColor() + " Lavabending"
+						+ w + "\n-" + Element.EARTH.getColor() + " Metalbending"
+						+ w + "\n-" + Element.EARTH.getColor() + " Sandbending"
+						+ w + "\n-" + Element.FIRE.getColor() + " Combustion"
+						+ w + "\n-" + Element.FIRE.getColor() + " Lightning"
+						+ w + "\n-" + Element.WATER.getColor() + " Bloodbending"
+						+ w + "\n-" + Element.WATER.getColor() + " Healing"
+						+ w + "\n-" + Element.WATER.getColor() + " Icebending"
+						+ w + "\n-" + Element.WATER.getColor() + " Plantbending");
 			}
 		}
 		if (args.size() == 0) {
@@ -198,15 +199,19 @@ public class DisplayCommand extends PKCommand {
 	 */
 	private void displaySubElement(CommandSender sender, String element) {
 		List<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(element);
+		Element mainElement = Element.getElement(element);
+		if (mainElement instanceof SubElement) {
+			mainElement = ((SubElement) mainElement).getParentElement();
+		}
+		ChatColor color = mainElement != null ? mainElement.getColor() : null;
+		
 		if (abilities.isEmpty() && element != null) {
-			Element e = SubElement.getType(element.toLowerCase()).getMainElement();
-			ChatColor color = GeneralMethods.getSubBendingColor(e);
 			sender.sendMessage(ChatColor.YELLOW + "There are no " + color + element + ChatColor.YELLOW + " abilities installed!");
 			return;
 		}
 		for (CoreAbility ability : abilities) {
 			if (!(sender instanceof Player) || GeneralMethods.canView((Player) sender, ability.getName())) {
-				sender.sendMessage(GeneralMethods.getSubBendingColor(Element.getType(getElement(element))) + ability.getName());
+				sender.sendMessage(color + ability.getName());
 			}
 		}
 	}
@@ -217,10 +222,10 @@ public class DisplayCommand extends PKCommand {
 	 * @param sender The CommandSender to output the bound abilities to
 	 */
 	private void displayBinds(CommandSender sender) {
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(sender.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
 		if (bPlayer == null) {
 			GeneralMethods.createBendingPlayer(((Player) sender).getUniqueId(), sender.getName());
-			bPlayer = GeneralMethods.getBendingPlayer(sender.getName());
+			bPlayer = BendingPlayer.getBendingPlayer(sender.getName());
 		}
 		HashMap<Integer, String> abilities = bPlayer.getAbilities();
 
@@ -232,8 +237,9 @@ public class DisplayCommand extends PKCommand {
 
 		for (int i = 1; i <= 9; i++) {
 			String ability = abilities.get(i);
-			if (ability != null && !ability.equalsIgnoreCase("null"))
-				sender.sendMessage(i + " - " + GeneralMethods.getAbilityColor(ability) + ability);
+			CoreAbility coreAbil = CoreAbility.getAbility(ability);
+			if (coreAbil != null && !ability.equalsIgnoreCase("null"))
+				sender.sendMessage(i + " - " + coreAbil.getElement().getColor() + ability);
 		}
 	}
 }

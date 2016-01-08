@@ -55,17 +55,18 @@ public class ImportCommand extends PKCommand {
 			String playername = string;
 			@SuppressWarnings("deprecation")
 			UUID uuid = ProjectKorra.plugin.getServer().getOfflinePlayer(playername).getUniqueId();
-			ArrayList<Element> element = new ArrayList<Element>();
+			ArrayList<Element> elements = new ArrayList<Element>();
 			List<Integer> bendingTypes = bendingPlayers.getIntegerList(string + ".BendingTypes");
 			boolean permaremoved = bendingPlayers.getBoolean(string + ".Permaremoved");
-
+			Element[] mainElements = Element.getMainElements();
+			
 			for (int i : bendingTypes) {
-				if (Element.getType(i) != null) {
-					element.add(Element.getType(i));
+				if (i < mainElements.length) {
+					elements.add(mainElements[i]);
 				}
 			}
 
-			BendingPlayer bPlayer = new BendingPlayer(uuid, playername, element, new HashMap<Integer, String>(), permaremoved);
+			BendingPlayer bPlayer = new BendingPlayer(uuid, playername, elements, new HashMap<Integer, String>(), permaremoved);
 			bPlayers.add(bPlayer);
 		}
 
@@ -96,15 +97,15 @@ public class ImportCommand extends PKCommand {
 					}
 					StringBuilder elements = new StringBuilder();
 					BendingPlayer bPlayer = bPlayers.pop();
-					if (bPlayer.hasElement(Element.Air))
+					if (bPlayer.hasElement(Element.AIR))
 						elements.append("a");
-					if (bPlayer.hasElement(Element.Water))
+					if (bPlayer.hasElement(Element.WATER))
 						elements.append("w");
-					if (bPlayer.hasElement(Element.Earth))
+					if (bPlayer.hasElement(Element.EARTH))
 						elements.append("e");
-					if (bPlayer.hasElement(Element.Fire))
+					if (bPlayer.hasElement(Element.FIRE))
 						elements.append("f");
-					if (bPlayer.hasElement(Element.Chi))
+					if (bPlayer.hasElement(Element.CHI))
 						elements.append("c");
 
 					HashMap<Integer, String> abilities = bPlayer.getAbilities();

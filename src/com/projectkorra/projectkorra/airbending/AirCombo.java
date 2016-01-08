@@ -1,6 +1,5 @@
 package com.projectkorra.projectkorra.airbending;
 
-import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AirAbility;
@@ -348,9 +347,9 @@ public class AirCombo extends AirAbility {
 						if (damage != 0) {
 							if (entity instanceof LivingEntity) {
 								if (fstream.getAbility().equalsIgnoreCase("AirSweep")) {
-									GeneralMethods.damageEntity(player, entity, damage, Element.Air, "AirSweep");
+									GeneralMethods.damageEntity(this, entity, damage);
 								} else {
-									GeneralMethods.damageEntity(player, entity, damage, Element.Air, "AirCombo");
+									GeneralMethods.damageEntity(this, entity, damage);
 								}
 							}
 						}

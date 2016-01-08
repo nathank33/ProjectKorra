@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra.earthbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.ElementalAbility;
@@ -100,8 +101,8 @@ public class EarthPassive {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 			
 			if (bPlayer != null) {
-				if (bPlayer.canSandbend() && bPlayer.hasElement("Earth") 
-						&& !bPlayer.canBendPassive("Air") && !bPlayer.canBendPassive("Chi")) {
+				if (bPlayer.canSandbend() && bPlayer.hasElement(Element.EARTH) 
+						&& !bPlayer.canBendPassive(Element.AIR) && !bPlayer.canBendPassive(Element.CHI)) {
 					if (player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SAND
 							|| player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SANDSTONE 
 							|| player.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.RED_SANDSTONE) {
@@ -117,7 +118,7 @@ public class EarthPassive {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 			
-			if (bPlayer != null && bPlayer.canBendPassive("Earth") && bPlayer.canMetalbend()) {
+			if (bPlayer != null && bPlayer.canBendPassive(Element.EARTH) && bPlayer.canMetalbend()) {
 				if (player.isSneaking() && !bPlayer.isOnCooldown("MetalPassive")) {
 					Block block = player.getTargetBlock((HashSet<Material>) null, 5);
 					if (block == null) {

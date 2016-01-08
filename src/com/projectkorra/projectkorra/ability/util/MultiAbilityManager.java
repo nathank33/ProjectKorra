@@ -1,16 +1,9 @@
 package com.projectkorra.projectkorra.ability.util;
 
 import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.NewElement;
 import com.projectkorra.projectkorra.ProjectKorra;
-import com.projectkorra.projectkorra.ability.AirAbility;
-import com.projectkorra.projectkorra.ability.AvatarAbility;
-import com.projectkorra.projectkorra.ability.ChiAbility;
-import com.projectkorra.projectkorra.ability.EarthAbility;
-import com.projectkorra.projectkorra.ability.FireAbility;
-import com.projectkorra.projectkorra.ability.WaterAbility;
-import com.sun.java.util.jar.pack.Attribute.Layout.Element;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -30,12 +23,12 @@ public class MultiAbilityManager {
 
 	public MultiAbilityManager() {
 		ArrayList<MultiAbilityInfoSub> waterArms = new ArrayList<MultiAbilityInfoSub>();
-		waterArms.add(new MultiAbilityInfoSub("Pull", Element.Water, null));
-		waterArms.add(new MultiAbilityInfoSub("Punch", Element.Water, null));
-		waterArms.add(new MultiAbilityInfoSub("Grapple", Element.Water, null));
-		waterArms.add(new MultiAbilityInfoSub("Grab", Element.Water, null));
-		waterArms.add(new MultiAbilityInfoSub("Freeze", Element.Water, SubElement.Icebending));
-		waterArms.add(new MultiAbilityInfoSub("Spear", Element.Water, SubElement.Icebending));
+		waterArms.add(new MultiAbilityInfoSub("Pull", Element.WATER));
+		waterArms.add(new MultiAbilityInfoSub("Punch", Element.WATER));
+		waterArms.add(new MultiAbilityInfoSub("Grapple", Element.WATER));
+		waterArms.add(new MultiAbilityInfoSub("Grab", Element.WATER));
+		waterArms.add(new MultiAbilityInfoSub("Freeze", Element.ICE));
+		waterArms.add(new MultiAbilityInfoSub("Spear", Element.ICE));
 		multiAbilityList.add(new MultiAbilityInfo("WaterArms", waterArms));
 		manage();
 	}
@@ -51,7 +44,7 @@ public class MultiAbilityManager {
 			unbindMultiAbility(player);
 		playerSlot.put(player, player.getInventory().getHeldItemSlot());
 		playerBoundAbility.put(player, multiAbility);
-		BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		HashMap<Integer, String> currAbilities = new HashMap<Integer, String>();
 		for (int i : bPlayer.getAbilities().keySet()) {
 			currAbilities.put(i, bPlayer.getAbilities().get(i));
@@ -124,8 +117,13 @@ public class MultiAbilityManager {
 	 * @return true If player has the specified multiability active
 	 */
 	public static boolean hasMultiAbilityBound(Player player, String multiAbility) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null) {
+			return false;
+		}
+		
 		if (playerAbilities.containsKey(player)) {
-			if (!playerBoundAbility.get(player).equals(multiAbility) && GeneralMethods.getBoundAbility(player) != null)
+			if (!playerBoundAbility.get(player).equals(multiAbility) && bPlayer.getBoundAbility() != null)
 				return false;
 			return true;
 		}
@@ -166,8 +164,12 @@ public class MultiAbilityManager {
 	public static void scrollHotBarSlots() {
 		if (!playerAbilities.isEmpty()) {
 			for (Player player : playerAbilities.keySet()) {
+				BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+				if (bPlayer == null) {
+					continue;
+				}
 				if (playerBoundAbility.containsKey(player)) {
-					if (GeneralMethods.getBoundAbility(player) == null) {
+					if (bPlayer.getBoundAbility() == null) {
 						if (multiAbilityList.contains(getMultiAbility(playerBoundAbility.get(player)))) {
 							if (player.getInventory().getHeldItemSlot() > getMultiAbility(playerBoundAbility.get(player)).getAbilities().size()) {
 								player.getInventory().setHeldItemSlot(getMultiAbility(playerBoundAbility.get(player)).getAbilities().size() - 1);
@@ -190,7 +192,7 @@ public class MultiAbilityManager {
 	public static void unbindMultiAbility(Player player) {
 		if (playerAbilities.containsKey(player)) {
 			HashMap<Integer, String> prevBinds = playerAbilities.get(player);
-			BendingPlayer bPlayer = GeneralMethods.getBendingPlayer(player.getName());
+			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 			int lastNonNull = -1;
 			for (int i = 1; i < 10; i++) {
 				if (prevBinds.get(i) != null)
@@ -251,16 +253,14 @@ public class MultiAbilityManager {
 
 	public static class MultiAbilityInfoSub {
 		private String name;
-		private String element;
-		private String sub;
+		private Element element;
 
-		public MultiAbilityInfoSub(String name, String element, String sub) {
+		public MultiAbilityInfoSub(String name, Element element) {
 			this.name = name;
 			this.element = element;
-			this.sub = sub;
 		}
 
-		public String getElement() {
+		public Element getElement() {
 			return element;
 		}
 
@@ -268,11 +268,7 @@ public class MultiAbilityManager {
 			return name;
 		}
 
-		public String getSubElement() {
-			return sub;
-		}
-
-		public void setElement(String element) {
+		public void setElement(Element element) {
 			this.element = element;
 		}
 
@@ -280,12 +276,8 @@ public class MultiAbilityManager {
 			this.name = name;
 		}
 
-		public void setSubElement(String sub) {
-			this.sub = sub;
-		}
-
 		public ChatColor getAbilityColor() {
-			return NewElement.getElementColor(element)
+			return element != null ? element.getColor() : null;
 		}
 	}
 

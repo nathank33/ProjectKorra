@@ -107,7 +107,7 @@ public class BendingTabComplete implements TabCompleter {
 				if (args.length > 2 || !sender.hasPermission("bending.command.help"))
 					return new ArrayList<String>();
 				List<String> list = new ArrayList<String>();
-				for (Element e : Element.values()) {
+				for (Element e : Element.getElements()) {
 					list.add(e.toString());
 				}
 				List<String> abils = new ArrayList<String>();

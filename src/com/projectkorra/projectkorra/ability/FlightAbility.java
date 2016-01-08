@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class FlightAbility extends AirAbility implements SubAbility {
@@ -14,7 +16,12 @@ public abstract class FlightAbility extends AirAbility implements SubAbility {
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Flight";
+	public Element getElement() {
+		return Element.FLIGHT;
+	}
+	
+	@Override
+	public Element getParentElement() {
+		return Element.AIR;
 	}
 }

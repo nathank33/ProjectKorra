@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class BloodAbility extends WaterAbility implements SubAbility {
@@ -14,7 +16,12 @@ public abstract class BloodAbility extends WaterAbility implements SubAbility {
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Blood";
+	public Element getElement() {
+		return Element.BLOOD;
+	}
+	
+	@Override
+	public Element getParentElement() {
+		return Element.WATER;
 	}
 }

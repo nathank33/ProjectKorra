@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
+
 import org.bukkit.entity.Player;
 
 public abstract class LightningAbility extends FireAbility implements SubAbility {
@@ -14,8 +16,12 @@ public abstract class LightningAbility extends FireAbility implements SubAbility
 	}
 	
 	@Override
-	public String getSubElementName() {
-		return "Lightning";
+	public Element getElement() {
+		return Element.LIGHTNING;
 	}
 	
+	@Override
+	public Element getParentElement() {
+		return Element.FIRE;
+	}
 }

@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra.firebending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.FireAbility;
 
@@ -60,7 +61,7 @@ public class HeatControlExtinguish extends FireAbility {
 		} else if (bPlayer.getBoundAbilityName().equals("HeatControl") || hasAbility(player, FireJet.class)) {
 			player.setFireTicks(-1);
 			return false;
-		} else if (player.getFireTicks() > 80 && bPlayer.canBendPassive("Fire")) {
+		} else if (player.getFireTicks() > 80 && bPlayer.canBendPassive(Element.FIRE)) {
 			player.setFireTicks(80);
 		}
 		return true;

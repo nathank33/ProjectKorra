@@ -26,6 +26,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AirSwipe extends AirAbility {
@@ -48,6 +49,7 @@ public class AirSwipe extends AirAbility {
 	private double radius;
 	private double maxChargeFactor;
 	private Location origin;
+	private Random random;
 	private ConcurrentHashMap<Vector, Location> elements;
 	private ArrayList<Entity> affectedEntities;
 	
@@ -71,6 +73,7 @@ public class AirSwipe extends AirAbility {
 		this.range = getConfig().getDouble("Abilities.Air.AirSwipe.Range");
 		this.radius = getConfig().getDouble("Abilities.Air.AirSwipe.Radius");
 		this.maxChargeFactor = getConfig().getDouble("Abilities.Air.AirSwipe.chargeFactor");
+		this.random = new Random();
 		this.elements = new ConcurrentHashMap<>();
 		this.affectedEntities = new ArrayList<>();
 		
@@ -152,7 +155,7 @@ public class AirSwipe extends AirAbility {
 						}
 					} else {
 						playAirbendingParticles(location, particleCount, 0.2F, 0.2F, 0);
-						if (GeneralMethods.rand.nextInt(4) == 0) {
+						if (random.nextInt(4) == 0) {
 							playAirbendingSound(location);
 						}
 						affectPeople(location, direction);

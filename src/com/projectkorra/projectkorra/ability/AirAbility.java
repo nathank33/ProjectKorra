@@ -1,11 +1,11 @@
 package com.projectkorra.projectkorra.ability;
 
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.airbending.AirSpout;
 import com.projectkorra.projectkorra.airbending.Suffocate;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
@@ -31,8 +31,8 @@ public abstract class AirAbility extends ElementalAbility {
 	}
 	
 	@Override
-	public final String getElementName() {
-		return "Air";
+	public Element getElement() {
+		return Element.AIR;
 	}
 
 	/**
@@ -76,25 +76,6 @@ public abstract class AirAbility extends ElementalAbility {
 		}
 	}
 	
-	
-	/**
-	 * Gets the AirColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getChatColor() {
-		return ChatColor.valueOf(getConfig().getString("Properties.Chat.Colors.Air"));
-	}
-
-	/**
-	 * Gets the AirSubColor from the config.
-	 * 
-	 * @return Config specified ChatColor
-	 */
-	public static ChatColor getSubChatColor() {
-		return ChatColor.valueOf(getConfig().getString("Properties.Chat.Colors.AirSub"));
-	}
-
 	/**
 	 * Checks whether a location is within an AirShield.
 	 * 

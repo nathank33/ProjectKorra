@@ -146,7 +146,7 @@ public class PhaseChangeFreeze extends IceAbility {
 					}
 				}
 				
-				if (GeneralMethods.canBend(player.getName(), "PhaseChange")) {
+				if (bPlayer.canBend(getAbility("PhaseChange"))) {
 					double range = getNightFactor(REMOVE_RANGE, player.getWorld());
 					if (AvatarState.isAvatarState(player)) {
 						range = AvatarState.getValue(range);

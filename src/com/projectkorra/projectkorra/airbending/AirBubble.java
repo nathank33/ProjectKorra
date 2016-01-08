@@ -83,16 +83,16 @@ public class AirBubble extends AirAbility {
 	}
 
 	private void pushWater() {
-		if (GeneralMethods.isBender(player.getName(), Element.Air)) {
+		if (bPlayer.hasElement(Element.AIR)) {
 			radius = airRadius;
 		} else {
 			radius = waterRadius;
 		}
 		
-		if (GeneralMethods.isBender(player.getName(), Element.Water) && isNight(player.getWorld())) {
+		if (bPlayer.hasElement(Element.WATER) && isNight(player.getWorld())) {
 			radius = WaterAbility.getNightFactor(waterRadius, player.getWorld());
 		}
-		if (airRadius > radius && GeneralMethods.isBender(player.getName(), Element.Air)) {
+		if (airRadius > radius && bPlayer.hasElement(Element.AIR)) {
 			radius = airRadius;
 		}
 

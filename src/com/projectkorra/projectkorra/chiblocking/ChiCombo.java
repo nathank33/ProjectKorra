@@ -34,7 +34,7 @@ public class ChiCombo extends ChiAbility {
 		if (ability.equalsIgnoreCase("Immobilize")) {
 			this.cooldown = getConfig().getLong("Abilities.Chi.ChiCombo.Immobilize.Cooldown");
 			this.duration = getConfig().getLong("Abilities.Chi.ChiCombo.Immobilize.ParalyzeDuration");
-			if (!GeneralMethods.canBend(player.getName(), name) || bPlayer.isOnCooldown(this)) {
+			if (!bPlayer.canBendIgnoreBinds(this)) {
 				return;
 			} else {
 				target = GeneralMethods.getTargetedEntity(player, 5);

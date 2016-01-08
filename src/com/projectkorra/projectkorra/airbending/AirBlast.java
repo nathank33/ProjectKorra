@@ -1,5 +1,7 @@
 package com.projectkorra.projectkorra.airbending;
 
+import com.projectkorra.projectkorra.BendingPlayer;
+import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AirAbility;
@@ -135,17 +137,16 @@ public class AirBlast extends AirAbility {
 		}
 
 		Location origin = ORIGINS.get(player);
-		if (player.isDead() || !player.isOnline()) {
+		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null || player.isDead() || !player.isOnline()) {
 			return;
 		} else if (!origin.getWorld().equals(player.getWorld())) {
 			ORIGINS.remove(player);
 			return;
-		} else if (GeneralMethods.getBoundAbility(player) == null
-				|| !GeneralMethods.getBoundAbility(player).equalsIgnoreCase("AirBlast")
-				|| !GeneralMethods.canBend(player.getName(), "AirBlast")) {
+		} else if (!bPlayer.canBendIgnoreCooldowns(getAbility("AirBlast"))) {
 			ORIGINS.remove(player);
 			return;
-		} else if (origin.distance(player.getEyeLocation()) > ORIGIN_SELECT_RANGE) {
+		} else if (origin.distanceSquared(player.getEyeLocation()) > ORIGIN_SELECT_RANGE * ORIGIN_SELECT_RANGE) {
 			ORIGINS.remove(player);
 			return;
 		}
@@ -160,7 +161,7 @@ public class AirBlast extends AirAbility {
 	}
 
 	public static void setOrigin(Player player) {
-		Location location = GeneralMethods.getTargetedLocation(player, ORIGIN_SELECT_RANGE, GeneralMethods.nonOpaque);
+		Location location = GeneralMethods.getTargetedLocation(player, ORIGIN_SELECT_RANGE, GeneralMethods.NON_OPAQUE);
 		if (location.getBlock().isLiquid() || GeneralMethods.isSolid(location.getBlock())) {
 			return;
 		} else if (GeneralMethods.isRegionProtectedFromBuild(player, "AirBlast", location)) {
@@ -235,9 +236,9 @@ public class AirBlast extends AirAbility {
 
 			GeneralMethods.setVelocity(entity, velocity);
 			if (source != null) {
-				new HorizontalVelocityTracker(entity, player, 200l, "AirBurst", Element.Air, null);
+				new HorizontalVelocityTracker(entity, player, 200l, "AirBurst", Element.AIR);
 			} else {
-				new HorizontalVelocityTracker(entity, player, 200l, "AirBlast", Element.Air, null);
+				new HorizontalVelocityTracker(entity, player, 200l, "AirBlast", Element.AIR);
 			}
 
 			entity.setFallDistance(0);
