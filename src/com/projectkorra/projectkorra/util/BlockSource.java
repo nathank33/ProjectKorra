@@ -45,8 +45,11 @@ public class BlockSource {
 	 */
 	public static void update(Player player, ClickType clickType) {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+		if (bPlayer == null) {
+			return;
+		}
+
 		CoreAbility coreAbil = bPlayer.getBoundAbility();
-		
 		if (coreAbil == null) {
 			return;
 		}

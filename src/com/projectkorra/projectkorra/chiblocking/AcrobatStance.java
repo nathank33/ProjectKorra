@@ -60,6 +60,16 @@ public class AcrobatStance extends ChiAbility {
 		return 0;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+	
 	public int getSpeed() {
 		return speed;
 	}

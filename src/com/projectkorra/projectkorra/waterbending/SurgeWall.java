@@ -37,7 +37,7 @@ public class SurgeWall extends WaterAbility {
 	private long interval;
 	private long cooldown;
 	private double radius;
-	private double range;	
+	private double range;
 	private Block sourceBlock;
 	private Location location;
 	private Location firstDestination;
@@ -135,7 +135,7 @@ public class SurgeWall extends WaterAbility {
 		cancelPrevious();
 		Block block = BlockSource.getWaterSourceBlock(player, range, ClickType.LEFT_CLICK, true, true, bPlayer.canPlantbend());
 		
-		if (block != null) {
+		if (block != null && !GeneralMethods.isRegionProtectedFromBuild(this, block.getLocation())) {
 			sourceBlock = block;
 			focusBlock();
 			return true;
@@ -465,6 +465,16 @@ public class SurgeWall extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isProgressing() {

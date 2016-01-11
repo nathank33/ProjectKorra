@@ -263,6 +263,16 @@ public class IceSpikePillar extends IceAbility {
 	public String getName() {
 		return "IceSpike";
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public int getHeight() {
 		return height;

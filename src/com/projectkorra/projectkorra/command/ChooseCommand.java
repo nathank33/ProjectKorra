@@ -90,6 +90,10 @@ public class ChooseCommand extends PKCommand {
 		Element element = Element.getElement(elementName);
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(target);
 		
+		if (bPlayer == null) {
+			return;
+		}
+		
 		bPlayer.setElement(element);
 		ChatColor color = element != null ? element.getColor() : null;
 		

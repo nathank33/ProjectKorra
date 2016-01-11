@@ -135,9 +135,7 @@ public class PhaseChangeFreeze extends IceAbility {
 			for (Player player : block.getWorld().getPlayers()) {
 				BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 				if (bPlayer == null || !player.isOnline()) {
-					return true;
-				} else if (bPlayer.getBoundAbilityName() == null) {
-					return true;
+					continue;
 				}
 				
 				if (bPlayer.getBoundAbilityName().equalsIgnoreCase("OctopusForm")) {
@@ -146,9 +144,9 @@ public class PhaseChangeFreeze extends IceAbility {
 					}
 				}
 				
-				if (bPlayer.canBend(getAbility("PhaseChange"))) {
+				if (bPlayer.canBendIgnoreBindsCooldowns(getAbility("PhaseChange"))) {
 					double range = getNightFactor(REMOVE_RANGE, player.getWorld());
-					if (AvatarState.isAvatarState(player)) {
+					if (bPlayer.isAvatarState()) {
 						range = AvatarState.getValue(range);
 					}
 					if (block.getLocation().distanceSquared(player.getLocation()) <= range * range) {
@@ -192,6 +190,16 @@ public class PhaseChangeFreeze extends IceAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public static boolean isOverloading() {

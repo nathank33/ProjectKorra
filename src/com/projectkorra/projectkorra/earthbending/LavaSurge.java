@@ -173,7 +173,7 @@ public class LavaSurge extends LavaAbility {
 	}
 	
 	public boolean canMoveThrough(Block block) {
-		if(isTransparentToEarthbending(startLocation.getBlock()) ||
+		if(isTransparent(startLocation.getBlock()) ||
 				isEarthbendable(startLocation.getBlock()) ||
 				isLavabendable(startLocation.getBlock())) {
 			return true;
@@ -270,7 +270,7 @@ public class LavaSurge extends LavaAbility {
 
 	@Override
 	public String getName() {
-		return "LavaSurge";
+		return null; // disabled
 	}
 
 	@Override
@@ -281,6 +281,16 @@ public class LavaSurge extends LavaAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 	
 	public static HashSet<FallingBlock> getAllFallingBlocks() {

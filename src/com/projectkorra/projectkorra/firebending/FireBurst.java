@@ -3,7 +3,6 @@ package com.projectkorra.projectkorra.firebending;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.FireAbility;
-import com.projectkorra.projectkorra.avatar.AvatarState;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -47,7 +46,7 @@ public class FireBurst extends FireAbility {
 		if (isDay(player.getWorld())) {
 			chargeTime /= getDayFactor();
 		}
-		if (AvatarState.isAvatarState(player) || isSozinsComet(player.getWorld())) {
+		if (bPlayer.isAvatarState() || isSozinsComet(player.getWorld())) {
 			chargeTime = 0;
 		}
 
@@ -179,6 +178,16 @@ public class FireBurst extends FireAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isCharged() {

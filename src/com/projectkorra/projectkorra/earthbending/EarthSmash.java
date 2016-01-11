@@ -90,7 +90,7 @@ public class EarthSmash extends EarthAbility {
 		this.affectedBlocks = new ArrayList<>();
 		
 		if (type == ClickType.SHIFT_DOWN || type == ClickType.SHIFT_UP && !player.isSneaking()) {
-			if (AvatarState.isAvatarState(player)) {
+			if (bPlayer.isAvatarState()) {
 				grabRange = AvatarState.getValue(grabRange);
 				chargeTime = 0;
 				cooldown = 0;
@@ -200,7 +200,7 @@ public class EarthSmash extends EarthAbility {
 
 				// Check to make sure the new location is available to move to
 				for (Block block : getBlocks()) {
-					if (block.getType() != Material.AIR && !isTransparentToEarthbending(block)) {
+					if (block.getType() != Material.AIR && !isTransparent(block)) {
 						location = oldLoc;
 						break;
 					}
@@ -232,7 +232,7 @@ public class EarthSmash extends EarthAbility {
 				// If an earthsmash runs into too many blocks we should remove it
 				int badBlocksFound = 0;
 				for (Block block : getBlocks()) {
-					if (block.getType() != Material.AIR && (!isTransparentToEarthbending(block) 
+					if (block.getType() != Material.AIR && (!isTransparent(block) 
 							|| block.getType() == Material.WATER 
 							|| block.getType() == Material.STATIONARY_WATER)) {
 						badBlocksFound++;
@@ -327,7 +327,7 @@ public class EarthSmash extends EarthAbility {
 				//Make sure there is a clear path upward otherwise remove
 				for (int y = 0; y <= 3; y++) {
 					Block tempBlock = location.clone().add(0, y, 0).getBlock();
-					if (!isTransparentToEarthbending(tempBlock) && tempBlock.getType() != Material.AIR) {
+					if (!isTransparent(tempBlock) && tempBlock.getType() != Material.AIR) {
 						remove();
 						return;
 					}
@@ -396,7 +396,7 @@ public class EarthSmash extends EarthAbility {
 		}
 		for (BlockRepresenter blockRep : currentBlocks) {
 			Block block = location.clone().add(blockRep.getX(), blockRep.getY(), blockRep.getZ()).getBlock();
-			if (player != null && isTransparentToEarthbending(block)) {
+			if (player != null && isTransparent(block)) {
 				affectedBlocks.add(new TempBlock(block, blockRep.getType(), blockRep.getData()));
 				getPreventEarthbendingBlocks().add(block);
 			}
@@ -693,6 +693,16 @@ public class EarthSmash extends EarthAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isAllowGrab() {

@@ -142,4 +142,14 @@ public class HealingWaters extends HealingAbility {
 		return 0;
 	}
 	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+	
 }

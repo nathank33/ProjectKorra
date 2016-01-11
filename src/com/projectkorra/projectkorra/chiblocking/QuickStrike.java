@@ -49,6 +49,16 @@ public class QuickStrike extends ChiAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public int getDamage() {
 		return damage;

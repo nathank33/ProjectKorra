@@ -16,6 +16,7 @@ import com.projectkorra.projectkorra.configuration.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
@@ -219,19 +220,26 @@ public abstract class CoreAbility implements Ability {
 	
 	public static void registerAbilities() {
 		ABILITIES_BY_NAME.clear();
-		registerStockAbilities();
-		registerAddonAbilities();
+		registerPluginAbilities(ProjectKorra.plugin, "com.projectkorra");
+		registerAddonAbilities("/Abilities/");
 	}
 
-	private static void registerStockAbilities() {
-		Class<?> pluginClass = ProjectKorra.class;
+	public static void registerPluginAbilities(JavaPlugin plugin, String packagePrefix) {
+		if (plugin == null) {
+			return;
+		}
+		
+		Class<?> pluginClass = plugin.getClass();
 		ClassLoader loader = pluginClass.getClassLoader();
 		ReflectionFactory rf = ReflectionFactory.getReflectionFactory();
 		
 		try {
-			for (final ClassInfo info : ClassPath.from(loader).getTopLevelClasses()) {
-				Class<?> clazz = null;
+			for (final ClassInfo info : ClassPath.from(loader).getAllClasses()) {
+				if (!info.getPackageName().startsWith(packagePrefix)) {
+					continue;
+				}
 				
+				Class<?> clazz = null;
 				try {
 					clazz = info.load();
 					if (!CoreAbility.class.isAssignableFrom(clazz) || clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
@@ -245,7 +253,6 @@ public abstract class CoreAbility implements Ability {
 					if (ability != null && ability.getName() != null) {
 						ABILITIES_BY_NAME.put(ability.getName().toLowerCase(), ability);
 					}
-					ProjectKorra.log.info(ability.getElement() + " " + ability.getName());
 				} catch (Exception e) {
 				} catch (Error e) {
 				}
@@ -255,9 +262,9 @@ public abstract class CoreAbility implements Ability {
 		}
 	}
 	
-	private static void registerAddonAbilities() {
+	public static void registerAddonAbilities(String folder) {
 		ProjectKorra plugin = ProjectKorra.plugin;
-		File path = new File(plugin.getDataFolder().toString() + "/Abilities/");
+		File path = new File(plugin.getDataFolder().toString() + folder);
 		AbilityLoader<CoreAbility> abilityLoader = new AbilityLoader<CoreAbility>(plugin, path);
 		List<CoreAbility> loadedAbilities = abilityLoader.load(CoreAbility.class, CoreAbility.class);
 		
@@ -276,10 +283,12 @@ public abstract class CoreAbility implements Ability {
 				
 				if (coreAbil instanceof ComboAbility) {
 					ComboAbility combo = (ComboAbility) coreAbil;
-					ComboManager.comboAbilityList.put(name, new ComboManager.ComboAbilityInfo(name, combo.getCombination(), combo));
-					ComboManager.descriptions.put(name, coreAbil.getDescription());
-					ComboManager.instructions.put(name, combo.getInstructions());
-					ComboManager.authors.put(name, addon.getAuthor());
+					if (combo.getCombination() != null) {
+						ComboManager.comboAbilityList.put(name, new ComboManager.ComboAbilityInfo(name, combo.getCombination(), combo));
+						ComboManager.descriptions.put(name, coreAbil.getDescription());
+						ComboManager.instructions.put(name, combo.getInstructions());
+						ComboManager.authors.put(name, addon.getAuthor());
+					}
 				}
 				
 				if (coreAbil instanceof MultiAbility) {
@@ -321,7 +330,10 @@ public abstract class CoreAbility implements Ability {
 	
 	@Override
 	public String getDescription() {
-		return getConfig().getString("Abilities." + getElement() + "." + getName() + ".Description");
+		if (this instanceof SubAbility) {
+			return getConfig().getString("Abilities." + ((SubAbility) this).getParentElement().getName() + "." + getName() + ".Description");
+		}
+		return getConfig().getString("Abilities." + getElement().getName() + "." + getName() + ".Description");
 	}
 
 	@Override

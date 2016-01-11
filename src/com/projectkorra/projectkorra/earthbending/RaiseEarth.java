@@ -42,7 +42,7 @@ public class RaiseEarth extends EarthAbility {
 		}
 
 		try {
-			if (AvatarState.isAvatarState(player)) {
+			if (bPlayer.isAvatarState()) {
 				height = (int) (2.0 / 5.0 * (double) AvatarState.getValue(height));
 			}
 			block = BlockSource.getEarthSourceBlock(player, range, ClickType.LEFT_CLICK);
@@ -160,6 +160,16 @@ public class RaiseEarth extends EarthAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public int getDistance() {

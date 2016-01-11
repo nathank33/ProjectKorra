@@ -131,9 +131,12 @@ public class Preset {
 		if (abilities == null) {
 
 		}
+		
 		boolean boundAll = true;
 		for (int i = 1; i <= 9; i++) {
-			if (!bPlayer.canBend(CoreAbility.getAbility(abilities.get(i)))) {
+			String abilName = abilities.get(i);
+			CoreAbility coreAbil = CoreAbility.getAbility(abilName);
+			if (coreAbil != null && !bPlayer.canBind(coreAbil)) {
 				abilities.remove(i);
 				boundAll = false;
 			}

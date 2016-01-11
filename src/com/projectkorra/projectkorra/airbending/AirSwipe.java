@@ -188,7 +188,7 @@ public class AirSwipe extends AirAbility {
 							}
 						}
 						if (entities.size() < MAX_AFFECTABLE_ENTITIES) {
-							if (AvatarState.isAvatarState(player)) {
+							if (bPlayer.isAvatarState()) {
 								GeneralMethods.setVelocity(entity, fDirection.multiply(AvatarState.getValue(pushFactor)));
 							} else {
 								GeneralMethods.setVelocity(entity, fDirection.multiply(pushFactor));
@@ -208,7 +208,7 @@ public class AirSwipe extends AirAbility {
 							elements.remove(fDirection);
 						}
 					} else if (entity.getEntityId() != player.getEntityId() && !(entity instanceof LivingEntity)) {
-						if (AvatarState.isAvatarState(player)) {
+						if (bPlayer.isAvatarState()) {
 							GeneralMethods.setVelocity(entity, fDirection.multiply(AvatarState.getValue(pushFactor)));
 						} else {
 							GeneralMethods.setVelocity(entity, fDirection.multiply(pushFactor));
@@ -270,7 +270,7 @@ public class AirSwipe extends AirAbility {
 				double factor = 1;
 				if (System.currentTimeMillis() >= startTime + maxChargeTime) {
 					factor = maxChargeFactor;
-				} else if (AvatarState.isAvatarState(player)) {
+				} else if (bPlayer.isAvatarState()) {
 					factor = AvatarState.getValue(factor);
 				} else {
 					factor = maxChargeFactor * (double) (System.currentTimeMillis() - startTime) / (double) maxChargeTime;
@@ -301,6 +301,16 @@ public class AirSwipe extends AirAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public Location getOrigin() {

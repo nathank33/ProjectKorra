@@ -48,7 +48,7 @@ public class AirShield extends AirAbility {
 		this.random = new Random();
 		this.angles = new HashMap<>();
 
-		if (AvatarState.isAvatarState(player) && CoreAbility.hasAbility(player, AirShield.class) && isToggledByAvatarState) {
+		if (bPlayer.isAvatarState() && CoreAbility.hasAbility(player, AirShield.class) && isToggledByAvatarState) {
 			CoreAbility.getAbility(player, AirShield.class).remove();
 			return;
 		}
@@ -83,7 +83,7 @@ public class AirShield extends AirAbility {
 		if (player.getEyeLocation().getBlock().isLiquid()) {
 			remove();
 			return;
-		} else if (!AvatarState.isAvatarState(player) || !isToggledByAvatarState) {
+		} else if (!bPlayer.isAvatarState() || !isToggledByAvatarState) {
 			if (!player.isSneaking() || !bPlayer.canBend(this)) {
 				remove();
 				return;
@@ -125,7 +125,7 @@ public class AirShield extends AirAbility {
 				vz = (x * Math.sin(angle) + z * Math.cos(angle)) / mag;
 
 				Vector velocity = entity.getVelocity();
-				if (AvatarState.isAvatarState(player)) {
+				if (bPlayer.isAvatarState()) {
 					velocity.setX(AvatarState.getValue(vx));
 					velocity.setZ(AvatarState.getValue(vz));
 				} else {
@@ -196,6 +196,16 @@ public class AirShield extends AirAbility {
 	@Override
 	public long getCooldown() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isToggledByAvatarState() {

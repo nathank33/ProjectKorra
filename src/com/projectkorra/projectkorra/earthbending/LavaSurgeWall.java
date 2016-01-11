@@ -56,7 +56,7 @@ public class LavaSurgeWall extends LavaAbility {
 			return;
 		}
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			radius = AvatarState.getValue(radius);
 			range = AvatarState.getValue(range);
 		}
@@ -344,6 +344,16 @@ public class LavaSurgeWall extends LavaAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
 	public boolean isProgressing() {
 		return progressing;
 	}

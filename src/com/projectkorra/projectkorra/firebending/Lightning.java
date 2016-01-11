@@ -152,7 +152,7 @@ public class Lightning extends LightningAbility {
 	 * @return true if the block is transparent
 	 */
 	private boolean isTransparent(Player player, Block block) {
-		if (isTransparentToEarthbending(block)) {
+		if (isTransparent(block)) {
 			if (GeneralMethods.isRegionProtectedFromBuild(this, block.getLocation())) {
 				return false;
 			} else if (isIce(block)) {
@@ -612,6 +612,16 @@ public class Lightning extends LightningAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
 	public boolean isCharged() {
 		return charged;
 	}

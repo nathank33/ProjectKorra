@@ -84,7 +84,7 @@ public class AirSpout extends AirAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
+		if (player.isDead() || !player.isOnline() || !bPlayer.canBind(this)) {
 			remove();
 			return;
 		}
@@ -160,6 +160,16 @@ public class AirSpout extends AirAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
 	}
 
 	public int getAngle() {

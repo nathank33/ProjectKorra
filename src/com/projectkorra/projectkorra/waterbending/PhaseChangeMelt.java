@@ -118,6 +118,16 @@ public class PhaseChangeMelt extends IceAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public int getSeaLevel() {
 		return seaLevel;

@@ -557,6 +557,16 @@ public class WaterManipulation extends WaterAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public boolean isProgressing() {
 		return progressing;

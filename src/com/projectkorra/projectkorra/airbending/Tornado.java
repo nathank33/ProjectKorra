@@ -60,11 +60,12 @@ public class Tornado extends AirAbility {
 
 		this.flight = new Flight(player);
 		player.setAllowFlight(true);
+		start();
 	}
 
 	@Override
 	public void progress() {
-		if (player.getEyeLocation().getBlock().isLiquid() || !player.isSneaking() || !bPlayer.canBend(this)) {
+		if (player.getEyeLocation().getBlock().isLiquid() || !player.isSneaking() || !bPlayer.canBendIgnoreCooldowns(this)) {
 			remove();
 			return;
 		} else if (GeneralMethods.isRegionProtectedFromBuild(this, origin)) {
@@ -194,6 +195,16 @@ public class Tornado extends AirAbility {
 	@Override
 	public long getCooldown() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public Location getOrigin() {

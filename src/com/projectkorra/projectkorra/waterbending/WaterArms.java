@@ -208,7 +208,7 @@ public class WaterArms extends WaterAbility {
 
 		if (!(getRightHandPos().getBlock().getLocation().equals(r1.getBlock().getLocation()))) {
 			new TempBlock(r1.getBlock(), Material.STATIONARY_WATER, (byte) 5);
-			BLOCK_REVERT_TIMES.put(r1.getBlock(), 0L);
+			BLOCK_REVERT_TIMES.put(r1.getBlock(), System.currentTimeMillis() + 1);
 		}
 
 		Location r2 = GeneralMethods.getRightSide(player.getLocation(), 2).add(0, 1.5, 0);
@@ -267,7 +267,7 @@ public class WaterArms extends WaterAbility {
 		}
 
 		new TempBlock(l2.getBlock(), Material.STATIONARY_WATER, (byte) 8);
-		BLOCK_REVERT_TIMES.put(l2.getBlock(), 0L);
+		BLOCK_REVERT_TIMES.put(l2.getBlock(), System.currentTimeMillis() + 1);
 
 		for (int j = 0; j <= initLength; j++) {
 			Location l3 = l2.clone().toVector().add(player.getLocation().clone().getDirection().multiply(j)).toLocation(player.getWorld());
@@ -280,10 +280,10 @@ public class WaterArms extends WaterAbility {
 
 			if (j >= 1 && selectedSlot == freezeSlot && bPlayer.canIcebend()) {
 				new TempBlock(l3.getBlock(), Material.ICE, (byte) 0);
-				BLOCK_REVERT_TIMES.put(l3.getBlock(), System.currentTimeMillis());
+				BLOCK_REVERT_TIMES.put(l3.getBlock(), System.currentTimeMillis() + 1);
 			} else {
 				new TempBlock(l3.getBlock(), Material.STATIONARY_WATER, (byte) 8);
-				BLOCK_REVERT_TIMES.put(l3.getBlock(), System.currentTimeMillis());
+				BLOCK_REVERT_TIMES.put(l3.getBlock(), System.currentTimeMillis() + 1);
 			}
 		}
 
@@ -390,6 +390,12 @@ public class WaterArms extends WaterAbility {
 
 	public static void progressAllCleanup() {
 		progressRevert(false);
+		/*
+		 * There is currently a bug where waterArms will display the arms and then
+		 * progressRevert will revert the same blocks in the same tick before the user is
+		 * able to see them, thus causing invisible arms. Simple fix is just to display the arms
+		 * again.
+		 */
 		for (WaterArms waterArms : getAbilities(WaterArms.class)) {
 			waterArms.displayLeftArm();
 			waterArms.displayRightArm();
@@ -591,6 +597,16 @@ public class WaterArms extends WaterAbility {
 	@Override
 	public Location getLocation() {
 		return player != null ? player.getLocation() : null;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isCooldownLeft() {

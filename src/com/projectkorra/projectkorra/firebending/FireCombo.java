@@ -3,9 +3,11 @@ package com.projectkorra.projectkorra.firebending;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.ComboAbility;
 import com.projectkorra.projectkorra.ability.ElementalAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.ability.util.ComboManager.AbilityInformation;
 import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.util.ClickType;
@@ -26,7 +28,12 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-public class FireCombo extends FireAbility {
+/*
+ * TODO: Combo classes should eventually be rewritten so that each combo is treated
+ * as an individual ability. In the mean time, we will just place "fake"
+ * classes so that CoreAbility will register each ability. 
+ */
+public class FireCombo extends FireAbility implements ComboAbility {
 	
 	private static final ArrayList<String> BLOCKABLE_ABILITIES = new ArrayList<String>() {
 		private static final long serialVersionUID = 0; {
@@ -573,6 +580,31 @@ public class FireCombo extends FireAbility {
 		return cooldown;
 	}
 	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
+	@Override
+	public String getInstructions() {
+		return null;
+	}
+
+	@Override
+	public Object createNewComboInstance(Player player) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<AbilityInformation> getCombination() {
+		return null;
+	}
+	
 	public boolean isHiddenAbility() {
 		return true;
 	}
@@ -725,4 +757,69 @@ public class FireCombo extends FireAbility {
 		this.location = location;
 	}
 	
+	public class FireKick extends FireCombo {
+
+		public FireKick(Player player, String name) {
+			super(player, "FireKick");
+		}
+		
+		@Override
+		public String getName() {
+			return "FireKick";
+		}
+		
+	}
+		
+	public class FireSpin extends FireCombo {
+
+		public FireSpin(Player player, String name) {
+			super(player, "FireSpin");
+		}
+		
+		@Override
+		public String getName() {
+			return "FireSpin";
+		}
+		
+	}
+	
+	public class FireWheel extends FireCombo {
+
+		public FireWheel(Player player, String name) {
+			super(player, "FireWheel");
+		}
+		
+		@Override
+		public String getName() {
+			return "FireWheel";
+		}
+		
+	}
+	
+	public class JetBlast extends FireCombo {
+
+		public JetBlast(Player player, String name) {
+			super(player, "JetBlast");
+		}
+		
+		@Override
+		public String getName() {
+			return "JetBlast";
+		}
+		
+	}
+	
+	public class JetBlaze extends FireCombo {
+
+		public JetBlaze(Player player, String name) {
+			super(player, "JetBlaze");
+		}
+		
+		@Override
+		public String getName() {
+			return "JetBlaze";
+		}
+
+	}
+
 }

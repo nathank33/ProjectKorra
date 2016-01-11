@@ -25,8 +25,8 @@ public class AirPassive {
 			if (level < oldlevel) {
 				level = 0;
 			} else {
-				float factor = (float) ConfigManager.getConfig().getDouble("Abilities.Air.Passive.Factor");
-				level = (level - oldlevel) * factor + oldlevel;
+				double factor = getFactor(); 
+				level = (float) ((level - oldlevel) * factor + oldlevel);
 			}
 			FOOD.replace(player, level);
 			return level;
@@ -56,5 +56,9 @@ public class AirPassive {
 				}
 			}
 		}
+	}
+	
+	public static double getFactor() {
+		return ConfigManager.getConfig().getDouble("Abilities.Air.Passive.Factor");
 	}
 }

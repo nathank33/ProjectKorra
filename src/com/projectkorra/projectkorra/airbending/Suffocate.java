@@ -84,7 +84,7 @@ public class Suffocate extends AirAbility {
 		this.targets = new ArrayList<LivingEntity>();
 		this.tasks = new ArrayList<BukkitRunnable>();
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			cooldown = 0;
 			chargeTime = 0;
 			requireConstantAim = false;
@@ -102,7 +102,7 @@ public class Suffocate extends AirAbility {
 			particleCount = 2;
 		}
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			for (Entity ent : GeneralMethods.getEntitiesAroundPoint(player.getLocation(), range)) {
 				if (ent instanceof LivingEntity && !ent.equals(player)) {
 					targets.add((LivingEntity) ent);
@@ -133,8 +133,10 @@ public class Suffocate extends AirAbility {
 	public void progress() {
 		for (int i = 0; i < targets.size(); i++) {
 			LivingEntity target = targets.get(i);
-			if (target.isDead() || !target.getWorld().equals(player.getWorld())
-					|| target.getLocation().distanceSquared(player.getEyeLocation()) > range * range) {
+			if (target.isDead() 
+					|| !target.getWorld().equals(player.getWorld())
+					|| target.getLocation().distanceSquared(player.getEyeLocation()) > range * range
+					|| GeneralMethods.isRegionProtectedFromBuild(this, target.getLocation())) {
 				breakSuffocateLocal(target);
 				i--;
 			} else if (target instanceof Player) {
@@ -461,6 +463,16 @@ public class Suffocate extends AirAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isStarted() {

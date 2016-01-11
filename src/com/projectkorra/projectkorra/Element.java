@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 public class Element {
 	
+	private static final HashMap<String, Element> ALL_ELEMENTS = new HashMap<>(); // Must be initialized first
+	
 	public static final Element AIR = new Element("Air");
 	public static final Element WATER = new Element("Water");
 	public static final Element EARTH = new Element("Earth");
@@ -27,9 +29,8 @@ public class Element {
 	private static final Element[] ELEMENTS = {AIR, WATER, EARTH, FIRE, CHI, FLIGHT, SPIRITUAL, BLOOD, HEALING, ICE, PLANT, LAVA, METAL, SAND, LIGHTNING, COMBUSTION};
 	private static final Element[] MAIN_ELEMENTS = {AIR, WATER, EARTH, FIRE, CHI};
 	private static final SubElement[] SUB_ELEMENTS = {FLIGHT, SPIRITUAL, BLOOD, HEALING, ICE, PLANT, LAVA, METAL, SAND, LIGHTNING, COMBUSTION};
-	private static final HashMap<String, Element> ALL_ELEMENTS = new HashMap<>();
 	
-	private final String name;
+	private String name;
 
 	private Element(String name) {
 		this.name = name;
@@ -42,6 +43,11 @@ public class Element {
 	
 	public String getName() {
 		return name;
+	}
+	
+	@Override
+	public String toString() {
+		return getColor() + getName();
 	}
 	
 	public static Element getElement(String name) {
@@ -72,6 +78,7 @@ public class Element {
 			this.parentElement = parentElement;
 		}
 		
+		@Override
 		public ChatColor getColor() {
 			return ChatColor.valueOf(ProjectKorra.plugin.getConfig().getString("Properties.Chat.Colors." + parentElement.name + "Sub"));
 		}

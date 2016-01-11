@@ -147,6 +147,16 @@ public class Collapse extends EarthAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+
 	public Location getOrigin() {
 		return origin;
 	}

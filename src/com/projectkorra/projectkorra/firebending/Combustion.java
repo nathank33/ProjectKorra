@@ -53,7 +53,7 @@ public class Combustion extends CombustionAbility {
 		this.direction = player.getEyeLocation().getDirection().normalize();
 		this.location = origin.clone();
 		
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			range = AvatarState.getValue(range);
 			damage = AvatarState.getValue(damage);
 		} else if (isDay(player.getWorld())) {
@@ -116,6 +116,9 @@ public class Combustion extends CombustionAbility {
 		if (!bPlayer.canBendIgnoreCooldowns(this)) {
 			remove();
 			return;
+		} else if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
+			remove();
+			return;
 		}
 
 		speedFactor = speed * (ProjectKorra.time_step / 1000.0);
@@ -161,6 +164,16 @@ public class Combustion extends CombustionAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isBreakBlocks() {

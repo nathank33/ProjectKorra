@@ -158,6 +158,16 @@ public class Tremorsense extends EarthAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public byte getLightThreshold() {
 		return lightThreshold;

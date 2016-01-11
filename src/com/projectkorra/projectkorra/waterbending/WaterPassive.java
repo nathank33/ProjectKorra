@@ -2,7 +2,6 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
-import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
@@ -33,24 +32,29 @@ public class WaterPassive {
 	}
 
 	public static void handlePassive() {
-		double swimSpeed = ConfigManager.getConfig().getDouble("Abilities.Water.Passive.SwimSpeedFactor");
+		double swimSpeed = getSwimSpeed();
 		
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 			if (bPlayer == null) {
 				continue;
 			}
-			/*
+			
 			String ability = bPlayer.getBoundAbilityName();
-			if (GeneralMethods.canBendPassive(player.getName(), Element.Water)) {
+			CoreAbility coreAbil = CoreAbility.getAbility(ability);
+			if (bPlayer.canBendPassive(Element.WATER)) {
 				if (CoreAbility.hasAbility(player, WaterSpout.class) || CoreAbility.hasAbility(player, EarthArmor.class)) {
 					continue;
-				} else if (!AbilityModuleManager.shiftabilities.contains(ability)) {
+				} else if (coreAbil == null || (coreAbil != null && !coreAbil.isSneakAbility())) {
 					if (player.isSneaking() && WaterAbility.isWater(player.getLocation().getBlock())) {
 						player.setVelocity(player.getEyeLocation().getDirection().clone().normalize().multiply(swimSpeed));
 					}
 				}
-			}*/
+			}
 		}
+	}
+	
+	public static double getSwimSpeed() {
+		return ConfigManager.getConfig().getDouble("Abilities.Water.Passive.SwimSpeedFactor");
 	}
 }

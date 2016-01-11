@@ -1,5 +1,6 @@
 package com.projectkorra.projectkorra.firebending;
 
+import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.waterbending.PlantRegrowth;
@@ -67,7 +68,7 @@ public class BlazeArc extends FireAbility {
 	}
 
 	@Override
-	public void progress() {
+	public void progress() {		
 		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
 			remove();
 			return;
@@ -75,12 +76,18 @@ public class BlazeArc extends FireAbility {
 			location = location.clone().add(direction);
 			time = System.currentTimeMillis();
 			
-			if (location.distanceSquared(origin) > range * range) {
-				remove();
+			Block block = location.getBlock();
+			if (block.getType() == Material.FIRE) {
 				return;
 			}
 			
-			Block block = location.getBlock();
+			if (location.distanceSquared(origin) > range * range) {
+				remove();
+				return;
+			} else if (GeneralMethods.isRegionProtectedFromBuild(this, location)) {
+				return;
+			}
+			
 			if (isIgnitable(player, block)) {
 				ignite(block);
 			} else if (isIgnitable(player, block.getRelative(BlockFace.DOWN))) {
@@ -180,6 +187,16 @@ public class BlazeArc extends FireAbility {
 	@Override
 	public long getCooldown() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public long getTime() {

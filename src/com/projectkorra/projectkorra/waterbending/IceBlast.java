@@ -63,14 +63,14 @@ public class IceBlast extends IceAbility {
 
 		block(player);
 		range = getNightFactor(range, player.getWorld());
-		Block sourceblock = BlockSource.getWaterSourceBlock(player, range, ClickType.SHIFT_DOWN, false, true, false);
+		Block sourceBlock = BlockSource.getWaterSourceBlock(player, range, ClickType.SHIFT_DOWN, false, true, false);
 
-		if (sourceblock == null) {
+		if (sourceBlock == null) {
 			return;
-		} else if (TempBlock.isTempBlock(sourceblock)) {
+		} else if (TempBlock.isTempBlock(sourceBlock) || GeneralMethods.isRegionProtectedFromBuild(this, sourceBlock.getLocation())) {
 			return;
 		} else {
-			prepare(sourceblock);
+			prepare(sourceBlock);
 		}
 	}
 
@@ -325,6 +325,16 @@ public class IceBlast extends IceAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isPrepared() {

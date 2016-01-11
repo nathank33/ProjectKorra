@@ -86,4 +86,14 @@ public class HeatControlExtinguish extends FireAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+	
 }

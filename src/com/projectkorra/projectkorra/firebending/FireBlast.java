@@ -140,7 +140,9 @@ public class FireBlast extends FireAbility {
 
 	private void ignite(Location location) {
 		for (Block block : GeneralMethods.getBlocksAroundPoint(location, radius)) {
-			if (BlazeArc.isIgnitable(player, block) && !safeBlocks.contains(block)) {
+			if (BlazeArc.isIgnitable(player, block) 
+					&& !safeBlocks.contains(block)
+					&& !GeneralMethods.isRegionProtectedFromBuild(this, block.getLocation())) {
 				if (canFireGrief()) {
 					if (WaterAbility.isPlantbendable(block)) {
 						new PlantRegrowth(player, block);
@@ -160,7 +162,8 @@ public class FireBlast extends FireAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
+		if (!bPlayer.canBendIgnoreBindsCooldowns(this)
+				|| GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 			remove();
 			return;
 		}
@@ -268,6 +271,16 @@ public class FireBlast extends FireAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isPowerFurnace() {

@@ -166,7 +166,7 @@ public class FireBlastCharged extends FireAbility {
 						yield = (float) getDayFactor(yield);
 					}
 				} else {
-					yield *= AvatarState.factor;
+					yield = AvatarState.getValue(yield);
 				}
 				explosion.setYield((float) yield);
 				EXPLOSIONS.put(explosion, this);
@@ -200,7 +200,8 @@ public class FireBlastCharged extends FireAbility {
 
 		boolean exploded = false;
 		for (Entity entity : GeneralMethods.getEntitiesAroundPoint(location, 2 * radius)) {
-			if (entity.getEntityId() == player.getEntityId()) {
+			if (entity.getEntityId() == player.getEntityId()
+					|| GeneralMethods.isRegionProtectedFromBuild(this, entity.getLocation())) {
 				continue;
 			}
 			entity.setFireTicks((int) (fireTicks * 20));
@@ -296,6 +297,16 @@ public class FireBlastCharged extends FireAbility {
 	@Override
 	public long getCooldown() {
 		return 0;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 }

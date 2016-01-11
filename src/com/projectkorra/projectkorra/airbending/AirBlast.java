@@ -443,6 +443,16 @@ public class AirBlast extends AirAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public Location getOrigin() {
 		return origin;
@@ -595,4 +605,5 @@ public class AirBlast extends AirAbility {
 	public void setCooldown(long cooldown) {
 		this.cooldown = cooldown;
 	}
+
 }

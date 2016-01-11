@@ -161,6 +161,16 @@ public class HeatControlSolidify extends FireAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public int getRadius() {
 		return radius;

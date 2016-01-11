@@ -4,6 +4,7 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.ability.ElementalAbility;
 import com.projectkorra.projectkorra.util.TempBlock;
 
@@ -38,7 +39,7 @@ public class EarthPassive {
 			return true;
 		}
 		
-		if (ElementalAbility.isEarthbendable(player, block) || ElementalAbility.isTransparentToEarthbending(player, block)) {
+		if (EarthAbility.isEarthbendable(player, block) || ElementalAbility.isTransparentToEarthbending(player, block)) {
 			if (!ElementalAbility.isTransparentToEarthbending(player, block)) {
 				MaterialData type = block.getState().getData();
 				if (GeneralMethods.isSolid(block.getRelative(BlockFace.DOWN))) {
@@ -57,7 +58,7 @@ public class EarthPassive {
 			}
 
 			for (Block affectedBlock : GeneralMethods.getBlocksAroundPoint(block.getLocation(), 2)) {
-				if (ElementalAbility.isEarthbendable(player, affectedBlock)) {
+				if (EarthAbility.isEarthbendable(player, affectedBlock)) {
 					if (GeneralMethods.isSolid(affectedBlock.getRelative(BlockFace.DOWN))) {
 						MaterialData type = affectedBlock.getState().getData();
 						if (type.getItemType() == Material.RED_SANDSTONE) {
@@ -77,7 +78,7 @@ public class EarthPassive {
 			return true;
 		}
 
-		return ElementalAbility.isEarthbendable(player, block) || ElementalAbility.isTransparentToEarthbending(player, block);
+		return EarthAbility.isEarthbendable(player, block) || EarthAbility.isTransparentToEarthbending(player, block);
 	}
 
 	public static boolean isPassiveSand(Block block) {

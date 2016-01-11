@@ -258,7 +258,7 @@ public class WaterArmsWhip extends WaterAbility {
 				}
 
 				new TempBlock(l2.getBlock(), Material.STATIONARY_WATER, (byte) 8);
-				WaterArms.getBlockRevertTimes().put(l2.getBlock(), 0L);
+				WaterArms.getBlockRevertTimes().put(l2.getBlock(), System.currentTimeMillis() + 10);
 
 				if (i == activeLength) {
 					Location l3 = null;
@@ -271,7 +271,7 @@ public class WaterArmsWhip extends WaterAbility {
 					end = l3.clone();
 					if (canPlaceBlock(l3.getBlock())) {
 						new TempBlock(l3.getBlock(), Material.STATIONARY_WATER, (byte) 3);
-						WaterArms.getBlockRevertTimes().put(l3.getBlock(), 0L);
+						WaterArms.getBlockRevertTimes().put(l3.getBlock(), System.currentTimeMillis() + 10);
 						performAction(l3);
 					} else {
 						if (!l3.getBlock().getType().equals(Material.BARRIER)) {
@@ -424,6 +424,16 @@ public class WaterArmsWhip extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return usageCooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isReverting() {

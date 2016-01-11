@@ -107,6 +107,16 @@ public class Extraction extends EarthAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public int getDoubleChance() {
 		return doubleChance;

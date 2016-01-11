@@ -70,6 +70,8 @@ public class IceSpikeBlast extends IceAbility {
 
 		if (sourceBlock == null) {
 			new IceSpikePillarField(player);
+		} else if (GeneralMethods.isRegionProtectedFromBuild(this, sourceBlock.getLocation())) {
+			return;
 		} else {
 			prepare(sourceBlock);
 		}
@@ -78,6 +80,9 @@ public class IceSpikeBlast extends IceAbility {
 	private void affect(LivingEntity entity) {
 		if (entity instanceof Player) {
 			BendingPlayer targetBPlayer = BendingPlayer.getBendingPlayer((Player) entity);
+			if (targetBPlayer == null) {
+				return;
+			}
 			if (targetBPlayer.canBeSlowed()) {
 				PotionEffect effect = new PotionEffect(PotionEffectType.SLOW, slowDuration, slowPower);
 				new TempPotionEffect(entity, effect);
@@ -153,7 +158,9 @@ public class IceSpikeBlast extends IceAbility {
 				return;
 			}
 
-			source.revertBlock();
+			if (source != null) {
+				source.revertBlock();
+			}
 			source = null;
 
 			if (isTransparentToEarthbending(player, block) && !block.isLiquid()) {
@@ -247,11 +254,9 @@ public class IceSpikeBlast extends IceAbility {
 		if (isPlant(sourceBlock)) {
 			new PlantRegrowth(player, sourceBlock);
 			sourceBlock.setType(Material.AIR);
-		} else if (!GeneralMethods.isAdjacentToThreeOrMoreSources(sourceBlock)) {
-			sourceBlock.setType(Material.AIR);
 		}
 
-		source = new TempBlock(sourceBlock, Material.ICE, data);
+		new TempBlock(sourceBlock, Material.AIR, data);
 	}
 
 	public static void activate(Player player) {
@@ -400,6 +405,16 @@ public class IceSpikeBlast extends IceAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isPrepared() {

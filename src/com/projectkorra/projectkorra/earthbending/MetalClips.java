@@ -155,6 +155,8 @@ public class MetalClips extends MetalAbility {
 			return;
 		} else if (metalClipsCount == 3 && !canUse4Clips) {
 			return;
+		} else if (targetEntity != null && GeneralMethods.isRegionProtectedFromBuild(this, targetEntity.getLocation())) {
+			return;
 		}
 
 		metalClipsCount = (metalClipsCount < 4) ? metalClipsCount + 1 : 4;
@@ -482,6 +484,16 @@ public class MetalClips extends MetalAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isBeingWorn() {

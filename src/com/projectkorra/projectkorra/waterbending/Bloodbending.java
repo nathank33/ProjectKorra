@@ -282,6 +282,16 @@ public class Bloodbending extends BloodAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public boolean isCanOnlyBeUsedAtNight() {
 		return canOnlyBeUsedAtNight;

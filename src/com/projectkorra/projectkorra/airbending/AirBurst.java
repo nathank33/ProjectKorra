@@ -199,6 +199,17 @@ public class AirBurst extends AirAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+
 
 	public void addAffectedEntity(Entity entity) {
 		affectedEntities.add(entity);

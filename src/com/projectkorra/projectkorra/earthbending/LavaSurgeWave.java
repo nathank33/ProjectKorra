@@ -57,7 +57,7 @@ public class LavaSurgeWave extends LavaAbility {
 		this.waveBlocks = new ConcurrentHashMap<Block, Block>();
 		this.frozenBlocks = new ConcurrentHashMap<Block, Block>();
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			range = AvatarState.getValue(range);
 			maxRadius = AvatarState.getValue(maxRadius);
 			horizontalPush = AvatarState.getValue(horizontalPush);
@@ -316,6 +316,16 @@ public class LavaSurgeWave extends LavaAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isProgressing() {

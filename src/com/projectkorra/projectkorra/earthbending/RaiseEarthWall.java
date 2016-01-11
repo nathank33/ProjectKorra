@@ -32,7 +32,7 @@ public class RaiseEarthWall extends EarthAbility {
 			return;
 		}
 
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			height = (int) (2.0 / 5.0 * (double) AvatarState.getValue(height));
 			width = AvatarState.getValue(width);
 		}
@@ -60,20 +60,20 @@ public class RaiseEarthWall extends EarthAbility {
 		for (int i = -width / 2; i <= width / 2; i++) {
 			Block block = world.getBlockAt(location.clone().add(orth.clone().multiply((double) i)));
 
-			if (isTransparentToEarthbending(block)) {
+			if (isTransparent(block)) {
 				for (int j = 1; j < height; j++) {
 					block = block.getRelative(BlockFace.DOWN);
 					if (isEarthbendable(block)) {
 						cooldown = true;
 						new RaiseEarth(player, block.getLocation(), height);
-					} else if (!isTransparentToEarthbending(block)) {
+					} else if (!isTransparent(block)) {
 						break;
 					}
 				}
 			} else if (isEarthbendable(block.getRelative(BlockFace.UP))) {
 				for (int j = 1; j < height; j++) {
 					block = block.getRelative(BlockFace.UP);
-					if (isTransparentToEarthbending(block)) {
+					if (isTransparent(block)) {
 						cooldown = true;
 						new RaiseEarth(player, block.getRelative(BlockFace.DOWN).getLocation(), height);
 					} else if (!isEarthbendable(block)) {
@@ -107,6 +107,16 @@ public class RaiseEarthWall extends EarthAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public int getRange() {

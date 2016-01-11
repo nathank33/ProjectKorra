@@ -2,14 +2,22 @@ package com.projectkorra.projectkorra.chiblocking;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.ChiAbility;
+import com.projectkorra.projectkorra.ability.ComboAbility;
+import com.projectkorra.projectkorra.ability.util.ComboManager.AbilityInformation;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ChiCombo extends ChiAbility {
+/*
+ * TODO: Combo classes should eventually be rewritten so that each combo is treated
+ * as an individual ability. In the mean time, we will just place "fake"
+ * classes so that CoreAbility will register each ability. 
+ */
+public class ChiCombo extends ChiAbility implements ComboAbility {
 	
 	/**
 	 * a Map containing every entity which is paralyzed, and the time in milliseconds at which they will be unparalyzed.
@@ -119,6 +127,32 @@ public class ChiCombo extends ChiAbility {
 		return true;
 	}
 	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+
+	
+	@Override
+	public String getInstructions() {
+		return null;
+	}
+
+	@Override
+	public Object createNewComboInstance(Player player) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<AbilityInformation> getCombination() {
+		return null;
+	}
+
 	public boolean isEnabled() {
 		return enabled;
 	}
@@ -153,6 +187,18 @@ public class ChiCombo extends ChiAbility {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public class Immobilize extends ChiCombo {
+		
+		public Immobilize(Player player, String name) {
+			super(player, "Immobilize");
+		}
+		
+		@Override
+		public String getName() {
+			return "Immobilize";
+		}
 	}
 
 }

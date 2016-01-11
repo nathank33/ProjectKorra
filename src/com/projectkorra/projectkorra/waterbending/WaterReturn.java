@@ -189,6 +189,16 @@ public class WaterReturn extends WaterAbility {
 	public Location getLocation() {
 		return location;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public void setLocation(Location location) {
 		this.location = location;

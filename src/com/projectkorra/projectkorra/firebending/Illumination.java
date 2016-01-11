@@ -119,6 +119,16 @@ public class Illumination extends FireAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public byte getNormalData() {
 		return normalData;

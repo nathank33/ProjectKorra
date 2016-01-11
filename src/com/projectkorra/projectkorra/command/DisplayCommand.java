@@ -4,7 +4,6 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.Element.SubElement;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.ability.AvatarAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.SubAbility;
 import com.projectkorra.projectkorra.ability.util.ComboManager;
@@ -38,7 +37,7 @@ public class DisplayCommand extends PKCommand {
 			String elementName = args.get(0).toLowerCase();
 			//combos
 			if (Arrays.asList(Commands.comboaliases).contains(elementName)) {
-				elementName = getElement(elementName);
+				elementName = this.getElement(elementName);
 				Element element = Element.getElement(elementName);
 				ChatColor color = element != null ? element.getColor() : null;
 				ArrayList<String> combos = ComboManager.getCombosForElement(element);
@@ -105,7 +104,7 @@ public class DisplayCommand extends PKCommand {
 	private void displayAvatar(CommandSender sender) {
 		ArrayList<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(Element.AVATAR);
 		if (abilities.isEmpty()) {
-			sender.sendMessage(ChatColor.YELLOW + "There are no " + AvatarAbility.getChatColor() + "avatar" + ChatColor.YELLOW + " abilities on this server!");
+			sender.sendMessage(ChatColor.YELLOW + "There are no " + Element.AVATAR.getColor() + "avatar" + ChatColor.YELLOW + " abilities on this server!");
 			return;
 		}
 		for (CoreAbility ability : abilities) {
@@ -126,6 +125,7 @@ public class DisplayCommand extends PKCommand {
 	 * @param element The element to show the moves for
 	 */
 	private void displayElement(CommandSender sender, String element) {
+		element = this.getElement(element);
 		ArrayList<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(Element.getElement(element));
 		
 		if (abilities.isEmpty()) {
@@ -193,14 +193,17 @@ public class DisplayCommand extends PKCommand {
 	 * @param element The subelement to show the moves for
 	 */
 	private void displaySubElement(CommandSender sender, String element) {
-		List<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(Element.getElement(element));
+		element = this.getElement(element);
 		Element mainElement = Element.getElement(element);
+		List<CoreAbility> abilities = CoreAbility.getAbilitiesByElement(mainElement);
+		
+		
 		if (mainElement instanceof SubElement) {
 			mainElement = ((SubElement) mainElement).getParentElement();
 		}
 		ChatColor color = mainElement != null ? mainElement.getColor() : null;
 		
-		if (abilities.isEmpty() && element != null) {
+		if (abilities.isEmpty() && mainElement != null) {
 			sender.sendMessage(ChatColor.YELLOW + "There are no " + color + element + ChatColor.YELLOW + " abilities installed!");
 			return;
 		}

@@ -126,4 +126,14 @@ public class HeatControlCook extends FireAbility {
 		return 0;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+	
 }

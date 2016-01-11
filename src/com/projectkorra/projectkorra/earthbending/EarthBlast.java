@@ -218,7 +218,7 @@ public class EarthBlast extends EarthAbility {
 					block = location.getBlock();
 				}
 
-				if (isTransparentToEarthbending(block) && !block.isLiquid()) {
+				if (isTransparent(block) && !block.isLiquid()) {
 					GeneralMethods.breakBlock(block);
 				} else if (!isSettingUp) {
 					remove();
@@ -246,7 +246,7 @@ public class EarthBlast extends EarthAbility {
 						block2 = location.getBlock();
 					}
 
-					if (isTransparentToEarthbending(block) && !block.isLiquid()) {
+					if (isTransparent(block) && !block.isLiquid()) {
 						GeneralMethods.breakBlock(block);
 					} else {
 						remove();
@@ -471,7 +471,7 @@ public class EarthBlast extends EarthAbility {
 		}
 		
 		for (EarthBlast blast : CoreAbility.getAbilities(player, EarthBlast.class)) {
-			if (!blast.isProgressing && !bPlayer.canBend(blast)) {
+			if (!blast.isProgressing && bPlayer.canBend(blast)) {
 				blast.throwEarth();
 				ignore.add(blast);
 				earthBlast = blast;
@@ -497,6 +497,16 @@ public class EarthBlast extends EarthAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isProgressing() {

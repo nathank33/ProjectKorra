@@ -99,7 +99,7 @@ public class WaterSpout extends WaterAbility {
 
 	@Override
 	public void progress() {
-		if (!bPlayer.canBendIgnoreBindsCooldowns(this)) {
+		if (player.isDead() || !player.isOnline() || !bPlayer.canBind(this)) {
 			remove();
 			return;
 		} else {
@@ -309,6 +309,16 @@ public class WaterSpout extends WaterAbility {
 		return 0;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+	
 	public boolean isCanBendOnPackedIce() {
 		return canBendOnPackedIce;
 	}

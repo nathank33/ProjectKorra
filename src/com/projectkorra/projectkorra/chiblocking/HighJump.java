@@ -62,6 +62,16 @@ public class HighJump extends ChiAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+	
 	public int getHeight() {
 		return height;
 	}

@@ -88,7 +88,7 @@ public class Torrent extends WaterAbility {
 		
 		time = System.currentTimeMillis();
 		sourceBlock = BlockSource.getWaterSourceBlock(player, selectRange, ClickType.LEFT_CLICK, true, true, bPlayer.canPlantbend());
-		if (sourceBlock != null) {
+		if (sourceBlock != null && !GeneralMethods.isRegionProtectedFromBuild(this, sourceBlock.getLocation())) {
 			sourceSelected = true;
 			start();
 		}
@@ -612,6 +612,16 @@ public class Torrent extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isSourceSelected() {

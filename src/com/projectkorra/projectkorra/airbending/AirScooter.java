@@ -167,6 +167,17 @@ public class AirScooter extends AirAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+
 
 	public double getSpeed() {
 		return speed;

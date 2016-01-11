@@ -236,6 +236,16 @@ public class SandSpout extends SandAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public boolean isCanSpiral() {
 		return canSpiral;

@@ -129,4 +129,14 @@ public class AirFlight extends FlightAbility {
 		return 0;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
+
 }

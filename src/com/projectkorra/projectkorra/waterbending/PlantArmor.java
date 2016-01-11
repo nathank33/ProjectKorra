@@ -67,7 +67,9 @@ public class PlantArmor extends PlantAbility {
 	}
 
 	private boolean canUse() {
-		if (!bPlayer.canBend(this) || !bPlayer.canPlantbend()) {
+		if (!bPlayer.canPlantbend() 
+				|| !bPlayer.canBend(this) 
+				|| GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 			remove();
 			return false;
 		} else if (location.distanceSquared(player.getEyeLocation()) > range * range) {
@@ -156,6 +158,16 @@ public class PlantArmor extends PlantAbility {
 		if (plantbending != null) {
 			plantbending.remove();
 		}
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public static boolean canRemoveArmor(Player player) {

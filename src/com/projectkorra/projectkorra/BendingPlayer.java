@@ -1,5 +1,6 @@
 package com.projectkorra.projectkorra;
 
+import com.projectkorra.projectkorra.Element.SubElement;
 import com.projectkorra.projectkorra.ability.Ability;
 import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
@@ -143,10 +144,10 @@ public class BendingPlayer {
 	}
 
 	public boolean canBend(CoreAbility ability) {
-		return canBend(ability, false, false, false);
+		return canBend(ability, false, false);
 	}
 
-	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns, boolean ignoreRegions) {
+	private boolean canBend(CoreAbility ability, boolean ignoreBinds, boolean ignoreCooldowns) {
 		if (ability == null) {
 			return false;
 		}
@@ -173,6 +174,7 @@ public class BendingPlayer {
 		} else if (player.getGameMode() == GameMode.SPECTATOR) {
 			return false;
 		}
+		
 		if (!ignoreCooldowns && cooldowns.containsKey(name)) { // TODO: wtf is this
 			if (cooldowns.get(name) + getConfig().getLong("Properties.GlobalCooldown") >= System.currentTimeMillis()) {
 				return false;
@@ -180,19 +182,17 @@ public class BendingPlayer {
 			cooldowns.remove(name);
 		}
 
-		if (!ignoreRegions) {
-			if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
-				return false;
-			} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
-				return false;
-			} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
-					&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
-				return false;
-			} else if (ability instanceof WaterAbility && BendingManager.events.get(player.getWorld()) != null
-					&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("LunarEclipse")) {
-				return false;
-			} 
-		}
+		if (isChiBlocked() || isParalyzed() || isBloodbended() || isControlledByMetalClips()) {
+			return false;
+		} else if (GeneralMethods.isRegionProtectedFromBuild(player, ability.getName(), location)) {
+			return false;
+		} else if (ability instanceof FireAbility && BendingManager.events.get(player.getWorld()) != null
+				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("SolarEclipse")) {
+			return false;
+		} else if (ability instanceof WaterAbility && BendingManager.events.get(player.getWorld()) != null
+				&& BendingManager.events.get(player.getWorld()).equalsIgnoreCase("LunarEclipse")) {
+			return false;
+		} 
 		
 		if (!ignoreBinds && !canBind(ability)) {
 			return false;
@@ -201,25 +201,21 @@ public class BendingPlayer {
 	}
 
 	public boolean canBendIgnoreBinds(CoreAbility ability) {
-		return canBend(ability, true, false, false);
+		return canBend(ability, true, false);
 	}
 
 	public boolean canBendIgnoreBindsCooldowns(CoreAbility ability) {
-		return canBend(ability, true, true, false);
+		return canBend(ability, true, true);
 	}
 
 	public boolean canBendIgnoreCooldowns(CoreAbility ability) {
-		return canBend(ability, false, true, false);
+		return canBend(ability, false, true);
 	}
 	
-	public boolean canBendIgnoreBindsCooldownsRegions(CoreAbility ability) {
-		return canBend(ability, true, true, true);
-	}
-
 	public boolean canBendPassive(Element element) {
 		if (element == null || player == null) {
 			return false;
-		} else if (!player.hasPermission("bending." + element + ".passive")) {
+		} else if (!player.hasPermission("bending." + element.getName() + ".passive")) {
 			return false;
 		} else if (!isToggled() || !hasElement(element) || !isElementToggled(element)) {
 			return false;
@@ -240,14 +236,8 @@ public class BendingPlayer {
 		return (System.currentTimeMillis() > slowTime);
 	}
 
-	/*
-	 * TODO: Combos are broken with canBind in BendingTabCommand.
-	 * The fake CoreAbility will always return "FireCombo", however
-	 * we need to be able to check the permissions of every combo permission.
-	 * We should split up the combos into their own files.
-	 */
 	public boolean canBind(CoreAbility ability) {
-		if (ability == null || player == null && player.isOnline()) {
+		if (ability == null || !player.isOnline()) {
 			return false;
 		} else if (!player.hasPermission("bending.ability." + ability.getName())) {
 			return false;
@@ -456,11 +446,29 @@ public class BendingPlayer {
 	 * @return true If the player knows the element
 	 */
 	public boolean hasElement(Element element) {
-		return this.elements.contains(element);
+		if (element == null) {
+			return false;
+		} else if (element == Element.AVATAR) {
+			// At the moment we'll allow for both permissions to return true.
+			// Later on we can consider deleting the bending.ability.avatarstate option.
+			return player.hasPermission("bending.avatar") || player.hasPermission("bending.ability.AvatarState");
+		} else if (!(element instanceof SubElement)) {
+			return this.elements.contains(element);
+		} else {
+			Element parentElement = ((SubElement) element).getParentElement();
+			String prefix = "bending." + parentElement.getName() + ".";
+			
+			// Some permissions are bending.water.name and some are bending.water.namebending
+			if (player.hasPermission(prefix + element.getName())
+					|| player.hasPermission(prefix + element.getName() + "bending")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean isAvatarState() {
-		return AvatarState.isAvatarState(player);
+		return CoreAbility.hasAbility(player, AvatarState.class);
 	}
 
 	public boolean isBloodbended() {
@@ -481,8 +489,8 @@ public class BendingPlayer {
 	}
 
 	public boolean isElementToggled(Element element) {
-		if (element != null) {
-			return this.toggledElements.get(element);
+		if (element != null && toggledElements.containsKey(element)) {
+			return toggledElements.containsKey(element);
 		}
 		return true;
 	}
@@ -613,6 +621,9 @@ public class BendingPlayer {
 	}
 
 	public void toggleElement(Element element) {
+		if (element == null) {
+			return;
+		}
 		toggledElements.put(element, !toggledElements.get(element));
 	}
 	
@@ -631,10 +642,16 @@ public class BendingPlayer {
 	}
 	
 	public static BendingPlayer getBendingPlayer(OfflinePlayer oPlayer) {
+		if (oPlayer == null) {
+			return null;
+		}
 		return BendingPlayer.getPlayers().get(oPlayer.getUniqueId());
 	}
 	
 	public static BendingPlayer getBendingPlayer(Player player) {
+		if (player == null) {
+			return null;
+		}
 		return getBendingPlayer(player.getName());
 	}
 	

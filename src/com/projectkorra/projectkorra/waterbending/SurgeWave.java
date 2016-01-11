@@ -69,7 +69,7 @@ public class SurgeWave extends WaterAbility {
 		this.waveBlocks = new ConcurrentHashMap<Block, Block>();
 		this.frozenBlocks = new ConcurrentHashMap<Block, Block>();
 		
-		if (AvatarState.isAvatarState(player)) {
+		if (bPlayer.isAvatarState()) {
 			maxRadius = AvatarState.getValue(maxRadius);
 		}
 		maxRadius = getNightFactor(maxRadius);
@@ -218,7 +218,7 @@ public class SurgeWave extends WaterAbility {
 	public boolean prepare() {
 		cancelPrevious();
 		Block block = BlockSource.getWaterSourceBlock(player, range, ClickType.SHIFT_DOWN, true, true, bPlayer.canPlantbend());
-		if (block != null) {
+		if (block != null && !GeneralMethods.isRegionProtectedFromBuild(this, block.getLocation())) {
 			sourceBlock = block;
 			focusBlock();
 			return true;
@@ -425,6 +425,16 @@ public class SurgeWave extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isFreezing() {

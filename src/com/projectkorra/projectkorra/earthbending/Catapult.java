@@ -43,7 +43,7 @@ public class Catapult extends EarthAbility {
 			if (isEarthbendable(block)) {
 				distance = getEarthbendableBlocksLength(block, neg, length - i);
 				break;
-			} else if (!isTransparentToEarthbending(block)) {
+			} else if (!isTransparent(block)) {
 				break;
 			}
 		}
@@ -175,6 +175,16 @@ public class Catapult extends EarthAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public Location getOrigin() {

@@ -68,6 +68,16 @@ public class PlantRegrowth extends PlantAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public byte getData() {
 		return data;

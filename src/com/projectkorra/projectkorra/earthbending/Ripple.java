@@ -89,7 +89,7 @@ public class Ripple extends EarthAbility {
 			Block topBlock = loc.getBlock();
 			Block botBlock = loc.clone().add(0, -1, 0).getBlock();
 
-			if (isTransparentToEarthbending(topBlock) && isEarthbendable(botBlock)) {
+			if (isTransparent(topBlock) && isEarthbendable(botBlock)) {
 				location = loc.clone().add(0, -1, 0);
 				return location;
 			}
@@ -207,7 +207,7 @@ public class Ripple extends EarthAbility {
 				Block topblock = loc.getBlock();
 				Block botblock = loc.clone().add(0, -1, 0).getBlock();
 
-				if (isTransparentToEarthbending(topblock) && !topblock.isLiquid() && isEarthbendable(botblock)) {
+				if (isTransparent(topblock) && !topblock.isLiquid() && isEarthbendable(botblock)) {
 					location = loc.clone().add(0, -1, 0);
 					locations.add(location);
 					break;
@@ -315,6 +315,16 @@ public class Ripple extends EarthAbility {
 		return 0;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
 	public int getStep() {
 		return step;
 	}

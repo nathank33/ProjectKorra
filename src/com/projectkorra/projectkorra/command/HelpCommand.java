@@ -1,6 +1,7 @@
 package com.projectkorra.projectkorra.command;
 
 import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.ability.ComboAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.util.ComboManager;
 
@@ -29,13 +30,13 @@ public class HelpCommand extends PKCommand {
 			return;
 		}
 
-		String arg = args.get(0);
+		String arg = args.get(0).toLowerCase();
 
 		if (instances.keySet().contains(arg.toLowerCase())) { //bending help command
 			instances.get(arg).help(sender, true);
 		} else if (Arrays.asList(Commands.comboaliases).contains(arg)) { //bending help elementcombo
 			sender.sendMessage(ChatColor.GOLD + "Proper Usage: " + ChatColor.RED + "/bending display " + arg + ChatColor.GOLD + " or " + ChatColor.RED + "/bending help <Combo Name>");
-		} else if (CoreAbility.getAbility(arg) != null) { //bending help ability
+		} else if (CoreAbility.getAbility(arg) != null && !(CoreAbility.getAbility(arg) instanceof ComboAbility)) { //bending help ability
 			CoreAbility ability = CoreAbility.getAbility(arg);
 			ChatColor color = ability.getElement().getColor();
 			sender.sendMessage(color + ability.getName() + " - ");
@@ -64,7 +65,7 @@ public class HelpCommand extends PKCommand {
 			//combos - handled differently because they're stored in CamelCase in ComboManager
 			for (String combo : ComboManager.descriptions.keySet()) {
 				if (combo.equalsIgnoreCase(arg)) {
-					CoreAbility coreAbility = CoreAbility.getAbility(combo); //TODO: check to make sure this works
+					CoreAbility coreAbility = CoreAbility.getAbility(combo);
 					ChatColor color = coreAbility != null ? coreAbility.getElement().getColor() : null;
 					sender.sendMessage(color + combo + " (Combo) - ");
 					sender.sendMessage(color + ComboManager.descriptions.get(combo));

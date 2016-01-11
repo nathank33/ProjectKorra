@@ -565,6 +565,16 @@ public class LavaFlow extends LavaAbility {
 	public long getCooldown() {
 		return type == AbilityType.CLICK ? clickLandCooldown : shiftCooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public boolean isRemoving() {
 		return removing;

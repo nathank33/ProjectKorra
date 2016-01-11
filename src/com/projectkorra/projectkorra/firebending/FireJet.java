@@ -102,6 +102,16 @@ public class FireJet extends FireAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public boolean isAvatarStateToggled() {
 		return avatarStateToggled;

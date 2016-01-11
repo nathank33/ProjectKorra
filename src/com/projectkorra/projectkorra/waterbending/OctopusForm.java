@@ -163,7 +163,7 @@ public class OctopusForm extends WaterAbility {
 				continue;
 			}
 			
-			double knock = AvatarState.isAvatarState(player) ? AvatarState.getValue(knockback) : knockback;
+			double knock = bPlayer.isAvatarState() ? AvatarState.getValue(knockback) : knockback;
 			entity.setVelocity(GeneralMethods.getDirection(player.getLocation(), location).normalize().multiply(knock));
 			
 			if (entity instanceof LivingEntity) {
@@ -446,6 +446,16 @@ public class OctopusForm extends WaterAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public boolean isSourceSelected() {

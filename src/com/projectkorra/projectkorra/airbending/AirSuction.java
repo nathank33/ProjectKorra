@@ -140,7 +140,7 @@ public class AirSuction extends AirAbility {
 		Location location = origin.clone();
 		for (double i = 1; i <= range; i++) {
 			location = origin.clone().add(direction.clone().multiply(i));
-			if (!isTransparentToEarthbending(location.getBlock())
+			if (!isTransparent(location.getBlock())
 					|| GeneralMethods.isRegionProtectedFromBuild(this, location)) {
 				return origin.clone().add(direction.clone().multiply(i - 1));
 			}
@@ -172,7 +172,7 @@ public class AirSuction extends AirAbility {
 				Vector velocity = entity.getVelocity();
 				double max = speed;
 				double factor = pushFactor;
-				if (AvatarState.isAvatarState(player)) {
+				if (bPlayer.isAvatarState()) {
 					max = AvatarState.getValue(max);
 					factor = AvatarState.getValue(factor);
 				}
@@ -249,6 +249,16 @@ public class AirSuction extends AirAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public Location getOrigin() {

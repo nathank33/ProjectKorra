@@ -1,5 +1,6 @@
 package com.projectkorra.projectkorra.chiblocking;
 
+import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.command.Commands;
 
@@ -63,6 +64,8 @@ public class Smokescreen extends ChiAbility {
 		if (entity instanceof Player) {
 			if (Commands.invincible.contains(((Player) entity).getName())) {
 				return;
+			} else if (GeneralMethods.isRegionProtectedFromBuild(this, entity.getLocation())) {
+				return;
 			}
 			Player p = (Player) entity;
 			p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration * 20, 2));
@@ -98,6 +101,16 @@ public class Smokescreen extends ChiAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 	
 	public void setCooldown(long cooldown) {

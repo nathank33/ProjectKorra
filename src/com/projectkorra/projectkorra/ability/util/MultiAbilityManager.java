@@ -171,10 +171,8 @@ public class MultiAbilityManager {
 				if (playerBoundAbility.containsKey(player)) {
 					if (bPlayer.getBoundAbility() == null) {
 						if (multiAbilityList.contains(getMultiAbility(playerBoundAbility.get(player)))) {
-							if (player.getInventory().getHeldItemSlot() > getMultiAbility(playerBoundAbility.get(player)).getAbilities().size()) {
+							if (player.getInventory().getHeldItemSlot() >= getMultiAbility(playerBoundAbility.get(player)).getAbilities().size()) {
 								player.getInventory().setHeldItemSlot(getMultiAbility(playerBoundAbility.get(player)).getAbilities().size() - 1);
-							} else {
-								player.getInventory().setHeldItemSlot(0);
 							}
 						}
 					}
@@ -193,6 +191,10 @@ public class MultiAbilityManager {
 		if (playerAbilities.containsKey(player)) {
 			HashMap<Integer, String> prevBinds = playerAbilities.get(player);
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
+			if (bPlayer == null) {
+				return;
+			}
+			
 			int lastNonNull = -1;
 			for (int i = 1; i < 10; i++) {
 				if (prevBinds.get(i) != null)

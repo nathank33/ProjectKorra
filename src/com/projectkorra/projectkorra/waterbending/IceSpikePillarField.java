@@ -114,6 +114,16 @@ public class IceSpikePillarField extends IceAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public int getDamage() {
 		return damage;

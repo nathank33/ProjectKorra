@@ -2,8 +2,10 @@ package com.projectkorra.projectkorra.waterbending;
 
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
+import com.projectkorra.projectkorra.ability.ComboAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
+import com.projectkorra.projectkorra.ability.util.ComboManager.AbilityInformation;
 import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.firebending.FireCombo;
 import com.projectkorra.projectkorra.firebending.FireCombo.FireComboStream;
@@ -25,7 +27,12 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WaterCombo extends WaterAbility {
+/*
+ * TODO: Combo classes should eventually be rewritten so that each combo is treated
+ * as an individual ability. In the mean time, we will just place "fake"
+ * classes so that CoreAbility will register each ability. 
+ */
+public class WaterCombo extends WaterAbility implements ComboAbility {
 
 	public static enum AbilityState {
 		ICE_PILLAR_RISING, ICE_BULLET_FORMING
@@ -354,6 +361,31 @@ public class WaterCombo extends WaterAbility {
 	public boolean isHiddenAbility() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
+	@Override
+	public String getInstructions() {
+		return null;
+	}
+
+	@Override
+	public Object createNewComboInstance(Player player) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<AbilityInformation> getCombination() {
+		return null;
+	}
 
 	public boolean isEnabled() {
 		return enabled;
@@ -513,6 +545,32 @@ public class WaterCombo extends WaterAbility {
 
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+	
+	public class IceWave extends WaterCombo {
+
+		public IceWave(Player player, String name) {
+			super(player, "IceWave");
+		}
+		
+		@Override
+		public String getName() {
+			return "IceWave";
+		}
+		
+	}
+	
+	public class IceBullet extends WaterCombo {
+
+		public IceBullet(Player player, String name) {
+			super(player, "IceBullet");
+		}
+		
+		@Override
+		public String getName() {
+			return "IceBullet";
+		}
+		
 	}
 	
 }

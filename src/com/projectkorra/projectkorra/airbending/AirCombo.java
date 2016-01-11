@@ -3,8 +3,10 @@ package com.projectkorra.projectkorra.airbending;
 import com.projectkorra.projectkorra.GeneralMethods;
 import com.projectkorra.projectkorra.ProjectKorra;
 import com.projectkorra.projectkorra.ability.AirAbility;
+import com.projectkorra.projectkorra.ability.ComboAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
+import com.projectkorra.projectkorra.ability.util.ComboManager.AbilityInformation;
 import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.command.Commands;
 import com.projectkorra.projectkorra.firebending.FireCombo;
@@ -21,7 +23,12 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 
-public class AirCombo extends AirAbility {
+/*
+ * TODO: Combo classes should eventually be rewritten so that each combo is treated
+ * as an individual ability. In the mean time, we will just place "fake"
+ * classes so that CoreAbility will register each ability. 
+ */
+public class AirCombo extends AirAbility implements ComboAbility {
 
 	public static enum AbilityState {
 		TWISTER_MOVING, TWISTER_STATIONARY
@@ -79,11 +86,6 @@ public class AirCombo extends AirAbility {
 			this.cooldown = getConfig().getLong("Abilities.Air.AirCombo.AirStream.Cooldown");
 			this.airStreamMaxEntityHeight = getConfig().getDouble("Abilities.Air.AirCombo.AirStream.EntityHeight");
 			this.airStreamEntityCarryDuration = getConfig().getLong("Abilities.Air.AirCombo.AirStream.EntityDuration");
-		} else if (ability.equalsIgnoreCase("AirSlice")) {
-			this.damage = 3;
-			this.range = 10;
-			this.speed = 0.7;
-			this.cooldown = 500;
 		} else if (ability.equalsIgnoreCase("AirSweep")) {
 			this.damage = getConfig().getDouble("Abilities.Air.AirCombo.AirSweep.Damage");
 			this.range = getConfig().getDouble("Abilities.Air.AirCombo.AirSweep.Range");
@@ -91,7 +93,8 @@ public class AirCombo extends AirAbility {
 			this.knockback = getConfig().getDouble("Abilities.Air.AirCombo.AirSweep.Knockback");
 			this.cooldown = getConfig().getLong("Abilities.Air.AirCombo.AirSweep.Cooldown");
 		}
-		if (AvatarState.isAvatarState(player)) {
+		
+		if (bPlayer.isAvatarState()) {
 			this.cooldown = 0;
 			this.damage = AvatarState.getValue(damage);
 			this.range = AvatarState.getValue(range);
@@ -107,6 +110,9 @@ public class AirCombo extends AirAbility {
 	public void progress() {
 		progressCounter++;
 		if (player.isDead() || !player.isOnline()) {
+			remove();
+			return;
+		} else if (currentLoc != null && GeneralMethods.isRegionProtectedFromBuild(this, currentLoc)) {
 			remove();
 			return;
 		}
@@ -175,14 +181,14 @@ public class AirCombo extends AirAbility {
 				origin = player.getEyeLocation();
 				currentLoc = origin.clone();
 			}
-			Entity target = GeneralMethods.getTargetedEntity(player, range, new ArrayList<Entity>());
+			Entity target = GeneralMethods.getTargetedEntity(player, range);
 			if (target instanceof Player) {
 				if (Commands.invincible.contains(((Player) target).getName())) {
 					return;
 				}
 			}
 
-			if (target != null && target.getLocation().distanceSquared(currentLoc) > 7 * 7) {
+			if (target != null && target.getLocation().distanceSquared(currentLoc) > 49) {
 				destination = target.getLocation();
 			} else {
 				destination = GeneralMethods.getTargetedLocation(player, range, getTransparentMaterial());
@@ -190,9 +196,8 @@ public class AirCombo extends AirAbility {
 
 			direction = GeneralMethods.getDirection(currentLoc, destination).normalize();
 			currentLoc.add(direction.clone().multiply(speed));
-			if (!isTransparentToEarthbending(currentLoc.getBlock())) {
-				currentLoc.subtract(direction.clone().multiply(speed));
-			} else if (player.getWorld() != currentLoc.getWorld()) {
+			
+			if (player.getWorld() != currentLoc.getWorld()) {
 				remove();
 				return;
 			} else if (!player.isSneaking()) {
@@ -204,7 +209,7 @@ public class AirCombo extends AirAbility {
 			} else if (affectedEntities.size() > 0 && System.currentTimeMillis() - time >= airStreamEntityCarryDuration) {
 				remove();
 				return;
-			} else if (!isTransparentToEarthbending(currentLoc.getBlock())) {
+			} else if (!isTransparent(currentLoc.getBlock())) {
 				remove();
 				return;
 			} else if (currentLoc.getY() - origin.getY() > airStreamMaxEntityHeight) {
@@ -219,6 +224,8 @@ public class AirCombo extends AirAbility {
 			} else if (isWithinAirShield(currentLoc)) {
 				remove();
 				return;
+			} else if (!isTransparent(currentLoc.getBlock())) {
+				currentLoc.subtract(direction.clone().multiply(speed));
 			}
 
 			for (int i = 0; i < 10; i++) {
@@ -256,36 +263,10 @@ public class AirCombo extends AirAbility {
 				entity.setVelocity(force.clone().normalize().multiply(speed));
 				entity.setFallDistance(0F);
 			}
-		} else if (abilityName.equalsIgnoreCase("AirSlice")) {
-			if (origin == null) {
-				origin = player.getLocation();
-				currentLoc = origin.clone();
-				direction = player.getEyeLocation().getDirection();
-
-				for (double i = -5; i < 10; i += 1) {
-					FireComboStream fs = new FireComboStream(null, direction.clone().add(new Vector(0, 0.03 * i, 0)),
-							player.getLocation(), range, speed, "AirSlice");
-					fs.setDensity(1);
-					fs.setSpread(0F);
-					fs.setUseNewParticles(true);
-					fs.setParticleEffect(getAirbendingParticles());
-					fs.setCollides(false);
-					fs.runTaskTimer(ProjectKorra.plugin, 0, 1L);
-					tasks.add(fs);
-				}
-			}
-			manageAirVectors();
-			for (Entity entity : affectedEntities) {
-				if (entity instanceof LivingEntity) {
-					remove();
-					return;
-				}
-			}
 		} else if (abilityName.equalsIgnoreCase("AirSweep")) {
 			if (origin == null) {
 				direction = player.getEyeLocation().getDirection().normalize();
 				origin = player.getLocation().add(direction.clone().multiply(10));
-
 			}
 			if (progressCounter < 8) {
 				return;
@@ -326,15 +307,20 @@ public class AirCombo extends AirAbility {
 			FireComboStream fstream = (FireComboStream) tasks.get(i);
 			Location loc = fstream.getLocation();
 
-			if (!isTransparentToEarthbending(loc.getBlock())) {
-				if (!isTransparentToEarthbending(loc.clone().add(0, 0.2, 0).getBlock())) {
+			if (GeneralMethods.isRegionProtectedFromBuild(this, loc)) {
+				fstream.remove();
+				return;
+			}
+			
+			if (!isTransparent(loc.getBlock())) {
+				if (!isTransparent(loc.clone().add(0, 0.2, 0).getBlock())) {
 					fstream.remove();
 					return;
 				}
 			}
 			if (i % 3 == 0) {
 				for (Entity entity : GeneralMethods.getEntitiesAroundPoint(loc, 2.5)) {
-					if (GeneralMethods.isRegionProtectedFromBuild(player, "AirBlast", entity.getLocation())) {
+					if (GeneralMethods.isRegionProtectedFromBuild(this, entity.getLocation())) {
 						remove();
 						return;
 					}
@@ -430,6 +416,32 @@ public class AirCombo extends AirAbility {
 	public boolean isHiddenAbility() {
 		return true;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
+	@Override
+	public String getInstructions() {
+		return null;
+	}
+
+	@Override
+	public Object createNewComboInstance(Player player) {
+		return null;
+	}
+
+	@Override
+	public ArrayList<AbilityInformation> getCombination() {
+		return null;
+	}
+
 	
 	public String getAbilityName() {
 		return abilityName;
@@ -606,4 +618,44 @@ public class AirCombo extends AirAbility {
 	public void setCooldown(long cooldown) {
 		this.cooldown = cooldown;
 	}
+	
+	public class AirStream extends AirCombo {
+
+		public AirStream(Player player, String name) {
+			super(player, "AirStream");
+		}
+		
+		@Override
+		public String getName() {
+			return "AirStream";
+		}
+		
+	}
+	
+	public class AirSweep extends AirCombo {
+
+		public AirSweep(Player player, String name) {
+			super(player, "AirSweep");
+		}
+		
+		@Override
+		public String getName() {
+			return "AirSweep";
+		}
+		
+	}
+	
+	public class Twister extends AirCombo {
+
+		public Twister(Player player, String name) {
+			super(player, "Twister");
+		}
+		
+		@Override
+		public String getName() {
+			return "Twister";
+		}
+		
+	}
+		
 }

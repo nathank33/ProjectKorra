@@ -175,6 +175,16 @@ public class EarthGrab extends EarthAbility {
 	public long getCooldown() {
 		return cooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public double getLowestDistance() {
 		return lowestDistance;

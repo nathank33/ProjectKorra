@@ -3,7 +3,6 @@ package com.projectkorra.projectkorra;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
-import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.chiblocking.ChiCombo;
 import com.projectkorra.projectkorra.configuration.ConfigManager;
 import com.projectkorra.projectkorra.object.HorizontalVelocityTracker;
@@ -164,7 +163,6 @@ public class BendingManager implements Runnable {
 			ProjectKorra.time_step = interval;
 
 			CoreAbility.progressAll();
-			AvatarState.manageAvatarStates();
 			TempPotionEffect.progressAll();
 			handleDayNight();
 			Flight.handle();

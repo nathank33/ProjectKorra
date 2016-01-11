@@ -67,7 +67,7 @@ public class EarthTunnel extends EarthAbility {
 				return;
 			} else {
 				while (!isEarthbendable(block)) {
-					if (!isTransparentToEarthbending(block)) {
+					if (!isTransparent(block)) {
 						remove();
 						return;
 					}
@@ -116,6 +116,16 @@ public class EarthTunnel extends EarthAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 
 	public long getInterval() {

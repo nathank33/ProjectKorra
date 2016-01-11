@@ -1,9 +1,6 @@
 package com.projectkorra.projectkorra.ability;
 
-import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.earthbending.LavaFlow;
-import com.projectkorra.projectkorra.util.TempBlock;
 
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -20,7 +17,6 @@ import java.util.HashSet;
 // Contains methods that all 5 elements should be capable of accessing
 public abstract class ElementalAbility extends CoreAbility {
 	
-	private static final HashSet<Block> PREVENT_EARTHBENDING = new HashSet<Block>();
 	private static final Integer[] TRANSPARENT_MATERIAL = { 0, 6, 8, 9, 10, 11, 30, 31, 32, 37, 38, 39, 40, 50, 51, 59, 78, 83, 106, 175 };
 	private static final Integer[] PLANT_IDS = { 6, 18, 31, 37, 38, 39, 40, 59, 81, 83, 86, 99, 100, 103, 104, 105, 106, 111, 161, 175 };
 	private static final PotionEffectType[] POSITIVE_EFFECTS = {PotionEffectType.ABSORPTION, PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.FAST_DIGGING, 
@@ -34,24 +30,8 @@ public abstract class ElementalAbility extends CoreAbility {
 		super(player);
 	}
 	
-	public boolean isEarthbendable(Block block) {
-		return isEarthbendable(player, getName(), block);
-	}
-	
-	public boolean isMetalbendable(Block block) {
-		return isMetalbendable(block.getType());
-	}
-	
-	public boolean isMetalbendable(Material material) {
-		return isMetalbendable(player, material);
-	}
-
-	public boolean isTransparentToEarthbending(Block block) {
-		return isTransparentToEarthbending(player, getName(), block);
-	}
-
-	public static HashSet<Block> getPreventEarthbendingBlocks() {
-		return PREVENT_EARTHBENDING;
+	public boolean isTransparent(Block block) {
+		return isTransparent(player, getName(), block);
 	}
 	
 	public static Integer[] getTransparentMaterial() {
@@ -75,29 +55,6 @@ public abstract class ElementalAbility extends CoreAbility {
 			return true;
 		}
 		return false;
-	}
-
-	public static boolean isEarthbendable(Material material) {
-		return getConfig().getStringList("Properties.Earth.EarthbendableBlocks").contains(material.toString());
-	}
-	
-	public static boolean isEarthbendable(Player player, Block block) {
-		return isEarthbendable(player, null, block);
-	}
-
-	public static boolean isEarthbendable(Player player, String abilityName, Block block) {
-		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
-		if (bPlayer == null || !isEarthbendable(block.getType()) || PREVENT_EARTHBENDING.contains(block)
-				|| GeneralMethods.isRegionProtectedFromBuild(player, abilityName, block.getLocation())) {
-			return false;
-		} else if (isMetal(block) && !bPlayer.canMetalbend()) {
-			return false;
-		}
-		return true;
-	}
-
-	public static boolean isEarthRevertOn() {
-		return getConfig().getBoolean("Properties.Earth.RevertEarthbending");
 	}
 	
 	public static boolean isFullMoon(World world) {
@@ -125,21 +82,6 @@ public abstract class ElementalAbility extends CoreAbility {
 		return material == Material.LAVA || material == Material.STATIONARY_LAVA;
 	}
 
-	@SuppressWarnings("deprecation")
-	public static boolean isLavabendable(Block block) {
-		byte full = 0x0;
-		if (TempBlock.isTempBlock(block)) {
-			TempBlock tblock = TempBlock.instances.get(block);
-			if (tblock == null || !LavaFlow.getTempLavaBlocks().contains(tblock)) {
-				return false;
-			}
-		}
-		if (isLava(block) && block.getData() == full) {
-			return true;
-		}
-		return false;
-	}
-	
 	public static boolean isMeltable(Block block) {
 		if (block.getType() == Material.ICE || block.getType() == Material.SNOW) {
 			return true;
@@ -153,11 +95,6 @@ public abstract class ElementalAbility extends CoreAbility {
 	
 	public static boolean isMetal(Material material) {
 		return getConfig().getStringList("Properties.Earth.MetalBlocks").contains(material.toString());
-	}
-	
-	public static boolean isMetalbendable(Player player, Material material) {
-		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
-		return bPlayer == null ? null : isMetal(material) && bPlayer.canMetalbend();
 	}
 	
 	public static boolean isMetalBlock(Block block) {
@@ -218,14 +155,14 @@ public abstract class ElementalAbility extends CoreAbility {
 		return false;
 	}
 
-	public static boolean isTransparentToEarthbending(Player player, Block block) {
-		return isTransparentToEarthbending(player, null, block);
-	}
-
 	@SuppressWarnings("deprecation")
-	public static boolean isTransparentToEarthbending(Player player, String abilityName, Block block) {
+	public static boolean isTransparent(Player player, String abilityName, Block block) {
 		return Arrays.asList(TRANSPARENT_MATERIAL).contains(block.getTypeId())
 				&& !GeneralMethods.isRegionProtectedFromBuild(player, abilityName, block.getLocation());
+	}
+
+	public static boolean isTransparentToEarthbending(Player player, Block block) {
+		return isTransparent(player, null, block);
 	}
 	
 	public static boolean isUndead(Entity entity) {

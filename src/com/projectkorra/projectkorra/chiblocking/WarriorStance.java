@@ -54,6 +54,16 @@ public class WarriorStance extends ChiAbility {
 	public long getCooldown() {
 		return 0;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return true;
+	}
 
 	public int getStrength() {
 		return strength;

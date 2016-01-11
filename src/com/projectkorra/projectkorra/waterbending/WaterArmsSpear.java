@@ -266,6 +266,16 @@ public class WaterArmsSpear extends WaterAbility {
 	public long getCooldown() {
 		return usageCooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public boolean isHitEntity() {
 		return hitEntity;

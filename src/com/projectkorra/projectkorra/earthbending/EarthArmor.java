@@ -124,14 +124,14 @@ public class EarthArmor extends EarthAbility {
 			newLegsBlock = legsBlockLocation.getBlock();
 		}
 
-		if (isTransparentToEarthbending(newHeadBlock) && !newHeadBlock.isLiquid()) {
+		if (isTransparent(newHeadBlock) && !newHeadBlock.isLiquid()) {
 			GeneralMethods.breakBlock(newHeadBlock);
 		} else if (!isEarthbendable(newHeadBlock) && !newHeadBlock.isLiquid() && newHeadBlock.getType() != Material.AIR) {
 			remove();
 			return false;
 		}
 
-		if (isTransparentToEarthbending(newLegsBlock) && !newLegsBlock.isLiquid()) {
+		if (isTransparent(newLegsBlock) && !newLegsBlock.isLiquid()) {
 			GeneralMethods.breakBlock(newLegsBlock);
 		} else if (!isEarthbendable(newLegsBlock) && !newLegsBlock.isLiquid() && newLegsBlock.getType() != Material.AIR) {
 			remove();
@@ -221,6 +221,16 @@ public class EarthArmor extends EarthAbility {
 		return cooldown;
 	}
 
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
+	
 	public boolean isFormed() {
 		return formed;
 	}

@@ -1,8 +1,8 @@
 package com.projectkorra.projectkorra.chiblocking;
 
+import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.ability.ChiAbility;
 import com.projectkorra.projectkorra.airbending.Suffocate;
-import com.projectkorra.projectkorra.avatar.AvatarState;
 import com.projectkorra.projectkorra.command.Commands;
 
 import org.bukkit.Location;
@@ -67,7 +67,8 @@ public class Paralyze extends ChiAbility {
 	//TODO change paralyze to use Spigot metadata rather than checking this class
 	public static boolean isParalyzed(Entity entity) {
 		if (entity instanceof Player) {
-			if (AvatarState.isAvatarState((Player) entity)) {
+			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer((Player) entity);
+			if (bPlayer != null && bPlayer.isAvatarState()) {
 				return false;
 			}
 		}
@@ -94,6 +95,16 @@ public class Paralyze extends ChiAbility {
 	@Override
 	public long getCooldown() {
 		return cooldown;
+	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return false;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
 	}
 	
 	public static long getDuration() {

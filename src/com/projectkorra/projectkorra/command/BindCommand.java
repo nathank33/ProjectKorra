@@ -25,20 +25,20 @@ public class BindCommand extends PKCommand {
 			return;
 		}
 
-		if (!GeneralMethods.abilityExists(args.get(0))) {
+		CoreAbility coreAbil = CoreAbility.getAbility(args.get(0));
+		if (coreAbil == null || coreAbil.isHiddenAbility()) {
 			sender.sendMessage(ChatColor.RED + "That ability doesn't exist.");
 			return;
 		}
 		
-		CoreAbility coreAbil = CoreAbility.getAbility(args.get(0));
 		// bending bind [Ability]
 		if (args.size() == 1) {
-			bind(sender, coreAbil.getName(), ((Player) sender).getInventory().getHeldItemSlot()+1);
+			bind(sender, args.get(0), ((Player) sender).getInventory().getHeldItemSlot()+1);
 		}
 
 		// bending bind [ability] [#]
 		if (args.size() == 2) {
-			bind(sender, coreAbil.getName(), Integer.parseInt(args.get(1)));
+			bind(sender, args.get(0), Integer.parseInt(args.get(1)));
 		}
 	}
 

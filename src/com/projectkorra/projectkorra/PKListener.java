@@ -159,8 +159,9 @@ public class PKListener implements Listener {
 
 	ProjectKorra plugin;
 
-	public static HashMap<Player, String> bendingDeathPlayer = new HashMap<Player, String>(); // Player killed by Bending
-	public static List<UUID> interact = new ArrayList<UUID>(); // Player right click block
+	private static final HashMap<Player, String> BENDING_PLAYER_DEATH = new HashMap<>(); // Player killed by Bending
+	private static final List<UUID> RIGHT_CLICK_INTERACT = new ArrayList<UUID>(); // Player right click block
+	private static final ArrayList<UUID> TOGGLED_OUT = new ArrayList<>(); // Stands for toggled = false while logging out
 
 	public PKListener(ProjectKorra plugin) {
 		this.plugin = plugin;
@@ -175,7 +176,7 @@ public class PKListener implements Listener {
 			return;
 		}
 
-		if (GeneralMethods.TOGGLED_OUT.contains(player.getUniqueId())) {
+		if (TOGGLED_OUT.contains(player.getUniqueId())) {
 			bPlayer.toggleBending();
 			player.sendMessage(ChatColor.YELLOW + "Reminder, you toggled your bending before signing off. Enable it again with /bending toggle.");
 		}
@@ -695,13 +696,13 @@ public class PKListener implements Listener {
 			StringBuilder sb = new StringBuilder();
 			sb.append(ability.getElement().getColor());
 			sb.append(event.getAbility());
-			bendingDeathPlayer.put(event.getVictim(), sb.toString());
+			BENDING_PLAYER_DEATH.put(event.getVictim(), sb.toString());
 			final Player player = event.getVictim();
 
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					bendingDeathPlayer.remove(player);
+					BENDING_PLAYER_DEATH.remove(player);
 				}
 			}.runTaskLater(ProjectKorra.plugin, 20);
 		}
@@ -972,9 +973,9 @@ public class PKListener implements Listener {
 		}
 		
 		if (event.getEntity().getKiller() != null) {
-			if (bendingDeathPlayer.containsKey(event.getEntity())) {
+			if (BENDING_PLAYER_DEATH.containsKey(event.getEntity())) {
 				String message = ConfigManager.deathMsgConfig.get().getString("Properties.Default");
-				String ability = bendingDeathPlayer.get(event.getEntity());
+				String ability = BENDING_PLAYER_DEATH.get(event.getEntity());
 				String tempAbility = ChatColor.stripColor(ability).replaceAll(" ", "");
 				CoreAbility coreAbil = CoreAbility.getAbility(ability);
 				Element element = null;
@@ -1005,7 +1006,7 @@ public class PKListener implements Listener {
 				}
 				message = message.replace("{victim}", event.getEntity().getName()).replace("{attacker}", event.getEntity().getKiller().getName()).replace("{ability}", ability);
 				event.setDeathMessage(message);
-				bendingDeathPlayer.remove(event.getEntity());
+				BENDING_PLAYER_DEATH.remove(event.getEntity());
 			}
 		}
 	}
@@ -1020,12 +1021,12 @@ public class PKListener implements Listener {
 
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			final UUID uuid = player.getUniqueId();
-			interact.add(uuid);
+			RIGHT_CLICK_INTERACT.add(uuid);
 			
 			new BukkitRunnable() {
 				@Override
 				public void run() {
-					interact.remove(uuid);
+					RIGHT_CLICK_INTERACT.remove(uuid);
 				}
 			}.runTaskLater(plugin, 5);
 			
@@ -1132,11 +1133,11 @@ public class PKListener implements Listener {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
 		
 		if (bPlayer != null) {
-			if (GeneralMethods.TOGGLED_OUT.contains(player.getUniqueId()) && bPlayer.isToggled()) {
-				GeneralMethods.TOGGLED_OUT.remove(player.getUniqueId());
+			if (TOGGLED_OUT.contains(player.getUniqueId()) && bPlayer.isToggled()) {
+				TOGGLED_OUT.remove(player.getUniqueId());
 			}
 			if (!bPlayer.isToggled()) {
-				GeneralMethods.TOGGLED_OUT.add(player.getUniqueId());
+				TOGGLED_OUT.add(player.getUniqueId());
 			}
 		}
 
@@ -1375,7 +1376,7 @@ public class PKListener implements Listener {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);		
 		if (bPlayer == null) {
 			return;
-		} else if (interact.contains(player.getUniqueId())) {
+		} else if (RIGHT_CLICK_INTERACT.contains(player.getUniqueId())) {
 			return;
 		}
 		
@@ -1403,7 +1404,7 @@ public class PKListener implements Listener {
 		
 		if (coreAbil == null && !MultiAbilityManager.hasMultiAbilityBound(player)) {
 			return;
-		} else if (bPlayer.canBendIgnoreBindsCooldowns(coreAbil)) {
+		} else if (bPlayer.canBendIgnoreCooldowns(coreAbil)) {
 			if (coreAbil instanceof AddonAbility) {
 				return;
 			}
@@ -1616,7 +1617,11 @@ public class PKListener implements Listener {
 		}
 
 		Player player = event.getPlayer();
-		if (CoreAbility.hasAbility(player, Tornado.class) || Bloodbending.isBloodbended(player) || Suffocate.isBreathbent(player) || CoreAbility.hasAbility(player, FireJet.class) || AvatarState.getPlayers().contains(player)) {
+		if (CoreAbility.hasAbility(player, Tornado.class) 
+				|| Bloodbending.isBloodbended(player) 
+				|| Suffocate.isBreathbent(player) 
+				|| CoreAbility.hasAbility(player, FireJet.class) 
+				|| CoreAbility.hasAbility(player,  AvatarState.class)) {
 			event.setCancelled(player.getGameMode() != GameMode.CREATIVE);
 		}
 	}
@@ -1633,6 +1638,18 @@ public class PKListener implements Listener {
 			}
 			Smokescreen.getSnowballs().remove(id);
 		}
+	}
+
+	public static HashMap<Player, String> getBendingPlayerDeath() {
+		return BENDING_PLAYER_DEATH;
+	}
+
+	public static List<UUID> getRightClickInteract() {
+		return RIGHT_CLICK_INTERACT;
+	}
+
+	public static ArrayList<UUID> getToggledOut() {
+		return TOGGLED_OUT;
 	}
 
 }

@@ -11,9 +11,15 @@ public interface Ability {
 
 	public void remove();
 	
-	//public boolean isSneakAbiliity();
+	public boolean isSneakAbility();
 	
-	//public boolean isHarmlessAbility();
+	/**
+	 * Determines if this ability is considered harmless against other players. A harmless
+	 * ability cannot manipulate another player. For example: AirPassive,
+	 * WaterSpout, AirSpout, and FireJet.
+	 * @return true if the ability is harmless and should be allowed in both PvP and non-PvP zones.
+	 */
+	public boolean isHarmlessAbility();
 	
 	public boolean isIgniteAbility();
 	
@@ -23,6 +29,8 @@ public interface Ability {
 	
 	public long getCooldown();
 	
+	public Player getPlayer();
+	
 	public String getName();
 	
 	public String getDescription();
@@ -31,6 +39,4 @@ public interface Ability {
 	
 	public Location getLocation();
 	
-	public Player getPlayer();
-
 }

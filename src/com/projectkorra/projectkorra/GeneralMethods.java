@@ -30,6 +30,7 @@ import com.projectkorra.projectkorra.ability.Ability;
 import com.projectkorra.projectkorra.ability.AddonAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.EarthAbility;
+import com.projectkorra.projectkorra.ability.ElementalAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.ability.WaterAbility;
 import com.projectkorra.projectkorra.ability.util.ComboManager;
@@ -56,7 +57,6 @@ import com.projectkorra.projectkorra.util.BlockCacheElement;
 import com.projectkorra.projectkorra.util.Flight;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 import com.projectkorra.projectkorra.util.TempBlock;
-import com.projectkorra.projectkorra.waterbending.PhaseChangeFreeze;
 import com.projectkorra.projectkorra.waterbending.WaterManipulation;
 import com.projectkorra.projectkorra.waterbending.WaterSpout;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
@@ -67,7 +67,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -120,14 +119,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("deprecation")
 public class GeneralMethods {
 	
-	private static final ArrayList<Ability> INVINCIBLE = new ArrayList<>();
-	
-	// Represents PlayerName, previously checked blocks, and whether they were true or false
-	private static final ConcurrentHashMap<String, ConcurrentHashMap<Block, BlockCacheElement>> BLOCK_CACHE = new ConcurrentHashMap<>();
-
-	public static Integer[] NON_OPAQUE = { 0, 6, 8, 9, 10, 11, 27, 28, 30, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 68, 
+	public static final Integer[] NON_OPAQUE = { 0, 6, 8, 9, 10, 11, 27, 28, 30, 31, 32, 37, 38, 39, 40, 50, 51, 55, 59, 66, 68, 
 			69, 70, 72, 75, 76, 77, 78, 83, 90, 93, 94, 104, 105, 106, 111, 115, 119, 127, 131, 132, 175 };
-	private static Material[] INTERACTABLE_MATERIALS = { Material.ACACIA_DOOR, Material.ACACIA_FENCE_GATE, Material.ANVIL, 
+	public static final Material[] INTERACTABLE_MATERIALS = { Material.ACACIA_DOOR, Material.ACACIA_FENCE_GATE, Material.ANVIL, 
 			Material.ARMOR_STAND, Material.BEACON, Material.BED, Material.BED_BLOCK, Material.BIRCH_DOOR,
 			Material.BIRCH_FENCE_GATE, Material.BOAT, Material.BREWING_STAND, Material.BURNING_FURNACE, 
 			Material.CAKE_BLOCK, Material.CHEST, Material.COMMAND, Material.DARK_OAK_DOOR, 
@@ -138,8 +132,10 @@ public class GeneralMethods {
 			Material.LEVER, Material.MINECART, Material.NOTE_BLOCK, Material.PAINTING, Material.SPRUCE_DOOR, 
 			Material.SPRUCE_FENCE_GATE, Material.STONE_BUTTON, Material.TRAPPED_CHEST, Material.TRAP_DOOR, 
 			Material.WOOD_BUTTON, Material.WOOD_DOOR, Material.WORKBENCH };
-	public static ArrayList<UUID> TOGGLED_OUT = new ArrayList<>(); 	// Stands for toggled = false while logging out
 	
+	// Represents PlayerName, previously checked blocks, and whether they were true or false
+	private static final ConcurrentHashMap<String, ConcurrentHashMap<Block, BlockCacheElement>> BLOCK_CACHE = new ConcurrentHashMap<>();
+	private static final ArrayList<Ability> INVINCIBLE = new ArrayList<>();
 	private static ProjectKorra plugin;
 
 	public GeneralMethods(ProjectKorra plugin) {
@@ -258,19 +254,6 @@ public class GeneralMethods {
 		return player.hasPermission("bending.ability." + ability);
 	}
 
-	public static boolean comboExists(String string) {
-		/*
-		 * Previous method only returned non-stock combos. Reason we use
-		 * descriptions is because that contains all valid combos. Not technical
-		 * ones like IceBulletLeftClick, etc.
-		 */
-		for (String s : ComboManager.descriptions.keySet()) {
-			if (s.equalsIgnoreCase(string))
-				return true;
-		}
-		return false;
-	}
-
 	/**
 	 * Creates a {@link BendingPlayer} with the data from the database. This
 	 * runs when a player logs in.
@@ -309,16 +292,21 @@ public class GeneralMethods {
 				boolean p = false;
 				final ArrayList<Element> elements = new ArrayList<Element>();
 				if (element != null) { // Player has an element.
-					if (element.contains("a"))
+					if (element.contains("a")) {
 						elements.add(Element.AIR);
-					if (element.contains("w"))
+					}
+					if (element.contains("w")) {
 						elements.add(Element.WATER);
-					if (element.contains("e"))
+					}
+					if (element.contains("e")) {
 						elements.add(Element.EARTH);
-					if (element.contains("f"))
+					}
+					if (element.contains("f")) {
 						elements.add(Element.FIRE);
-					if (element.contains("c"))
+					}
+					if (element.contains("c")) {
 						elements.add(Element.CHI);
+					}
 				}
 
 				final HashMap<Integer, String> abilities = new HashMap<Integer, String>();
@@ -363,8 +351,9 @@ public class GeneralMethods {
 	public static void damageEntity(Player player, Entity entity, double damage, String ability) {
 		if (entity instanceof LivingEntity) {
 			if (entity instanceof Player) {
-				if (Commands.invincible.contains(entity.getName()))
+				if (Commands.invincible.contains(entity.getName())) {
 					return;
+				}
 			}
 			if (Bukkit.getPluginManager().isPluginEnabled("NoCheatPlus")) {
 				NCPExemptionManager.exemptPermanently(player, CheckType.FIGHT_REACH);
@@ -417,28 +406,31 @@ public class GeneralMethods {
 			R = Integer.valueOf(hexVal.substring(0, 2), 16);
 			G = Integer.valueOf(hexVal.substring(2, 4), 16);
 			B = Integer.valueOf(hexVal.substring(4, 6), 16);
-			if (R <= 0)
+			if (R <= 0) {
 				R = 1;
+			}
 		} else if (hexVal.length() <= 7 && hexVal.substring(0, 1).equals("#")) {
 			R = Integer.valueOf(hexVal.substring(1, 3), 16);
 			G = Integer.valueOf(hexVal.substring(3, 5), 16);
 			B = Integer.valueOf(hexVal.substring(5, 7), 16);
-			if (R <= 0)
+			if (R <= 0) {
 				R = 1;
+			}
 		}
 
 		loc.setX(loc.getX() + Math.random() * (xOffset / 2 - -(xOffset / 2)));
 		loc.setY(loc.getY() + Math.random() * (yOffset / 2 - -(yOffset / 2)));
 		loc.setZ(loc.getZ() + Math.random() * (zOffset / 2 - -(zOffset / 2)));
 
-		if (type == ParticleEffect.RED_DUST || type == ParticleEffect.REDSTONE)
-			ParticleEffect.RED_DUST.display((float) R, (float) G, (float) B, 0.004F, 0, loc, 257D);
-		else if (type == ParticleEffect.SPELL_MOB || type == ParticleEffect.MOB_SPELL)
+		if (type == ParticleEffect.RED_DUST || type == ParticleEffect.REDSTONE) {
+			ParticleEffect.RED_DUST.display(R, G, B, 0.004F, 0, loc, 257D);
+		} else if (type == ParticleEffect.SPELL_MOB || type == ParticleEffect.MOB_SPELL) {
 			ParticleEffect.SPELL_MOB.display((float) 255 - R, (float) 255 - G, (float) 255 - B, 1, 0, loc, 257D);
-		else if (type == ParticleEffect.SPELL_MOB_AMBIENT || type == ParticleEffect.MOB_SPELL_AMBIENT)
+		} else if (type == ParticleEffect.SPELL_MOB_AMBIENT || type == ParticleEffect.MOB_SPELL_AMBIENT) {
 			ParticleEffect.SPELL_MOB_AMBIENT.display((float) 255 - R, (float) 255 - G, (float) 255 - B, 1, 0, loc, 257D);
-		else
-			ParticleEffect.RED_DUST.display((float) 0, (float) 0, (float) 0, 0.004F, 0, loc, 257D);
+		} else {
+			ParticleEffect.RED_DUST.display(0, 0, 0, 0.004F, 0, loc, 257D);
+		}
 	}
 
 	public static void displayColoredParticle(Location loc, String hexVal) {
@@ -450,16 +442,18 @@ public class GeneralMethods {
 			R = Integer.valueOf(hexVal.substring(0, 2), 16);
 			G = Integer.valueOf(hexVal.substring(2, 4), 16);
 			B = Integer.valueOf(hexVal.substring(4, 6), 16);
-			if (R <= 0)
+			if (R <= 0) {
 				R = 1;
+			}
 		} else if (hexVal.length() <= 7 && hexVal.substring(0, 1).equals("#")) {
 			R = Integer.valueOf(hexVal.substring(1, 3), 16);
 			G = Integer.valueOf(hexVal.substring(3, 5), 16);
 			B = Integer.valueOf(hexVal.substring(5, 7), 16);
-			if (R <= 0)
+			if (R <= 0) {
 				R = 1;
+			}
 		}
-		ParticleEffect.RED_DUST.display((float) R, (float) G, (float) B, 0.004F, 0, loc, 257D);
+		ParticleEffect.RED_DUST.display(R, G, B, 0.004F, 0, loc, 257D);
 	}
 
 	public static void displayColoredParticle(Location loc, String hexVal, float xOffset, float yOffset, float zOffset) {
@@ -471,42 +465,45 @@ public class GeneralMethods {
 			R = Integer.valueOf(hexVal.substring(0, 2), 16);
 			G = Integer.valueOf(hexVal.substring(2, 4), 16);
 			B = Integer.valueOf(hexVal.substring(4, 6), 16);
-			if (R <= 0)
+			if (R <= 0) {
 				R = 1;
+			}
 		} else if (hexVal.length() <= 7 && hexVal.substring(0, 1).equals("#")) {
 			R = Integer.valueOf(hexVal.substring(1, 3), 16);
 			G = Integer.valueOf(hexVal.substring(3, 5), 16);
 			B = Integer.valueOf(hexVal.substring(5, 7), 16);
-			if (R <= 0)
+			if (R <= 0) {
 				R = 1;
+			}
 		}
 
 		loc.setX(loc.getX() + Math.random() * (xOffset / 2 - -(xOffset / 2)));
 		loc.setY(loc.getY() + Math.random() * (yOffset / 2 - -(yOffset / 2)));
 		loc.setZ(loc.getZ() + Math.random() * (zOffset / 2 - -(zOffset / 2)));
 
-		ParticleEffect.RED_DUST.display((float) R, (float) G, (float) B, 0.004F, 0, loc, 257D);
+		ParticleEffect.RED_DUST.display(R, G, B, 0.004F, 0, loc, 257D);
 	}
 
 	public static void displayParticleVector(Location loc, ParticleEffect type, float xTrans, float yTrans, float zTrans) {
-		if (type == ParticleEffect.FIREWORKS_SPARK)
+		if (type == ParticleEffect.FIREWORKS_SPARK) {
 			ParticleEffect.FIREWORKS_SPARK.display(xTrans, yTrans, zTrans, 0.09F, 0, loc, 257D);
-		else if (type == ParticleEffect.SMOKE || type == ParticleEffect.SMOKE_NORMAL)
+		} else if (type == ParticleEffect.SMOKE || type == ParticleEffect.SMOKE_NORMAL) {
 			ParticleEffect.SMOKE.display(xTrans, yTrans, zTrans, 0.04F, 0, loc, 257D);
-		else if (type == ParticleEffect.LARGE_SMOKE || type == ParticleEffect.SMOKE_LARGE)
+		} else if (type == ParticleEffect.LARGE_SMOKE || type == ParticleEffect.SMOKE_LARGE) {
 			ParticleEffect.LARGE_SMOKE.display(xTrans, yTrans, zTrans, 0.04F, 0, loc, 257D);
-		else if (type == ParticleEffect.ENCHANTMENT_TABLE)
+		} else if (type == ParticleEffect.ENCHANTMENT_TABLE) {
 			ParticleEffect.ENCHANTMENT_TABLE.display(xTrans, yTrans, zTrans, 0.5F, 0, loc, 257D);
-		else if (type == ParticleEffect.PORTAL)
+		} else if (type == ParticleEffect.PORTAL) {
 			ParticleEffect.PORTAL.display(xTrans, yTrans, zTrans, 0.5F, 0, loc, 257D);
-		else if (type == ParticleEffect.FLAME)
+		} else if (type == ParticleEffect.FLAME) {
 			ParticleEffect.FLAME.display(xTrans, yTrans, zTrans, 0.04F, 0, loc, 257D);
-		else if (type == ParticleEffect.CLOUD)
+		} else if (type == ParticleEffect.CLOUD) {
 			ParticleEffect.CLOUD.display(xTrans, yTrans, zTrans, 0.04F, 0, loc, 257D);
-		else if (type == ParticleEffect.SNOW_SHOVEL)
+		} else if (type == ParticleEffect.SNOW_SHOVEL) {
 			ParticleEffect.SNOW_SHOVEL.display(xTrans, yTrans, zTrans, 0.2F, 0, loc, 257D);
-		else
-			ParticleEffect.RED_DUST.display((float) 0, (float) 0, (float) 0, 0.004F, 0, loc, 257D);
+		} else {
+			ParticleEffect.RED_DUST.display(0, 0, 0, 0.004F, 0, loc, 257D);
+		}
 	}
 
 	/**
@@ -516,8 +513,9 @@ public class GeneralMethods {
 	 * @param items The items to drop.
 	 */
 	public static void dropItems(Block block, Collection<ItemStack> items) {
-		for (ItemStack item : items)
+		for (ItemStack item : items) {
 			block.getWorld().dropItem(block.getLocation(), item);
+		}
 	}
 
 	public static List<Block> getBlocksAlongLine(Location ploc, Location tloc, World w) {
@@ -806,12 +804,14 @@ public class GeneralMethods {
 	}
 
 	public static int getMaxPresets(Player player) {
-		if (player.isOp())
+		if (player.isOp()) {
 			return 500;
+		}
 		int cap = 0;
 		for (int i = 0; i <= 500; i++) {
-			if (player.hasPermission("bending.command.presets.create." + i))
+			if (player.hasPermission("bending.command.presets.create." + i)) {
 				cap = i;
+			}
 		}
 		return cap;
 	}
@@ -867,13 +867,14 @@ public class GeneralMethods {
 		Location origin = player.getEyeLocation();
 		Vector direction = player.getEyeLocation().getDirection().normalize();
 		for (Entity entity : origin.getWorld().getEntities()) {
-			if (avoid.contains(entity))
+			if (avoid.contains(entity)) {
 				continue;
+			}
 			if (entity.getLocation().distanceSquared(origin) < longestr * longestr 
 					&& getDistanceFromLine(direction, origin, entity.getLocation()) < 2 
 					&& (entity instanceof LivingEntity) 
 					&& entity.getEntityId() != player.getEntityId() 
-					&& entity.getLocation().distance(origin.clone().add(direction)) < entity.getLocation().distance(origin.clone().add(direction.clone().multiply(-1)))) {
+					&& entity.getLocation().distanceSquared(origin.clone().add(direction)) < entity.getLocation().distanceSquared(origin.clone().add(direction.clone().multiply(-1)))) {
 				target = entity;
 				longestr = entity.getLocation().distance(origin);
 			}
@@ -936,16 +937,18 @@ public class GeneralMethods {
 		while (blockHolder.getType() != Material.AIR && Math.abs(y) < Math.abs(positiveY)) {
 			y++;
 			Block tempBlock = loc.clone().add(0, y, 0).getBlock();
-			if (tempBlock.getType() == Material.AIR)
+			if (tempBlock.getType() == Material.AIR) {
 				return blockHolder;
+			}
 			blockHolder = tempBlock;
 		}
 
 		while (blockHolder.getType() == Material.AIR && Math.abs(y) < Math.abs(negativeY)) {
 			y--;
 			blockHolder = loc.clone().add(0, y, 0).getBlock();
-			if (blockHolder.getType() != Material.AIR)
+			if (blockHolder.getType() != Material.AIR) {
 				return blockHolder;
+			}
 		}
 		return null;
 	}
@@ -959,30 +962,22 @@ public class GeneralMethods {
 	}
 
 	public static boolean isAdjacentToThreeOrMoreSources(Block block) {
-		if (TempBlock.isTempBlock(block))
+		if (TempBlock.isTempBlock(block)) {
 			return false;
+		}
 		int sources = 0;
 		byte full = 0x0;
 		BlockFace[] faces = { BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH };
 		for (BlockFace face : faces) {
 			Block blocki = block.getRelative(face);
-			if ((blocki.getType() == Material.LAVA || blocki.getType() == Material.STATIONARY_LAVA) && blocki.getData() == full && EarthPassive.canPhysicsChange(blocki))
+			if ((blocki.getType() == Material.LAVA || blocki.getType() == Material.STATIONARY_LAVA) && blocki.getData() == full && EarthPassive.canPhysicsChange(blocki)) {
 				sources++;
-			if ((blocki.getType() == Material.WATER || blocki.getType() == Material.STATIONARY_WATER) && blocki.getData() == full && WaterManipulation.canPhysicsChange(blocki))
+			}
+			if ((WaterAbility.isWater(blocki) || WaterAbility.isIce(blocki)) && blocki.getData() == full && WaterManipulation.canPhysicsChange(blocki)) {
 				sources++;
-			if (PhaseChangeFreeze.getFrozenBlocks().containsKey(blocki)) {
-				//if (FreezeMelt.frozenblocks.get(blocki) == full)
-				//sources++;
-			} else if (blocki.getType() == Material.ICE) {
-				//sources++;
 			}
 		}
 		return sources >= 2;
-	}
-
-	public static boolean isHarmlessAbility(String ability) {
-		return false; // TODO: FIX
-		//return AbilityModuleManager.harmlessabilities.contains(ability);
 	}
 
 	public static boolean isImportEnabled() {
@@ -1007,8 +1002,9 @@ public class GeneralMethods {
 		for (double i = 0; i <= max; i++) {
 			loc = location1.clone().add(direction.clone().multiply(i));
 			Material type = loc.getBlock().getType();
-			if (type != Material.AIR && !(Arrays.asList(EarthAbility.getTransparentMaterialSet()).contains(type.getId()) || WaterAbility.isWater(loc.getBlock())))
+			if (type != Material.AIR && !(Arrays.asList(ElementalAbility.getTransparentMaterialSet()).contains(type.getId()) || ElementalAbility.isWater(loc.getBlock()))) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -1022,8 +1018,9 @@ public class GeneralMethods {
 	 * in the map first.
 	 */
 	public static boolean isRegionProtectedFromBuild(Player player, String ability, Location loc) {
-		if (!BLOCK_CACHE.containsKey(player.getName()))
+		if (!BLOCK_CACHE.containsKey(player.getName())) {
 			BLOCK_CACHE.put(player.getName(), new ConcurrentHashMap<Block, BlockCacheElement>());
+		}
 
 		ConcurrentHashMap<Block, BlockCacheElement> blockMap = BLOCK_CACHE.get(player.getName());
 		Block block = loc.getBlock();
@@ -1050,7 +1047,7 @@ public class GeneralMethods {
 	}
 
 	public static boolean isRegionProtectedFromBuildPostCache(Player player, String ability, Location loc) {
-		boolean allowharmless = plugin.getConfig().getBoolean("Properties.RegionProtection.AllowHarmlessAbilities");
+		boolean allowHarmless = plugin.getConfig().getBoolean("Properties.RegionProtection.AllowHarmlessAbilities");
 		boolean respectWorldGuard = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectWorldGuard");
 		boolean respectPreciousStones = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectPreciousStones");
 		boolean respectFactions = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectFactions");
@@ -1058,16 +1055,22 @@ public class GeneralMethods {
 		boolean respectGriefPrevention = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectGriefPrevention");
 		boolean respectLWC = plugin.getConfig().getBoolean("Properties.RegionProtection.RespectLWC");
 
-		//List<String> ignite = AbilityModuleManager.igniteabilities;
-		//List<String> explode = AbilityModuleManager.explodeabilities;
-		// TODO: fix
-		List<String> ignite = new ArrayList<>();
-		List<String> explode = new ArrayList<>();
+		boolean isIgnite = false;
+		boolean isExplosive = false;
+		boolean isHarmless = false;
+		CoreAbility coreAbil = CoreAbility.getAbility(ability);
+		if (coreAbil != null) {
+			isIgnite = coreAbil.isIgniteAbility();
+			isExplosive = coreAbil.isExplosiveAbility();
+			isHarmless = coreAbil.isHarmlessAbility();
+		}
 
-		if (ability == null && allowharmless)
+		if (ability == null && allowHarmless) {
 			return false;
-		if (isHarmlessAbility(ability) && allowharmless)
+		}
+		if (isHarmless && allowHarmless) {
 			return false;
+		}
 
 		PluginManager pm = Bukkit.getPluginManager();
 
@@ -1094,20 +1097,24 @@ public class GeneralMethods {
 			}
 			if (wgp != null && respectWorldGuard && !player.hasPermission("worldguard.region.bypass." + world.getName())) {
 				WorldGuardPlugin wg = (WorldGuardPlugin) Bukkit.getPluginManager().getPlugin("WorldGuard");
-				if (!player.isOnline())
+				if (!player.isOnline()) {
 					return true;
+				}
 
-				if (ignite.contains(ability)) {
+				if (isIgnite) {
 					if (!wg.hasPermission(player, "worldguard.override.lighter")) {
-						if (wg.getGlobalStateManager().get(world).blockLighter)
+						if (wg.getGlobalStateManager().get(world).blockLighter) {
 							return true;
+						}
 					}
 				}
-				if (explode.contains(ability)) {
-					if (wg.getGlobalStateManager().get(location.getWorld()).blockTNTExplosions)
+				if (isExplosive) {
+					if (wg.getGlobalStateManager().get(location.getWorld()).blockTNTExplosions) {
 						return true;
-					if (!wg.getRegionContainer().createQuery().testBuild(location, player, DefaultFlag.TNT))
+					}
+					if (!wg.getRegionContainer().createQuery().testBuild(location, player, DefaultFlag.TNT)) {
 						return true;
+					}
 				}
 
 				if (!wg.canBuild(player, location.getBlock())) {
@@ -1118,18 +1125,16 @@ public class GeneralMethods {
 			if (psp != null && respectPreciousStones) {
 				PreciousStones ps = (PreciousStones) psp;
 
-				if (ignite.contains(ability)) {
-					if (ps.getForceFieldManager().hasSourceField(location, FieldFlag.PREVENT_FIRE))
+				if (isIgnite) {
+					if (ps.getForceFieldManager().hasSourceField(location, FieldFlag.PREVENT_FIRE)) {
 						return true;
+					}
 				}
-				if (explode.contains(ability)) {
-					if (ps.getForceFieldManager().hasSourceField(location, FieldFlag.PREVENT_EXPLOSIONS))
+				if (isExplosive) {
+					if (ps.getForceFieldManager().hasSourceField(location, FieldFlag.PREVENT_EXPLOSIONS)) {
 						return true;
+					}
 				}
-
-				//				if (ps.getForceFieldManager().hasSourceField(location,
-				//						FieldFlag.PREVENT_PLACE))
-				//					return true;
 
 				if (!PreciousStones.API().canBreak(player, location)) {
 					return true;
@@ -1151,14 +1156,6 @@ public class GeneralMethods {
 
 					boolean bBuild = PlayerCacheUtil.getCachePermission(player, location, 3, (byte) 0, TownyPermission.ActionType.BUILD);
 
-					if (ignite.contains(ability)) {
-
-					}
-
-					if (explode.contains(ability)) {
-
-					}
-
 					if (!bBuild) {
 						PlayerCache cache = twn.getCache(player);
 						TownBlockStatus status = cache.getStatus();
@@ -1177,8 +1174,9 @@ public class GeneralMethods {
 							return true;
 						}
 
-						if ((cache.hasBlockErrMsg()))
+						if ((cache.hasBlockErrMsg())) {
 							TownyMessaging.sendErrorMsg(player, cache.getBlockErrMsg());
+						}
 					}
 				}
 				catch (Exception e1) {
@@ -1188,21 +1186,16 @@ public class GeneralMethods {
 
 			if (gpp != null && respectGriefPrevention) {
 				Material type = player.getWorld().getBlockAt(location).getType();
-				if (type == null)
+				if (type == null) {
 					type = Material.AIR;
+				}
 				String reason = GriefPrevention.instance.allowBuild(player, location); // WORKING with WorldGuard 6.0 BETA 4
 
 				Claim claim = GriefPrevention.instance.dataStore.getClaimAt(loc, true, null);
-				if (ignite.contains(ability)) {
 
-				}
-
-				if (explode.contains(ability)) {
-
-				}
-
-				if (reason != null && claim.siegeData != null)
+				if (reason != null && claim.siegeData != null) {
 					return true;
+				}
 			}
 		}
 		return false;
@@ -1220,10 +1213,6 @@ public class GeneralMethods {
 
 	public static boolean isWeapon(Material mat) {
 		return mat != null && (mat == Material.WOOD_AXE || mat == Material.WOOD_PICKAXE || mat == Material.WOOD_SPADE || mat == Material.WOOD_SWORD || mat == Material.STONE_AXE || mat == Material.STONE_PICKAXE || mat == Material.STONE_SPADE || mat == Material.STONE_SWORD || mat == Material.IRON_AXE || mat == Material.IRON_PICKAXE || mat == Material.IRON_SWORD || mat == Material.IRON_SPADE || mat == Material.DIAMOND_AXE || mat == Material.DIAMOND_PICKAXE || mat == Material.DIAMOND_SWORD || mat == Material.DIAMOND_SPADE);
-	}
-
-	public static void playAvatarSound(Location loc) {
-		loc.getWorld().playSound(loc, Sound.ANVIL_LAND, 1, 10);
 	}
 
 	public static void reloadPlugin() {
@@ -1277,7 +1266,7 @@ public class GeneralMethods {
 		HashMap<Integer, String> slots = bPlayer.getAbilities();
 		HashMap<Integer, String> finalAbilities = new HashMap<Integer, String>();
 		for (int i : slots.keySet()) {
-			if (bPlayer.canBendIgnoreBindsCooldownsRegions(CoreAbility.getAbility(slots.get(i)))) {
+			if (bPlayer.canBind(CoreAbility.getAbility(slots.get(i)))) {
 				finalAbilities.put(i, slots.get(i));
 			}
 		}
@@ -1447,41 +1436,50 @@ public class GeneralMethods {
 	}
 
 	public static void saveAbility(BendingPlayer bPlayer, int slot, String ability) {
-		if (bPlayer == null)
+		if (bPlayer == null) {
 			return;
+		}
 		String uuid = bPlayer.getUUIDString();
 
 		//Temp code to block modifications of binds, Should be replaced when bind event is added.
-		if (MultiAbilityManager.playerAbilities.containsKey(Bukkit.getPlayer(bPlayer.getUUID())))
+		if (MultiAbilityManager.playerAbilities.containsKey(Bukkit.getPlayer(bPlayer.getUUID()))) {
 			return;
+		}
 		HashMap<Integer, String> abilities = bPlayer.getAbilities();
 
 		DBConnection.sql.modifyQuery("UPDATE pk_players SET slot" + slot + " = '" + (abilities.get(slot) == null ? null : abilities.get(slot)) + "' WHERE uuid = '" + uuid + "'");
 	}
 
 	public static void saveElements(BendingPlayer bPlayer) {
-		if (bPlayer == null)
+		if (bPlayer == null) {
 			return;
+		}
 		String uuid = bPlayer.getUUIDString();
 
 		StringBuilder elements = new StringBuilder();
-		if (bPlayer.hasElement(Element.AIR))
+		if (bPlayer.hasElement(Element.AIR)) {
 			elements.append("a");
-		if (bPlayer.hasElement(Element.WATER))
+		}
+		if (bPlayer.hasElement(Element.WATER)) {
 			elements.append("w");
-		if (bPlayer.hasElement(Element.EARTH))
+		}
+		if (bPlayer.hasElement(Element.EARTH)) {
 			elements.append("e");
-		if (bPlayer.hasElement(Element.FIRE))
+		}
+		if (bPlayer.hasElement(Element.FIRE)) {
 			elements.append("f");
-		if (bPlayer.hasElement(Element.CHI))
+		}
+		if (bPlayer.hasElement(Element.CHI)) {
 			elements.append("c");
+		}
 
 		DBConnection.sql.modifyQuery("UPDATE pk_players SET element = '" + elements + "' WHERE uuid = '" + uuid + "'");
 	}
 
 	public static void savePermaRemoved(BendingPlayer bPlayer) {
-		if (bPlayer == null)
+		if (bPlayer == null) {
 			return;
+		}
 		String uuid = bPlayer.getUUIDString();
 		boolean permaRemoved = bPlayer.isPermaRemoved();
 		DBConnection.sql.modifyQuery("UPDATE pk_players SET permaremoved = '" + (permaRemoved ? "true" : "false") + "' WHERE uuid = '" + uuid + "'");
@@ -1489,13 +1487,15 @@ public class GeneralMethods {
 
 	public static void setVelocity(Entity entity, Vector velocity) {
 		if (entity instanceof TNTPrimed) {
-			if (plugin.getConfig().getBoolean("Properties.BendingAffectFallingSand.TNT"))
+			if (plugin.getConfig().getBoolean("Properties.BendingAffectFallingSand.TNT")) {
 				entity.setVelocity(velocity.multiply(plugin.getConfig().getDouble("Properties.BendingAffectFallingSand.TNTStrengthMultiplier")));
+			}
 			return;
 		}
 		if (entity instanceof FallingSand) {
-			if (plugin.getConfig().getBoolean("Properties.BendingAffectFallingSand.Normal"))
+			if (plugin.getConfig().getBoolean("Properties.BendingAffectFallingSand.Normal")) {
 				entity.setVelocity(velocity.multiply(plugin.getConfig().getDouble("Properties.BendingAffectFallingSand.NormalStrengthMultiplier")));
+			}
 			return;
 		}
 		entity.setVelocity(velocity);
@@ -1519,6 +1519,7 @@ public class GeneralMethods {
 
 	public static void startCacheCleaner(final double period) {
 		new BukkitRunnable() {
+			@Override
 			public void run() {
 				for (ConcurrentHashMap<Block, BlockCacheElement> map : BLOCK_CACHE.values()) {
 					for (Iterator<Block> i = map.keySet().iterator(); i.hasNext();) {
@@ -1549,8 +1550,9 @@ public class GeneralMethods {
 		Flight.removeAll();
 		TempBlock.removeAll();
 		MultiAbilityManager.removeAll();
-		if (!INVINCIBLE.isEmpty())
+		if (!INVINCIBLE.isEmpty()) {
 			INVINCIBLE.clear();
+		}
 	}
 
 	public static void stopPlugin() {

@@ -173,6 +173,16 @@ public class WaterArmsFreeze extends IceAbility {
 	public long getCooldown() {
 		return usageCooldown;
 	}
+	
+	@Override
+	public boolean isSneakAbility() {
+		return true;
+	}
+
+	@Override
+	public boolean isHarmlessAbility() {
+		return false;
+	}
 
 	public boolean isCancelled() {
 		return cancelled;

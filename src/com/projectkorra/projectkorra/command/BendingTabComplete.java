@@ -36,9 +36,11 @@ public class BendingTabComplete implements TabCompleter {
 				
 				List<String> abilities = new ArrayList<String>();
 				if (args.length == 2) {
-					for (CoreAbility coreAbil : CoreAbility.getAbilities()) {
-						if (bPlayer != null && bPlayer.canBind(coreAbil)) {
-							abilities.add(coreAbil.getName());
+					if (bPlayer != null) {
+						for (CoreAbility coreAbil : CoreAbility.getAbilities()) {
+							if (!coreAbil.isHiddenAbility() && bPlayer.canBind(coreAbil)) {
+								abilities.add(coreAbil.getName());
+							}
 						}
 					}
 				} else {
@@ -108,7 +110,7 @@ public class BendingTabComplete implements TabCompleter {
 					return new ArrayList<String>();
 				List<String> list = new ArrayList<String>();
 				for (Element e : Element.getElements()) {
-					list.add(e.toString());
+					list.add(e.getName());
 				}
 				List<String> abils = new ArrayList<String>();
 				for (CoreAbility coreAbil : CoreAbility.getAbilities()) {
@@ -116,19 +118,7 @@ public class BendingTabComplete implements TabCompleter {
 						abils.add(coreAbil.getName());
 					}
 				}
-				
-				/*
-				 * TODO: Combo support is currently broken because Combos
-				 * are all in the same class file. We need to split those abilities
-				 * into their own file. 
-				 */
-				/*
-				for (ComboAbilityModule abil : ComboModuleManager.combo) {
-					if (bPlayer.canBind(abil.getName())) {
-						abils.add(abil.getName());
-					}
-				}
-				*/
+								
 				Collections.sort(abils);
 				list.addAll(abils);
 				return getPossibleCompletionsForGivenArgs(args, list);
